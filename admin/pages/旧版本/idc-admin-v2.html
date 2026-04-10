@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIDC Collector — 管理后台</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --primary: #1E3A5F;
+      --primary-light: #2C5282;
+      --accent: #E8843C;
+      --success: #2D9E6C;
+      --warning: #D97706;
+      --danger: #DC2626;
+      --info: #3B82F6;
+      --bg: #F4F6F9;
+      --card: #FFFFFF;
+      --border: #E5E7EB;
+      --text: #111827;
+      --text-secondary: #6B7280;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; background: var(--bg); font-size: 14px; }
+    .admin-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: var(--primary); color: #fff; position: fixed; top: 0; left: 0; bottom: 0; display: flex; flex-direction: column; z-index: 100; }
+    .sidebar-logo { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-logo h1 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
+    .nav-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); }
+    .main { flex: 1; margin-left: 240px; padding: 24px 32px; }
+    .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .card { background: var(--card); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th, .table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .status-new { background: #EFF6FF; color: var(--info); }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: var(--card); border-radius: 8px; width: 90%; max-width: 800px; max-height: 90vh; overflow: auto; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group.full { grid-column: span 2; }
+    .form-input, .form-select { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; }
+    .page-content { display: none; }
+    .page-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><h1>AIDC Collector</h1></div>
+      <nav>
+        <div class="nav-item active" onclick="switchPage('datacenters')">机房管理</div>
+        <div class="nav-item" onclick="switchPage('users')">用户管理</div>
+      </nav>
+    </aside>
+    <main class="main">
+      <div id="page-datacenters" class="page-content active">
+        <h2>机房管理</h2>
+        <button class="btn btn-accent" onclick="openEditModal()">新增机房</button>
+        <div class="card">
+          <table class="table">
+            <thead><tr><th>机房名称</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="page-users" class="page-content">
+        <h2>用户管理</h2>
+        <div class="card">
+          <table class="table">
+            <thead><tr><th>用户</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody id="userTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="editModal">
+    <div class="modal" style="max-width: 900px;">
+      <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="modalTitle">新增机房</h3>
+        <button onclick="closeEditModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+      </div>
+      <input type="hidden" id="editId">
+      <form id="datacenterForm" class="form-grid">
+        <div class="form-group">
+          <label>机房名称 <span style="color: var(--danger)">*</span></label>
+          <input type="text" id="dcName" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>城市</label>
+          <input type="text" id="dcCity" class="form-input">
+        </div>
+        <div class="form-group full">
+          <label>详细地址</label>
+          <input type="text" id="dcAddress" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>区域</label>
+          <select id="dcRegion" class="form-select">
+            <option value="">请选择</option>
+            <option value="southeast_asia">东南亚</option>
+            <option value="japan">日本</option>
+            <option value="europe">欧洲</option>
+            <option value="oceania">澳洲</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>机房等级</label>
+          <select id="dcTier" class="form-select">
+            <option value="">请选择</option>
+            <option value="Tier I">Tier I</option>
+            <option value="Tier II">Tier II</option>
+            <option value="Tier III">Tier III</option>
+            <option value="Tier III+">Tier III+</option>
+            <option value="Tier IV">Tier IV</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>总机柜数量</label>
+          <input type="number" id="dcTotalCabinets" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>可用机柜数量</label>
+          <input type="number" id="dcAvailableCabinets" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>单柜最大功率 (kW)</label>
+          <input type="number" id="dcMaxPower" class="form-input" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>可用电力 (MW)</label>
+          <input type="number" id="dcAvailablePower" class="form-input" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>制冷方式</label>
+          <select id="dcCooling" class="form-select">
+            <option value="">请选择</option>
+            <option value="风冷">风冷</option>
+            <option value="水冷">水冷</option>
+            <option value="液冷">液冷</option>
+            <option value="风冷+液冷">风冷+液冷</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>设计PUE</label>
+          <input type="number" id="dcPUE" class="form-input" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>状态</label>
+          <select id="dcStatus" class="form-select">
+            <option value="new">新发现</option>
+            <option value="visited">已考察</option>
+            <option value="negotiating">洽谈中</option>
+            <option value="contracted">已签约</option>
+            <option value="rejected">已排除</option>
+          </select>
+        </div>
+        <div class="form-group full" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+          <button type="button" class="btn" onclick="closeEditModal()">取消</button>
+          <button type="button" class="btn btn-primary" onclick="saveDatacenter()">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Demo 数据
+    const DEMO_DATA = [
+      { _id: '1', name: 'Equinix SG3', city: '新加坡', address: 'Tampines North', status: 'negotiating', region: 'southeast_asia', tier: 'Tier IV', totalCabinets: 1500, availableCabinets: 320, maxCabinetPower: 12, availablePower: 18, mainCoolingType: '液冷', pueDesign: '1.12', createdByName: 'Willis', createdAt: '2026-04-02' },
+      { _id: '2', name: 'Supernap Thailand', city: '曼谷', address: 'Eastern Seaboard', status: 'visited', region: 'southeast_asia', tier: 'Tier III+', totalCabinets: 800, availableCabinets: 450, maxCabinetPower: 8, availablePower: 10, mainCoolingType: '风冷', pueDesign: '1.35', createdByName: 'Willis', createdAt: '2026-04-01' },
+      { _id: '3', name: 'NTT Inzai', city: '日本千叶', address: 'Inzai City', status: 'contracted', region: 'japan', tier: 'Tier IV', totalCabinets: 2000, availableCabinets: 200, maxCabinetPower: 15, availablePower: 25, mainCoolingType: '液冷', pueDesign: '1.10', createdByName: '张明', createdAt: '2026-03-28' }
+    ];
+
+    const DEMO_USERS = [
+      { _id: 'u1', name: 'Willis', role: 'admin', status: 'approved', createdAt: '2026-03-01', lastLogin: '2026-04-06' },
+      { _id: 'u2', name: '张明', role: 'collector', status: 'approved', createdAt: '2026-03-15', lastLogin: '2026-04-05' },
+      { _id: 'u3', name: '李婷', role: 'collector', status: 'pending', createdAt: '2026-04-06', lastLogin: '-' }
+    ];
+
+    const STATUS_MAP = {
+      new: { text: '新发现', class: 'status-new' },
+      visited: { text: '已考察', class: 'status-visited' },
+      negotiating: { text: '洽谈中', class: 'status-negotiating' },
+      contracted: { text: '已签约', class: 'status-contracted' },
+      rejected: { text: '已排除', class: 'status-rejected' }
+    };
+
+    let allData = [...DEMO_DATA];
+    let users = [...DEMO_USERS];
+    let currentPage = 1;
+    const pageSize = 10;
+
+    function switchPage(page) {
+      document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('page-' + page).classList.add('active');
+      event.target.classList.add('active');
+      
+      if (page === 'datacenters') renderTable();
+      if (page === 'users') renderUserTable();
+    }
+
+    function openEditModal(id) {
+      document.getElementById('editModal').classList.add('show');
+      document.getElementById('editId').value = id || '';
+      
+      if (id) {
+        const dc = allData.find(d => d._id === id);
+        document.getElementById('dcName').value = dc.name || '';
+        document.getElementById('dcCity').value = dc.city || '';
+        document.getElementById('dcAddress').value = dc.address || '';
+        document.getElementById('dcStatus').value = dc.status || 'new';
+        document.getElementById('dcRegion').value = dc.region || '';
+        document.getElementById('dcTier').value = dc.tier || '';
+        document.getElementById('dcTotalCabinets').value = dc.totalCabinets || '';
+        document.getElementById('dcAvailableCabinets').value = dc.availableCabinets || '';
+        document.getElementById('dcMaxPower').value = dc.maxCabinetPower || '';
+        document.getElementById('dcAvailablePower').value = dc.availablePower || '';
+        document.getElementById('dcCooling').value = dc.mainCoolingType || '';
+        document.getElementById('dcPUE').value = dc.pueDesign || '';
+      } else {
+        document.getElementById('datacenterForm').reset();
+      }
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('show');
+      document.getElementById('datacenterForm').reset();
+    }
+
+    function saveDatacenter() {
+      const id = document.getElementById('editId').value;
+      const data = {
+        name: document.getElementById('dcName').value,
+        city: document.getElementById('dcCity').value,
+        address: document.getElementById('dcAddress').value,
+        status: document.getElementById('dcStatus').value,
+        region: document.getElementById('dcRegion').value,
+        tier: document.getElementById('dcTier').value,
+        totalCabinets: parseInt(document.getElementById('dcTotalCabinets').value) || 0,
+        availableCabinets: parseInt(document.getElementById('dcAvailableCabinets').value) || 0,
+        maxCabinetPower: parseFloat(document.getElementById('dcMaxPower').value) || 0,
+        availablePower: parseFloat(document.getElementById('dcAvailablePower').value) || 0,
+        mainCoolingType: document.getElementById('dcCooling').value,
+        pueDesign: document.getElementById('dcPUE').value,
+        createdByName: 'Willis',
+        createdAt: new Date().toISOString().split('T')[0]
+      };
+
+      if (id) {
+        const index = allData.findIndex(d => d._id === id);
+        if (index >= 0) allData[index] = { ...allData[index], ...data };
+      } else {
+        data._id = Date.now().toString();
+        allData.unshift(data);
+      }
+
+      closeEditModal();
+      renderTable();
+      alert('保存成功！');
+    }
+
+    function deleteDatacenter(id) {
+      if (confirm('确定要删除这个机房吗？')) {
+        allData = allData.filter(d => d._id !== id);
+        renderTable();
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      const start = (currentPage - 1) * pageSize;
+      const pageData = allData.slice(start, start + pageSize);
+
+      tbody.innerHTML = pageData.map(dc => {
+        const status = STATUS_MAP[dc.status] || STATUS_MAP.new;
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:600">${dc.name}</div>
+              <div style="font-size:12px;color:var(--text-secondary)">${dc.city} · ${dc.address}</div>
+            </td>
+            <td><span class="status-badge ${status.class}">${status.text}</span></td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="openEditModal('${dc._id}')">编辑</button>
+              <button class="btn btn-sm" style="background:var(--danger);color:#fff" onclick="deleteDatacenter('${dc._id}')">删除</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderUserTable() {
+      const tbody = document.getElementById('userTableBody');
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td>${u.name}</td>
+          <td>${u.role}</td>
+          <td>${u.status}</td>
+          <td>${u.createdAt}</td>
+          <td>${u.lastLogin}</td>
+          <td>
+            <button class="btn btn-sm btn-primary">审核</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function exportExcel() {
+      const wb = XLSX.utils.book_new();
+      const exportData = allData.map(d => ({
+        '机房名称': d.name,
+        '城市': d.city,
+        '地址': d.address,
+        '状态': STATUS_MAP[d.status]?.text || d.status,
+        '等级': d.tier,
+        '总机柜': d.totalCabinets,
+        '可用机柜': d.availableCabinets,
+        '单柜功率': d.maxCabinetPower,
+        '可用电力': d.availablePower,
+        '制冷方式': d.mainCoolingType,
+        'PUE': d.pueDesign,
+        '采集人': d.createdByName
+      }));
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      XLSX.utils.book_append_sheet(wb, ws, '机房列表');
+      XLSX.writeFile(wb, `AIDC_机房数据_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
+    // 初始化
+    renderTable();
+  </script>
+</body>
+</html>

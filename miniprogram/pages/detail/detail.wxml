@@ -1,0 +1,382 @@
+<!--pages/detail/detail.wxml-->
+<view class="page-detail">
+  <t-loading wx:if="{{loading}}" text="加载中..." />
+
+  <view wx:elif="{{detail}}">
+    <!-- 头部 -->
+    <view class="detail-header">
+      <view class="detail-name">{{detail.name}}</view>
+      <view class="detail-tags">
+        <view class="dc-tag tag-{{detail.status || 'new'}}">{{statusLabel}}</view>
+        <view class="dc-tag tag-source" wx:if="{{detail.importedByName}}">Excel导入</view>
+      </view>
+    </view>
+
+    <!-- 一、基础信息 -->
+    <view class="section">
+      <view class="section-label">一、基础信息</view>
+      <view class="card">
+        <view class="info-row">
+          <view class="info-label">地址</view>
+          <view class="info-value">{{detail.address}}</view>
+        </view>
+        <view class="info-row" wx:if="{{detail.ownership}}">
+          <view class="info-label">产权归属</view>
+          <view class="info-value">{{detail.ownership}}</view>
+        </view>
+        <view class="info-row" wx:if="{{detail.expectedDelivery}}">
+          <view class="info-label">预计交付</view>
+          <view class="info-value num-highlight">{{detail.expectedDelivery}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 二、机柜资源 -->
+    <view class="section" wx:if="{{hasSection2}}">
+      <view class="section-label">二、机柜资源</view>
+      <view class="card">
+        <view class="param-grid">
+          <view class="param-item" wx:if="{{detail.totalCabinets}}">
+            <view class="param-value num-highlight">{{detail.totalCabinets}}</view>
+            <view class="param-unit">总机柜数（个）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.availableCabinets}}">
+            <view class="param-value num-highlight">{{detail.availableCabinets}}</view>
+            <view class="param-unit">可提供数（个）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.maxCabinetPower}}">
+            <view class="param-value num-highlight">{{detail.maxCabinetPower}}</view>
+            <view class="param-unit">最高功率（kW/柜）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.continuousCabinets}}">
+            <view class="param-value">{{detail.continuousCabinets}}</view>
+            <view class="param-unit">连续布置</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.physicalIsolation}}">
+            <view class="param-value">{{detail.physicalIsolation}}</view>
+            <view class="param-unit">物理隔离</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 三、电力系统 -->
+    <view class="section" wx:if="{{hasSection3}}">
+      <view class="section-label">三、电力系统</view>
+      <view class="card">
+        <view class="param-grid">
+          <view class="param-item" wx:if="{{detail.mainsCapacity}}">
+            <view class="param-value num-highlight">{{detail.mainsCapacity}}</view>
+            <view class="param-unit">市电总容量（kVA）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.availablePower}}">
+            <view class="param-value num-highlight">{{detail.availablePower}}</view>
+            <view class="param-unit">可用电力（MW）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.expandablePower}}">
+            <view class="param-value num-highlight">{{detail.expandablePower}}</view>
+            <view class="param-unit">可扩容上限（MW）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.transformerConfig}}">
+            <view class="param-value">{{detail.transformerConfig}}</view>
+            <view class="param-unit">变压器配置</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.transformerCapacity}}">
+            <view class="param-value num-highlight">{{detail.transformerCapacity}}</view>
+            <view class="param-unit">变压器容量（kVA）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.generatorRedundancy}}">
+            <view class="param-value">{{detail.generatorRedundancy}}</view>
+            <view class="param-unit">柴发冗余</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.generatorFuelHours}}">
+            <view class="param-value num-highlight">{{detail.generatorFuelHours}}</view>
+            <view class="param-unit">储油时长（小时）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.upsConfig}}">
+            <view class="param-value">{{detail.upsConfig}}</view>
+            <view class="param-unit">UPS配置</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.upsBatteryMinutes}}">
+            <view class="param-value num-highlight">{{detail.upsBatteryMinutes}}</view>
+            <view class="param-unit">UPS后备（分钟）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.highDensityBusway}}">
+            <view class="param-value">{{detail.highDensityBusway}}</view>
+            <view class="param-unit">高密度母线</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.bbuSuperCapacitor}}">
+            <view class="param-value">{{detail.bbuSuperCapacitor}}</view>
+            <view class="param-unit">BBU/超级电容</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.powerSLA}}">
+            <view class="param-value num-highlight">{{detail.powerSLA}}</view>
+            <view class="param-unit">电力SLA</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 四、制冷系统 -->
+    <view class="section" wx:if="{{hasSection4}}">
+      <view class="section-label">四、制冷系统</view>
+      <view class="card">
+        <view class="param-grid">
+          <view class="param-item" wx:if="{{detail.mainCoolingType}}">
+            <view class="param-value">{{detail.mainCoolingType}}</view>
+            <view class="param-unit">主制冷方式</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.coldPlateLiquid}}">
+            <view class="param-value">{{detail.coldPlateLiquid}}</view>
+            <view class="param-unit">冷板式液冷</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.liquidCoolRetrofit}}">
+            <view class="param-value">{{detail.liquidCoolRetrofit}}</view>
+            <view class="param-unit">液冷改造</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.hasCDU}}">
+            <view class="param-value">{{detail.hasCDU}}</view>
+            <view class="param-unit">配备CDU</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.chilledWaterSupplyTemp}}">
+            <view class="param-value num-highlight">{{detail.chilledWaterSupplyTemp}}</view>
+            <view class="param-unit">供水温度（℃）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.chilledWaterReturnTemp}}">
+            <view class="param-value num-highlight">{{detail.chilledWaterReturnTemp}}</view>
+            <view class="param-unit">回水温度（℃）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.endAirconRedundancy}}">
+            <view class="param-value">{{detail.endAirconRedundancy}}</view>
+            <view class="param-unit">空调冗余</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.chillerCount}}">
+            <view class="param-value num-highlight">{{detail.chillerCount}}</view>
+            <view class="param-unit">冷水机组（台）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.pueDesign}}">
+            <view class="param-value num-highlight">{{detail.pueDesign}}</view>
+            <view class="param-unit">PUE设计值</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 五、承重与空间 -->
+    <view class="section" wx:if="{{hasSection5}}">
+      <view class="section-label">五、承重与空间</view>
+      <view class="card">
+        <view class="param-grid">
+          <view class="param-item" wx:if="{{detail.floorLoad}}">
+            <view class="param-value num-highlight">{{detail.floorLoad}}</view>
+            <view class="param-unit">地板承重（kg/m²）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.raisedFloorHeight}}">
+            <view class="param-value num-highlight">{{detail.raisedFloorHeight}}</view>
+            <view class="param-unit">架空地板（米）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.freightElevatorWidth}}">
+            <view class="param-value num-highlight">{{detail.freightElevatorWidth}}</view>
+            <view class="param-unit">货梯宽（米）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.freightElevatorLoad}}">
+            <view class="param-value num-highlight">{{detail.freightElevatorLoad}}</view>
+            <view class="param-unit">货梯承重（吨）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.transportCorridorWidth}}">
+            <view class="param-value num-highlight">{{detail.transportCorridorWidth}}</view>
+            <view class="param-unit">通道宽（米）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.loadingDock}}">
+            <view class="param-value">{{detail.loadingDock}}</view>
+            <view class="param-unit">卸货平台</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 六、网络与互联 -->
+    <view class="section" wx:if="{{hasSection6}}">
+      <view class="section-label">六、网络与互联</view>
+      <view class="card">
+        <view class="param-grid">
+          <view class="param-item" wx:if="{{detail.networkRoutes}}">
+            <view class="param-value num-highlight">{{detail.networkRoutes}}</view>
+            <view class="param-unit">进线路由（路）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.ispCount}}">
+            <view class="param-value num-highlight">{{detail.ispCount}}</view>
+            <view class="param-unit">运营商（家）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.darkFiber}}">
+            <view class="param-value">{{detail.darkFiber}}</view>
+            <view class="param-unit">裸光纤</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.support800G}}">
+            <view class="param-value">{{detail.support800G}}</view>
+            <view class="param-unit">800G网络</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.supportRoCEIB}}">
+            <view class="param-value">{{detail.supportRoCEIB}}</view>
+            <view class="param-unit">RoCE/IB</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 七、交付时间 -->
+    <view class="section" wx:if="{{hasSection7}}">
+      <view class="section-label">七、交付时间</view>
+      <view class="card">
+        <view class="param-grid">
+          <view class="param-item" wx:if="{{detail.delivery3Months}}">
+            <view class="param-value num-highlight">{{detail.delivery3Months}}</view>
+            <view class="param-unit">3个月可交付（MW）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.delivery6Months}}">
+            <view class="param-value num-highlight">{{detail.delivery6Months}}</view>
+            <view class="param-unit">6个月可交付（MW）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.existingLiquidPower}}">
+            <view class="param-value num-highlight">{{detail.existingLiquidPower}}</view>
+            <view class="param-unit">液冷功率（kW/柜）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.existingLiquidCount}}">
+            <view class="param-value num-highlight">{{detail.existingLiquidCount}}</view>
+            <view class="param-unit">液冷机柜数（个）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.powerRetrofitPeriod}}">
+            <view class="param-value num-highlight">{{detail.powerRetrofitPeriod}}</view>
+            <view class="param-unit">电力改造（月）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.coolingRetrofitPeriod}}">
+            <view class="param-value num-highlight">{{detail.coolingRetrofitPeriod}}</view>
+            <view class="param-unit">制冷改造（月）</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 八、配套服务 -->
+    <view class="section" wx:if="{{hasSection8}}">
+      <view class="section-label">八、配套服务</view>
+      <view class="card">
+        <view class="param-grid">
+          <view class="param-item" wx:if="{{detail.officeSeats}}">
+            <view class="param-value num-highlight">{{detail.officeSeats}}</view>
+            <view class="param-unit">工位数</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.storageArea}}">
+            <view class="param-value num-highlight">{{detail.storageArea}}</view>
+            <view class="param-unit">库房（㎡）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.ops24x7}}">
+            <view class="param-value">{{detail.ops24x7}}</view>
+            <view class="param-unit">7x24值守</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.faultResponseTime}}">
+            <view class="param-value num-highlight">{{detail.faultResponseTime}}</view>
+            <view class="param-unit">故障响应（小时）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.liquidCoolMaintenance}}">
+            <view class="param-value">{{detail.liquidCoolMaintenance}}</view>
+            <view class="param-unit">液冷维护</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 九、成本与报价 -->
+    <view class="section" wx:if="{{hasSection9}}">
+      <view class="section-label">九、成本与报价</view>
+      <view class="card">
+        <view class="param-grid">
+          <view class="param-item" wx:if="{{detail.electricityBilling}}">
+            <view class="param-value">{{detail.electricityBilling}}</view>
+            <view class="param-unit">电费模式</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.oneTimeFee}}">
+            <view class="param-value num-highlight">{{detail.oneTimeFee}}</view>
+            <view class="param-unit">接入费（元）</view>
+          </view>
+          <view class="param-item" wx:if="{{detail.liquidCoolServiceFee}}">
+            <view class="param-value num-highlight">{{detail.liquidCoolServiceFee}}</view>
+            <view class="param-unit">液冷服务费（元/柜/月）</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 拜访信息 -->
+    <view class="section" wx:if="{{detail.visitDate || detail.contactPerson || detail.contactInfo}}">
+      <view class="section-label">拜访信息</view>
+      <view class="card">
+        <view class="info-row" wx:if="{{detail.visitDate}}">
+          <view class="info-label">拜访日期</view>
+          <view class="info-value num-highlight">{{detail.visitDate}}</view>
+        </view>
+        <view class="info-row" wx:if="{{detail.contactPerson}}">
+          <view class="info-label">联系人</view>
+          <view class="info-value">{{detail.contactPerson}}</view>
+        </view>
+        <view class="info-row" wx:if="{{detail.contactInfo}}">
+          <view class="info-label">联系方式</view>
+          <view class="info-value">{{detail.contactInfo}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="section" wx:if="{{detail.notes}}">
+      <view class="section-label">备注</view>
+      <view class="card">
+        <text class="notes-text">{{detail.notes}}</text>
+      </view>
+    </view>
+
+    <!-- 照片 -->
+    <view class="section" wx:if="{{detail.photos && detail.photos.length > 0}}">
+      <view class="section-label">现场照片</view>
+      <view class="card">
+        <view class="photo-grid">
+          <t-image wx:for="{{detail.photos}}" wx:key="*this" src="{{item}}" mode="aspectFill" t-class="photo-item" bind:tap="previewPhoto" data-index="{{index}}" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 修改历史 -->
+    <view class="section" wx:if="{{editHistory.length > 0}}">
+      <view class="section-label">修改历史</view>
+      <view class="card">
+        <view wx:for="{{editHistory}}" wx:key="_id" class="history-item">
+          <view class="history-header">
+            <text class="history-field">{{item.field}}</text>
+            <text class="history-time">{{item.updatedAt}}</text>
+          </view>
+          <view class="history-change">
+            <text class="history-old">{{item.oldValue || '空'}}</text>
+            <t-icon name="arrow-right" size="28rpx" color="#94A3B8" />
+            <text class="history-new">{{item.newValue || '空'}}</text>
+          </view>
+          <text class="history-user">{{item.updatedByName}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 录入/导入信息 -->
+    <view class="section section-footer">
+      <view class="record-meta">
+        <text wx:if="{{detail.importedByName}}">导入人: {{detail.importedByName}} | 导入时间: {{detail.importedAt}}</text>
+        <text wx:elif="{{detail.createdByName}}">录入人: {{detail.createdByName}} | {{detail.createdAt}}</text>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="detail-actions">
+      <t-button theme="primary" variant="outline" icon="edit" bindtap="handleEdit">编辑</t-button>
+      <t-button theme="danger" variant="outline" icon="delete" bindtap="handleDelete" wx:if="{{isAdmin}}">删除</t-button>
+    </view>
+  </view>
+
+  <watermark />
+</view>

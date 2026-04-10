@@ -1,0 +1,89 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/form/basic",
+    "pages/list/list",
+    "pages/detail/detail",
+    "pages/export/export",
+    "pages/import/import",
+    "pages/settings/settings",
+    "pages/settings/changePassword/changePassword"
+  ],
+
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1E3A5F",
+    "navigationBarTitleText": "AIDC Collector",
+    "navigationBarTextStyle": "white"
+  },
+
+  "tabBar": {
+    "custom": false,
+    "color": "#6B7280",
+    "selectedColor": "#1E3A5F",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "icons/home.png",
+        "selectedIconPath": "icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/list/list",
+        "text": "列表",
+        "iconPath": "icons/list.png",
+        "selectedIconPath": "icons/list-active.png"
+      },
+      {
+        "pagePath": "pages/settings/settings",
+        "text": "我的",
+        "iconPath": "icons/user.png",
+        "selectedIconPath": "icons/user-active.png"
+      }
+    ]
+  },
+
+  "usingComponents": {
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-textarea": "tdesign-miniprogram/textarea/textarea",
+    "t-picker": "tdesign-miniprogram/picker/picker",
+    "t-date-time-picker": "tdesign-miniprogram/date-time-picker/date-time-picker",
+    "t-cell": "tdesign-miniprogram/cell/cell",
+    "t-cell-group": "tdesign-miniprogram/cell-group/cell-group",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-image": "tdesign-miniprogram/image/image",
+    "t-image-upload": "tdesign-miniprogram/upload/upload",
+    "t-search": "tdesign-miniprogram/search/search",
+    "t-tag": "tdesign-miniprogram/tag/tag",
+    "t-tabs": "tdesign-miniprogram/tabs/tabs",
+    "t-tab-panel": "tdesign-miniprogram/tab-panel/tab-panel",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-empty": "tdesign-miniprogram/empty/empty",
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-grid": "tdesign-miniprogram/grid/grid",
+    "t-grid-item": "tdesign-miniprogram/grid-item/grid-item",
+    "t-message": "tdesign-miniprogram/message/message",
+    "t-drawer": "tdesign-miniprogram/drawer/drawer",
+    "t-popup": "tdesign-miniprogram/popup/popup",
+    "t-switch": "tdesign-miniprogram/switch/switch",
+    "t-divider": "tdesign-miniprogram/divider/divider",
+    "t-steps": "tdesign-miniprogram/steps/steps",
+    "t-step-item": "tdesign-miniprogram/step-item/step-item",
+    "t-skeleton": "tdesign-miniprogram/skeleton/skeleton",
+    "watermark": "/components/watermark/watermark"
+  },
+
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于机房定位"
+    }
+  }
+}

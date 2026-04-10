@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机房详情 - AIDC Collector</title>
+    <link rel="stylesheet" href="shared.css?v=20260410t1845">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <div class="nav-brand-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+            </div>
+            <span>AIDC Collector</span>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard-v2.html" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                仪表盘
+            </a>
+            <a href="datacenter-list.html" class="nav-item active">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                机房列表
+            </a>
+            <a href="datacenter-form.html" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                添加机房
+            </a>
+            <a href="datacenter-import.html" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                导入导出
+            </a>
+        </div>
+        <div class="nav-right">
+            <div class="nav-user">
+                <div class="nav-avatar">管</div>
+                <span>管理员</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <div class="page-title-icon brand">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <span id="datacenter-name">机房详情</span>
+            </h1>
+            <div class="page-actions">
+                <button class="btn btn-secondary" onclick="goBack()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    返回
+                </button>
+                <a href="#" id="edit-btn" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    编辑
+                </a>
+            </div>
+        </div>
+
+        <!-- 统计概览 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon brand">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="stat-cabinet">-</div>
+                    <div class="stat-label">机柜总数</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="stat-available">-</div>
+                    <div class="stat-label">可用机柜</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="stat-server">-</div>
+                    <div class="stat-label">服务器数量</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="stat-pue">-</div>
+                    <div class="stat-label">PUE值</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 基本信息 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon brand">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                    </div>
+                    <span class="section-title">基本信息</span>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">机房名称</span>
+                        <span class="detail-value" id="detail-name">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">区域</span>
+                        <span class="detail-value" id="detail-region">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">机房编码</span>
+                        <span class="detail-value" id="detail-code">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">状态</span>
+                        <span class="detail-value"><span class="status-tag" id="detail-status">-</span></span>
+                    </div>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">详细地址</span>
+                        <span class="detail-value" id="detail-address">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 联系信息 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon success">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </div>
+                    <span class="section-title">联系信息</span>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">联系人</span>
+                        <span class="detail-value" id="detail-contact">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">联系电话</span>
+                        <span class="detail-value" id="detail-phone">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">联系邮箱</span>
+                        <span class="detail-value" id="detail-email">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">官方网站</span>
+                        <span class="detail-value" id="detail-website">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 认证资质 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon info">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                    </div>
+                    <span class="section-title">认证与资质</span>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">ISO认证</span>
+                        <span class="detail-value" id="detail-iso">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">等级认证</span>
+                        <span class="detail-value" id="detail-level">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">运营商资质</span>
+                        <span class="detail-value" id="detail-operator">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">合规证书</span>
+                        <span class="detail-value" id="detail-compliance">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 备注 -->
+        <div class="card" id="remark-section" style="display: none;">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon accent">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <span class="section-title">备注信息</span>
+                </div>
+                <div class="detail-value" id="detail-remark" style="white-space: pre-wrap;">-</div>
+            </div>
+        </div>
+
+        <!-- 操作记录 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <span class="section-title">操作记录</span>
+                </div>
+                <div class="timeline" id="timeline"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const CONFIG = { STORAGE_KEY: 'aidc_datacenters' };
+        const STATUS_MAP = { 'new': '新增', 'collected': '已收录', 'pending': '待核实', 'rejected': '已驳回' };
+        let recordId = null;
+        let record = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            recordId = urlParams.get('id');
+            if (!recordId) { showToast('缺少机房ID', 'error'); setTimeout(() => { window.location.href = 'datacenter-list.html'; }, 1500); return; }
+            loadData();
+        });
+
+        function loadData() {
+            const stored = localStorage.getItem(CONFIG.STORAGE_KEY);
+            const dataList = stored ? JSON.parse(stored) : [];
+            record = dataList.find(d => d.id === recordId);
+            if (!record) { showToast('机房记录不存在', 'error'); setTimeout(() => { window.location.href = 'datacenter-list.html'; }, 1500); return; }
+            renderData();
+        }
+
+        function renderData() {
+            document.getElementById('datacenter-name').textContent = record.name || '机房详情';
+            document.title = `${record.name || '机房详情'} - AIDC Collector`;
+            document.getElementById('edit-btn').href = `datacenter-form.html?id=${recordId}`;
+
+            document.getElementById('stat-cabinet').textContent = record.cabinetCount || 0;
+            document.getElementById('stat-available').textContent = record.availableCabinets || 0;
+            document.getElementById('stat-server').textContent = record.serverCount || 0;
+            document.getElementById('stat-pue').textContent = record.pue ? record.pue.toFixed(2) : '-';
+
+            setDetailValue('name', record.name);
+            setDetailValue('region', record.region);
+            setDetailValue('code', record.code);
+            const statusEl = document.getElementById('detail-status');
+            statusEl.textContent = STATUS_MAP[record.status] || '新增';
+            statusEl.className = `status-tag ${record.status || 'new'}`;
+            setDetailValue('address', record.address);
+            setDetailValue('contact', record.contact);
+            setDetailValue('phone', record.phone);
+            setDetailValue('email', record.email);
+            setDetailValue('website', record.website);
+            setDetailValue('iso', record.isoCertified);
+            setDetailValue('level', record.levelCertification);
+            setDetailValue('operator', record.operatorLicense);
+            setDetailValue('compliance', record.complianceCert);
+
+            if (record.remark) {
+                document.getElementById('remark-section').style.display = 'block';
+                setDetailValue('remark', record.remark);
+            }
+            renderTimeline();
+        }
+
+        function setDetailValue(key, value) {
+            const el = document.getElementById(`detail-${key}`);
+            if (el) {
+                el.textContent = value || '-';
+                if (!value) el.classList.add('empty');
+            }
+        }
+
+        function renderTimeline() {
+            const timeline = document.getElementById('timeline');
+            const events = [];
+            if (record.createdAt) events.push({ title: '创建记录', desc: '新增机房记录', time: record.createdAt });
+            if (record.updatedAt && record.updatedAt !== record.createdAt) events.push({ title: '更新记录', desc: '修改了机房信息', time: record.updatedAt });
+
+            if (events.length === 0) {
+                timeline.innerHTML = '<div class="detail-value empty">暂无操作记录</div>';
+                return;
+            }
+
+            timeline.innerHTML = events.map(event => `
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">${event.title}</div>
+                        <div class="timeline-desc">${event.desc}</div>
+                        <div class="timeline-time">${new Date(event.time).toLocaleString('zh-CN')}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function goBack() { window.location.href = 'datacenter-list.html'; }
+
+        function showToast(message, type = 'success') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const iconSvg = type === 'success' ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' :
+                            '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
+            toast.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconSvg}</svg><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

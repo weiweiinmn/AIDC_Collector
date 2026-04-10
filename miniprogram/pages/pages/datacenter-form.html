@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加机房 - AIDC Collector</title>
+    <link rel="stylesheet" href="shared.css?v=20260410t1845">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <div class="nav-brand-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+            </div>
+            <span>AIDC Collector</span>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard-v2.html" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                仪表盘
+            </a>
+            <a href="datacenter-list.html" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                机房列表
+            </a>
+            <a href="datacenter-form.html" class="nav-item active">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                添加机房
+            </a>
+            <a href="datacenter-import.html" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                导入导出
+            </a>
+        </div>
+        <div class="nav-right">
+            <div class="nav-user">
+                <div class="nav-avatar">管</div>
+                <span>管理员</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <div class="page-title-icon accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+                <span id="form-title-text">添加机房</span>
+            </h1>
+            <div class="page-actions">
+                <a href="datacenter-list.html" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    返回列表
+                </a>
+            </div>
+        </div>
+
+        <!-- 基本信息 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon brand">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                    </div>
+                    <span class="section-title">基本信息</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">机房名称 <span class="required-mark">*</span></label>
+                        <input type="text" id="name" class="form-input" placeholder="请输入机房名称" maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">区域 <span class="required-mark">*</span></label>
+                        <select id="region" class="form-select">
+                            <option value="">请选择区域</option>
+                            <option value="华北">华北</option>
+                            <option value="东北">东北</option>
+                            <option value="华东">华东</option>
+                            <option value="华中">华中</option>
+                            <option value="华南">华南</option>
+                            <option value="西南">西南</option>
+                            <option value="西北">西北</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">机房编码</label>
+                        <input type="text" id="code" class="form-input" placeholder="如: IDC-2024-001" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">状态</label>
+                        <select id="status" class="form-select">
+                            <option value="new">新增</option>
+                            <option value="collected">已收录</option>
+                            <option value="pending">待核实</option>
+                            <option value="rejected">已驳回</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">详细地址</label>
+                        <input type="text" id="address" class="form-input" placeholder="请输入详细地址（省/市/区+详细地址）" maxlength="200">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 联系信息 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon success">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </div>
+                    <span class="section-title">联系信息</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">联系人</label>
+                        <input type="text" id="contact" class="form-input" placeholder="请输入联系人姓名" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">联系电话</label>
+                        <input type="tel" id="phone" class="form-input" placeholder="请输入联系电话" maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">联系邮箱</label>
+                        <input type="email" id="email" class="form-input" placeholder="请输入联系邮箱" maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">官方网站</label>
+                        <input type="url" id="website" class="form-input" placeholder="请输入网址" maxlength="200">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 机房规模 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                    </div>
+                    <span class="section-title">机房规模</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">机柜数量</label>
+                        <input type="number" id="cabinetCount" class="form-input" placeholder="机柜总数" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">可用机柜</label>
+                        <input type="number" id="availableCabinets" class="form-input" placeholder="可用机柜数" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">机房面积 (m²)</label>
+                        <input type="number" id="area" class="form-input" placeholder="机房面积" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">设计PUE值</label>
+                        <input type="number" id="pue" class="form-input" placeholder="如: 1.5" min="1" max="3" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">服务器数量</label>
+                        <input type="number" id="serverCount" class="form-input" placeholder="服务器数量" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">带宽出口 (Gbps)</label>
+                        <input type="number" id="bandwidth" class="form-input" placeholder="带宽出口" min="0" step="0.1">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 认证与资质 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon info">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                    </div>
+                    <span class="section-title">认证与资质</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">ISO认证</label>
+                        <select id="isoCertified" class="form-select">
+                            <option value="">请选择</option>
+                            <option value="是">是</option>
+                            <option value="否">否</option>
+                            <option value="办理中">办理中</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">等级认证</label>
+                        <select id="levelCertification" class="form-select">
+                            <option value="">请选择</option>
+                            <option value="A级">A级</option>
+                            <option value="B级">B级</option>
+                            <option value="C级">C级</option>
+                            <option value="无">无</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">运营商资质</label>
+                        <input type="text" id="operatorLicense" class="form-input" placeholder="如: 基础电信业务许可证" maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">合规证书</label>
+                        <input type="text" id="complianceCert" class="form-input" placeholder="如: 等保三级" maxlength="100">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 备注信息 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon accent">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <span class="section-title">备注信息</span>
+                </div>
+                <div class="form-group full-width">
+                    <textarea id="remark" class="form-textarea" placeholder="请输入备注信息..." rows="4"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="saveAndContinue()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                保存并继续
+            </button>
+            <button type="button" class="btn btn-primary" onclick="saveAndBack()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                保存并返回
+            </button>
+        </div>
+    </main>
+
+    <script>
+        const CONFIG = { STORAGE_KEY: 'aidc_datacenters' };
+        let editId = null;
+        let isEditMode = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            editId = urlParams.get('id');
+            if (editId) {
+                isEditMode = true;
+                document.getElementById('form-title-text').textContent = '编辑机房';
+                document.title = '编辑机房 - AIDC Collector';
+                loadData();
+            }
+        });
+
+        function loadData() {
+            const stored = localStorage.getItem(CONFIG.STORAGE_KEY);
+            const dataList = stored ? JSON.parse(stored) : [];
+            const record = dataList.find(d => d.id === editId);
+            if (record) {
+                Object.keys(record).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) el.value = record[key] || '';
+                });
+            } else {
+                showToast('记录不存在', 'error');
+                setTimeout(() => { window.location.href = 'datacenter-list.html'; }, 1500);
+            }
+        }
+
+        function getFormData() {
+            return {
+                name: document.getElementById('name').value.trim(),
+                region: document.getElementById('region').value,
+                code: document.getElementById('code').value.trim(),
+                status: document.getElementById('status').value,
+                address: document.getElementById('address').value.trim(),
+                contact: document.getElementById('contact').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                website: document.getElementById('website').value.trim(),
+                cabinetCount: parseInt(document.getElementById('cabinetCount').value) || 0,
+                availableCabinets: parseInt(document.getElementById('availableCabinets').value) || 0,
+                area: parseFloat(document.getElementById('area').value) || 0,
+                pue: parseFloat(document.getElementById('pue').value) || 0,
+                serverCount: parseInt(document.getElementById('serverCount').value) || 0,
+                bandwidth: parseFloat(document.getElementById('bandwidth').value) || 0,
+                isoCertified: document.getElementById('isoCertified').value,
+                levelCertification: document.getElementById('levelCertification').value,
+                operatorLicense: document.getElementById('operatorLicense').value.trim(),
+                complianceCert: document.getElementById('complianceCert').value.trim(),
+                remark: document.getElementById('remark').value.trim()
+            };
+        }
+
+        function validateForm() {
+            const data = getFormData();
+            if (!data.name) { showToast('请输入机房名称', 'error'); document.getElementById('name').focus(); return false; }
+            if (!data.region) { showToast('请选择区域', 'error'); document.getElementById('region').focus(); return false; }
+            return true;
+        }
+
+        function saveData() {
+            if (!validateForm()) return false;
+            const stored = localStorage.getItem(CONFIG.STORAGE_KEY);
+            const dataList = stored ? JSON.parse(stored) : [];
+            const data = getFormData();
+            const now = new Date().toISOString();
+
+            if (isEditMode) {
+                const index = dataList.findIndex(d => d.id === editId);
+                if (index !== -1) { dataList[index] = { ...dataList[index], ...data, updatedAt: now }; }
+            } else {
+                dataList.push({ id: 'dc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9), ...data, createdAt: now, updatedAt: now });
+            }
+
+            localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(dataList));
+            return true;
+        }
+
+        function saveAndContinue() {
+            if (saveData()) {
+                showToast(isEditMode ? '更新成功' : '保存成功', 'success');
+                if (!isEditMode) {
+                    document.querySelectorAll('input, select, textarea').forEach(el => {
+                        if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
+                    });
+                }
+            }
+        }
+
+        function saveAndBack() {
+            if (saveData()) {
+                showToast(isEditMode ? '更新成功' : '保存成功', 'success');
+                setTimeout(() => { window.location.href = 'datacenter-list.html'; }, 1000);
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const iconSvg = type === 'success' ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' :
+                            '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
+            toast.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconSvg}</svg><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!--pages/login/login.wxml-->
+<view class="page-login">
+  <view class="login-container">
+    <!-- Logo 区域 -->
+    <view class="login-logo">
+      <view class="logo-icon">
+        <t-icon name="server" size="96rpx" color="#E8843C" />
+      </view>
+      <view class="logo-title">AIDC Collector</view>
+      <view class="logo-subtitle">AI算力机房调研数据采集系统</view>
+    </view>
+
+    <!-- 未登录 → 显示手机号+密码登录表单 -->
+    <view wx:if="{{!isLoggedIn}}" class="login-action">
+      <view class="login-desc">请使用手机号和密码登录</view>
+      <view class="login-form">
+        <view class="form-item">
+          <t-input
+            value="{{phone}}"
+            placeholder="请输入手机号"
+            type="number"
+            maxlength="11"
+            prefix-icon="user"
+            bind:change="onPhoneChange"
+          />
+        </view>
+        <view class="form-item">
+          <t-input
+            value="{{password}}"
+            placeholder="请输入密码"
+            type="password"
+            prefix-icon="lock-on"
+            bind:change="onPasswordChange"
+            bind:confirm="handleLogin"
+          />
+        </view>
+        <t-button theme="primary" size="large" block bindtap="handleLogin" loading="{{loading}}">
+          登录
+        </t-button>
+      </view>
+      <view class="login-tip">首次使用需管理员开通账号，忘记密码请联系管理员重置</view>
+    </view>
+
+    <!-- 已登录但待审核 -->
+    <view wx:elif="{{userStatus === 'pending'}}" class="login-status">
+      <view class="status-icon-wrap status-pending">
+        <t-icon name="time" size="80rpx" color="#E8843C" />
+      </view>
+      <view class="status-title">账号待开通</view>
+      <view class="status-desc">你的账号正在等待管理员开通，请稍候或联系管理员</view>
+      <view class="status-meta">登录时间：{{loginTime}}</view>
+      <t-button variant="outline" size="medium" bindtap="handleLogout" class="logout-btn">
+        退出登录
+      </t-button>
+    </view>
+
+    <!-- 已登录但被拒绝 -->
+    <view wx:elif="{{userStatus === 'rejected'}}" class="login-status">
+      <view class="status-icon-wrap status-rejected">
+        <t-icon name="close-circle" size="80rpx" color="#E34D59" />
+      </view>
+      <view class="status-title">账号被停用</view>
+      <view class="status-desc">{{rejectReason || '请联系管理员了解详情'}}</view>
+      <t-button variant="outline" size="medium" bindtap="handleLogout" class="logout-btn">
+        退出登录
+      </t-button>
+    </view>
+  </view>
+
+  <view class="login-footer">
+    <text>数据保密 · 仅限授权人员使用</text>
+  </view>
+</view>

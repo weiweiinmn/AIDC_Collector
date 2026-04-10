@@ -1,0 +1,93 @@
+<!--pages/index/index.wxml-->
+<view class="page-index">
+  <!-- 顶部用户信息 -->
+  <view class="header">
+    <view class="header-left">
+      <view class="user-avatar">
+        <image wx:if="{{userInfo.avatarUrl}}" src="{{userInfo.avatarUrl}}" mode="aspectFill" class="avatar-img" />
+        <view wx:else class="avatar-placeholder">
+          <t-icon name="user" size="40rpx" color="#FFFFFF" />
+        </view>
+      </view>
+      <view class="user-info">
+        <view class="user-name">{{userInfo.name || '用户'}}</view>
+        <view class="user-role">
+          <t-tag wx:if="{{userInfo.role === 'admin'}}" theme="primary" size="small" variant="light">管理员</t-tag>
+          <t-tag wx:else theme="default" size="small" variant="light">采集人</t-tag>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-section">
+    <view class="stats-grid">
+      <view class="stat-card">
+        <view class="stat-number num-highlight">{{stats.total || 0}}</view>
+        <view class="stat-label">总机房数</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-number num-highlight">{{stats.today || 0}}</view>
+        <view class="stat-label">本月新增</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-number num-highlight">{{stats.mine || 0}}</view>
+        <view class="stat-label">我录入的</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷操作 -->
+  <view class="section">
+    <view class="section-header">
+      <view class="section-title">快捷操作</view>
+    </view>
+    <t-grid column="{{4}}" t-class="action-grid">
+      <t-grid-item text="新建采集" icon="add" bind:tap="goForm" />
+      <t-grid-item text="采集列表" icon="view-list" bind:tap="goList" />
+      <t-grid-item text="导出/导入" icon="download" bind:tap="goExport" wx:if="{{isAdmin}}" />
+      <t-grid-item text="导入数据" icon="upload" bind:tap="goImport" wx:if="{{!isAdmin}}" />
+    </t-grid>
+  </view>
+
+  <!-- 最近记录 -->
+  <view class="section">
+    <view class="section-header">
+      <view class="section-title">最近录入</view>
+      <view class="section-more" bindtap="goList">
+        查看全部
+        <t-icon name="chevron-right" size="32rpx" color="#64748B" />
+      </view>
+    </view>
+
+    <view wx:if="{{recentList.length === 0}}" class="empty-state">
+      <t-icon name="inbox" size="80rpx" color="#CBD5E1" />
+      <text>暂无采集记录</text>
+      <text class="empty-hint">点击「新建采集」开始录入</text>
+    </view>
+
+    <view wx:for="{{recentList}}" wx:key="_id" class="card dc-card" bindtap="goDetail" data-id="{{item._id}}">
+      <view class="dc-card-header">
+        <view class="dc-name">{{item.name}}</view>
+        <view class="dc-tag tag-{{item.status || 'new'}}">{{item.statusText}}</view>
+      </view>
+      <view class="dc-card-body">
+        <view class="dc-info-row">
+          <t-icon name="location" size="28rpx" color="#64748B" />
+          <text class="dc-info-text">{{item.address || '-'}}</text>
+        </view>
+        <view class="dc-info-row" wx:if="{{item.mainCoolingType}}">
+          <t-icon name="flash" size="28rpx" color="#64748B" />
+          <text class="dc-info-text">{{item.mainCoolingType}} · {{item.availablePower || '-'}}MW</text>
+        </view>
+      </view>
+      <view class="dc-card-footer">
+        <text class="dc-date">{{item.visitDate}}</text>
+        <text class="dc-creator">{{item.createdByName}}</text>
+      </view>
+    </view>
+  </view>
+
+  <watermark />
+</view>

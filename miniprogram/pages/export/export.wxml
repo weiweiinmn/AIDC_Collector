@@ -1,0 +1,110 @@
+<!--pages/export/export.wxml-->
+<view class="page-export">
+  <view class="export-header">
+    <view class="header-desc">管理员数据导出与导入中心</view>
+  </view>
+
+  <!-- 数据统计 -->
+  <view class="section">
+    <view class="section-label">数据概览</view>
+    <view class="card">
+      <view class="stats-row">
+        <view class="stat-item">
+          <view class="stat-num num-highlight">{{total}}</view>
+          <view class="stat-label">全部记录</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-num">{{thisMonth}}</view>
+          <view class="stat-label">本月新增</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-num">{{todayCount}}</view>
+          <view class="stat-label">今日新增</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导出操作 -->
+  <view class="section">
+    <view class="section-label">数据导出</view>
+    <view class="card">
+      <view class="action-row">
+        <view class="action-desc">
+          <view class="action-title">导出完整数据</view>
+          <view class="action-sub">导出所有机房的65个字段完整信息</view>
+        </view>
+        <t-button theme="primary" icon="download" loading="{{exporting}}" bindtap="handleExport" size="medium">
+          导出
+        </t-button>
+      </view>
+      <view class="action-divider"></view>
+      <view class="action-row">
+        <view class="action-desc">
+          <view class="action-title">导出空白模板</view>
+          <view class="action-sub">生成空白 Excel 发给机房服务商填写</view>
+        </view>
+        <t-button variant="outline" icon="file-excel" loading="{{exportingTemplate}}" bindtap="handleExportTemplate" size="medium">
+          模板
+        </t-button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导入入口 -->
+  <view class="section">
+    <view class="section-label">数据导入</view>
+    <view class="card">
+      <view class="action-row">
+        <view class="action-desc">
+          <view class="action-title">导入 Excel 数据</view>
+          <view class="action-sub">导入机房服务商填写的 Excel，自动记录导入人</view>
+        </view>
+        <t-button variant="outline" icon="upload" bindtap="goToImport" size="medium">
+          导入
+        </t-button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导出历史 -->
+  <view class="section" wx:if="{{exportHistory.length > 0}}">
+    <view class="section-label">最近导出</view>
+    <view class="card">
+      <view wx:for="{{exportHistory}}" wx:key="fileId" class="export-history-item">
+        <view class="eh-info">
+          <text class="eh-name">{{item.fileName}}</text>
+          <text class="eh-time">{{item.time}}</text>
+        </view>
+        <t-button size="small" variant="outline" icon="download" bindtap="handleDownload" data-fileid="{{item.fileId}}" data-filename="{{item.fileName}}">
+          下载
+        </t-button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="section">
+    <view class="section-label">使用流程</view>
+    <view class="card">
+      <view class="flow-steps">
+        <view class="flow-item">
+          <view class="flow-num">1</view>
+          <text class="flow-text">导出空白模板 Excel</text>
+        </view>
+        <view class="flow-arrow">→</view>
+        <view class="flow-item">
+          <view class="flow-num">2</view>
+          <text class="flow-text">发送给机房服务商填写</text>
+        </view>
+        <view class="flow-arrow">→</view>
+        <view class="flow-item">
+          <view class="flow-num">3</view>
+          <text class="flow-text">收回后在手机端导入</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <watermark />
+</view>

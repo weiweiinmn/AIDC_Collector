@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导入导出 - AIDC Collector</title>
+    <link rel="stylesheet" href="shared.css?v=20260410t1845">
+<link rel="stylesheet" href="shared-light.css">
+<!-- 登录态校验 -->
+<script>
+(function(){
+  var u = null;
+  try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
+  if (!u) { window.location.href = "../index.html"; return; }
+})();
+</script>
+<script src="api.js"></script>
+<style>
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--brand);
+}
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon { width: 18px; height: 18px; }
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+body.theme-light .theme-toggle .icon-sun { display: block; }
+body.theme-light .theme-toggle .icon-moon { display: none; }
+</style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <div class="nav-brand-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+            </div>
+            <span>AIDC Collector</span>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard-v2.html" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                仪表盘
+            </a>
+            <a href="datacenter-list.html" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                机房列表
+            </a>
+            <a href="datacenter-form.html" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                添加机房
+            </a>
+            <a href="datacenter-import.html" class="nav-item active">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                导入导出
+            </a>
+        </div>
+        <div class="nav-right">
+                        <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式" aria-label="切换主题">
+                <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
+<div class="nav-user">
+                <div class="nav-avatar">管</div>
+                <span>管理员</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <div class="page-title-icon info">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                导入导出
+            </h1>
+        </div>
+
+        <!-- 功能卡片 -->
+        <div class="feature-grid">
+            <!-- 导入功能 -->
+            <div class="feature-card">
+                <div class="feature-icon accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <h3 class="feature-title">导入数据</h3>
+                <p class="feature-desc">支持导入 CSV 格式的机房数据，轻松批量录入现有数据源。</p>
+
+                <div class="template-section">
+                    <div class="template-title">下载导入模板</div>
+                    <div class="template-desc">请先下载标准模板，按格式填写后再上传</div>
+                    <button class="template-download" onclick="downloadTemplate()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        下载 CSV 模板
+                    </button>
+                </div>
+
+                <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                    <div class="upload-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </div>
+                    <div class="upload-text">点击或拖拽文件到此处上传</div>
+                    <div class="upload-hint">支持 .csv 格式</div>
+                </div>
+                <input type="file" id="file-input" class="file-input" accept=".csv" onchange="handleFileSelect(event)">
+
+                <div class="preview-section" id="preview-section" style="display: none; margin-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 14px; font-weight: 600; color: var(--text-primary);">数据预览</span>
+                        <span id="preview-info" style="font-size: 13px; color: var(--text-secondary);"></span>
+                    </div>
+                    <div style="max-height: 300px; overflow: auto;">
+                        <table class="preview-table" id="preview-table">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 16px; display: flex; gap: 12px;">
+                        <button class="btn btn-secondary" onclick="clearPreview()">取消</button>
+                        <button class="btn btn-primary" onclick="confirmImport()">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            确认导入
+                        </button>
+                    </div>
+                </div>
+
+                <div class="import-result" id="import-result" style="display: none;">
+                    <div class="result-header">
+                        <div class="result-icon" id="result-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <span class="result-title" id="result-title">导入完成</span>
+                    </div>
+                    <div class="result-stats">
+                        <div class="result-stat">
+                            <div class="result-stat-value total" id="result-total">0</div>
+                            <div class="result-stat-label">总记录数</div>
+                        </div>
+                        <div class="result-stat">
+                            <div class="result-stat-value success" id="result-success">0</div>
+                            <div class="result-stat-label">成功</div>
+                        </div>
+                        <div class="result-stat">
+                            <div class="result-stat-value error" id="result-error">0</div>
+                            <div class="result-stat-label">失败</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 导出功能 -->
+            <div class="feature-card">
+                <div class="feature-icon success">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </div>
+                <h3 class="feature-title">导出数据</h3>
+                <p class="feature-desc">将机房数据导出为 CSV 或 JSON 格式，方便备份或在其他系统使用。</p>
+
+                <div class="export-options">
+                    <label class="export-option selected" onclick="selectExportOption(this, 'csv')">
+                        <input type="radio" name="export-format" value="csv" checked>
+                        <div class="export-label">
+                            <span class="export-radio"></span>
+                            <span>CSV 格式</span>
+                        </div>
+                    </label>
+                    <label class="export-option" onclick="selectExportOption(this, 'json')">
+                        <input type="radio" name="export-format" value="json">
+                        <div class="export-label">
+                            <span class="export-radio"></span>
+                            <span>JSON 格式</span>
+                        </div>
+                    </label>
+                    <label class="export-option" onclick="selectExportOption(this, 'xlsx')">
+                        <input type="radio" name="export-format" value="xlsx">
+                        <div class="export-label">
+                            <span class="export-radio"></span>
+                            <span>Excel 格式</span>
+                        </div>
+                    </label>
+                </div>
+
+                <button class="btn btn-primary" onclick="exportData()" style="width: 100%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    导出当前数据
+                </button>
+
+                <div style="margin-top: 16px; padding: 16px; background: var(--gray-50); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                    <div style="font-size: 14px; color: var(--text-secondary);">
+                        <strong style="color: var(--text-primary);">当前数据统计</strong>
+                        <div style="margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <span>总记录数：<strong id="export-count">0</strong></span>
+                            <span>已收录：<strong id="export-collected">0</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        var importData = [];
+        var selectedFormat = 'csv';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateExportStats();
+            initDragDrop();
+        });
+
+        function updateExportStats() {
+            var res = AIDC_API.getDatacenters({ pageSize: 1 });
+            var list = res.data.list || [];
+            // 需要总数，重新获取
+            var all = AIDC_API.getDatacenters({ pageSize: 10000 }).data.list || [];
+            document.getElementById('export-count').textContent = res.data.total || 0;
+            document.getElementById('export-collected').textContent = all.filter(function(d){ return d.status==='collected'; }).length;
+        }
+
+        function initDragDrop() {
+            var area = document.getElementById('upload-area');
+            area.addEventListener('dragover', function(e){ e.preventDefault(); area.classList.add('dragover'); });
+            area.addEventListener('dragleave', function(){ area.classList.remove('dragover'); });
+            area.addEventListener('drop', function(e){
+                e.preventDefault(); area.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) processFile(e.dataTransfer.files[0]);
+            });
+        }
+
+        function selectExportOption(el, format) {
+            document.querySelectorAll('.export-option').forEach(function(opt){ opt.classList.remove('selected'); });
+            el.classList.add('selected');
+            selectedFormat = format;
+        }
+
+        function handleFileSelect(event) { if (event.target.files[0]) processFile(event.target.files[0]); }
+
+        function processFile(file) {
+            var ext = file.name.split('.').pop().toLowerCase();
+            if (ext !== 'csv') { showToast('请上传 CSV 格式文件', 'error'); return; }
+            var reader = new FileReader();
+            reader.onload = function(e) { parseCSV(e.target.result); };
+            reader.readAsText(file);
+        }
+
+        function parseCSV(text) {
+            var lines = text.split('\n').filter(function(l){ return l.trim(); });
+            if (lines.length < 2) { showToast('文件内容为空或格式不正确', 'error'); return; }
+            var headers = parseCSVLine(lines[0]);
+            importData = [];
+            for (var i = 1; i < lines.length; i++) {
+                var values = parseCSVLine(lines[i]);
+                var row = {};
+                headers.forEach(function(header, idx) { row[header.trim()] = (values[idx] || '').trim(); });
+                importData.push(row);
+            }
+            showPreview();
+        }
+
+        function parseCSVLine(line) {
+            var result = [], current = '', inQuotes = false;
+            for (var i = 0; i < line.length; i++) {
+                var c = line[i];
+                if (c === '"') inQuotes = !inQuotes;
+                else if (c === ',' && !inQuotes) { result.push(current); current = ''; }
+                else current += c;
+            }
+            result.push(current);
+            return result;
+        }
+
+        function showPreview() {
+            if (importData.length === 0) { showToast('没有可导入的数据', 'warning'); return; }
+            var section = document.getElementById('preview-section');
+            var table   = document.getElementById('preview-table');
+            document.getElementById('preview-info').textContent = '共 ' + importData.length + ' 条数据';
+            var headers = Object.keys(importData[0]);
+            table.querySelector('thead').innerHTML = '<tr>' + headers.map(function(h){ return '<th>'+h+'</th>'; }).join('') + '</tr>';
+            var previewRows = importData.slice(0, 10);
+            table.querySelector('tbody').innerHTML = previewRows.map(function(row) {
+                return '<tr>' + headers.map(function(h){ return '<td>'+(row[h]||'')+'</td>'; }).join('') + '</tr>';
+            }).join('');
+            if (importData.length > 10) {
+                table.querySelector('tbody').innerHTML += '<tr><td colspan="'+headers.length+'" style="text-align:center;color:var(--text-muted);">...还有 '+(importData.length-10)+' 条数据</td></tr>';
+            }
+            section.style.display = 'block';
+        }
+
+        function clearPreview() {
+            document.getElementById('preview-section').style.display = 'none';
+            document.getElementById('import-result').style.display  = 'none';
+            document.getElementById('file-input').value = '';
+            importData = [];
+        }
+
+        function confirmImport() {
+            if (importData.length === 0) return;
+            var successCount = 0, errorCount = 0;
+            importData.forEach(function(row) {
+                var record = {
+                    name:    row['机房名称'] || row['name']    || '',
+                    country: row['国家']     || row['country']  || '',
+                    city:    row['城市']     || row['city']     || '',
+                    address: row['地址']     || row['address']  || '',
+                    customer: row['客户']     || row['customer'] || '',
+                    status:  'new'
+                };
+                if (!record.name) { errorCount++; return; }
+                AIDC_API.createDatacenter(record);
+                successCount++;
+            });
+
+            document.getElementById('result-total').textContent   = importData.length;
+            document.getElementById('result-success').textContent = successCount;
+            document.getElementById('result-error').textContent   = errorCount;
+
+            var result = document.getElementById('import-result');
+            var resultIcon = document.getElementById('result-icon');
+            if (errorCount === 0) {
+                result.className = 'import-result success';
+                resultIcon.className = 'result-icon success';
+                resultIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+                document.getElementById('result-title').textContent = '导入成功';
+                showToast('成功导入 ' + successCount + ' 条数据', 'success');
+            } else {
+                result.className = 'import-result error';
+                resultIcon.className = 'result-icon error';
+                resultIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+                document.getElementById('result-title').textContent = '部分导入失败';
+                showToast('导入完成：' + successCount + ' 成功，' + errorCount + ' 失败', 'warning');
+            }
+
+            document.getElementById('preview-section').style.display = 'none';
+            result.style.display = 'block';
+            updateExportStats();
+        }
+
+        function downloadTemplate() {
+            var headers   = ['机房名称','国家','城市','地址','客户'];
+            var sampleRows = [
+                ['示例机房A','中国','上海','上海市浦东新区xx路','etix'],
+                ['STT Bangkok 1','泰国','曼谷','Bang Khen, Bangkok','STT'],
+            ];
+            var csv = '\uFEFF' + headers.join(',') + '\n' + sampleRows.map(function(row) {
+                return row.map(function(c){ return '"'+(c||'')+'"'; }).join(',');
+            }).join('\n');
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
+            a.download = '机房导入模板.csv';
+            a.click();
+            showToast('模板下载成功', 'success');
+        }
+
+        function exportData() {
+            var all = AIDC_API.getDatacenters({ pageSize: 10000 }).data.list || [];
+            if (all.length === 0) { showToast('没有数据可导出', 'warning'); return; }
+
+            if (selectedFormat === 'json') {
+                var blob = new Blob([JSON.stringify(all, null, 2)], {type:'application/json'});
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = '机房数据_' + new Date().toISOString().split('T')[0] + '.json';
+                a.click();
+            } else {
+                var headers = ['机房名称','国家','城市','地址','客户','状态','创建时间'];
+                var rows    = all.map(function(d) {
+                    return [d.name||'', d.country||'', d.city||'', d.address||'', d.customer||'', AIDC_API.getStatusLabel(d.status), d.createdAt ? new Date(d.createdAt).toLocaleDateString('zh-CN') : ''];
+                });
+                var csv = '\uFEFF' + headers.join(',') + '\n' + rows.map(function(row) {
+                    return row.map(function(c){ return '"'+(c||'').toString().replace(/"/g,'""')+'"'; }).join(',');
+                }).join('\n');
+                var a2 = document.createElement('a');
+                a2.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
+                a2.download = '机房数据_' + new Date().toISOString().split('T')[0] + '.csv';
+                a2.click();
+            }
+            showToast('导出成功', 'success');
+        }
+
+        function showToast(message, type) {
+            type = type || 'success';
+            var existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            var icons = {
+                success: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+                error:   '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+                warning: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+            };
+            toast.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+(icons[type]||icons.success)+'</svg><span>'+message+'</span>';
+            document.body.appendChild(toast);
+            setTimeout(function(){ toast.remove(); }, 3000);
+        }
+    </script>
+<script>
+(function(){
+  var btn = document.getElementById('themeToggle');
+  if (!btn) return;
+  // 读取本地存储的偏好
+  var saved = localStorage.getItem('aidc_theme');
+  if (saved === 'light') {
+    document.body.classList.add('theme-light');
+  }
+  btn.addEventListener('click', function(){
+    document.body.classList.toggle('theme-light');
+    var isLight = document.body.classList.contains('theme-light');
+    localStorage.setItem('aidc_theme', isLight ? 'light' : 'dark');
+  });
+  // 监听 OS 级深色模式（可选支持）
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  if (!saved && !mq.matches) {
+    document.body.classList.add('theme-light');
+  }
+})();
+</script>
+</body>
+</html>

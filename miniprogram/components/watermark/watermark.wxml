@@ -1,0 +1,2 @@
+<!--components/watermark/watermark.wxml-->
+<view class="watermark-layer" style="{{watermarkStyle}}"></view>

@@ -1,0 +1,46 @@
+<!--pages/settings/settings.wxml-->
+<view class="page-settings">
+  <!-- 用户信息 -->
+  <view class="user-section">
+    <view class="user-card">
+      <view class="user-avatar">
+        <view class="avatar-placeholder">
+          <t-icon name="user" size="48rpx" color="#FFFFFF" />
+        </view>
+      </view>
+      <view class="user-info">
+        <view class="user-name">{{userInfo.name || '未设置'}}</view>
+        <view class="user-phone">{{userInfo.phone || ''}}</view>
+        <view class="user-role">
+          <t-tag wx:if="{{userInfo.role === 'admin'}}" theme="primary" size="small" variant="light">管理员</t-tag>
+          <t-tag wx:else theme="default" size="small" variant="light">采集人</t-tag>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 账号设置 -->
+  <view class="section">
+    <view class="section-label">账号设置</view>
+    <t-cell-group>
+      <t-cell title="修改密码" arrow bind:tap="goChangePassword" />
+    </t-cell-group>
+  </view>
+
+  <!-- 系统信息 -->
+  <view class="section">
+    <view class="section-label">系统信息</view>
+    <t-cell-group>
+      <t-cell title="当前版本" note="v3.0" />
+    </t-cell-group>
+  </view>
+
+  <!-- 退出登录 -->
+  <view class="section section-bottom">
+    <t-button theme="danger" variant="outline" block bindtap="handleLogout">
+      退出登录
+    </t-button>
+  </view>
+
+  <watermark />
+</view>

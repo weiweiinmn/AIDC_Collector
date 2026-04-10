@@ -1,0 +1,117 @@
+/* pages/form/basic.wxss — 采集表单样式 */
+
+/* ===== 页面容器 ===== */
+.page-form {
+  min-height: 100vh;
+  background: #F5F7FA;
+  padding-bottom: 160rpx;
+}
+
+/* ===== 通用区块 ===== */
+.section {
+  padding: 0 24rpx 24rpx;
+}
+
+.section-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1E3A5F;
+  padding: 32rpx 0 16rpx;
+}
+
+.card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 8rpx 0;
+}
+
+/* ===== 表单组 ===== */
+.form-group {
+  padding: 20rpx 32rpx;
+  border-bottom: 1rpx solid #F1F5F9;
+}
+.form-group:last-child {
+  border-bottom: none;
+}
+
+.form-group-half {
+  flex: 1;
+}
+
+.form-group-third {
+  flex: 1;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.form-label {
+  font-size: 26rpx;
+  color: #6B7280;
+  margin-bottom: 12rpx;
+  line-height: 1.4;
+}
+
+.form-required::before {
+  content: '* ';
+  color: #DC2626;
+}
+
+/* ===== 输入附加单位 ===== */
+.input-with-unit {
+  display: flex;
+  align-items: center;
+  background: #F9FAFB;
+  border-radius: 8rpx;
+  border: 1rpx solid #E5E7EB;
+  overflow: hidden;
+}
+
+.input-with-unit .t-input {
+  flex: 1;
+}
+
+.input-unit {
+  font-size: 26rpx;
+  color: #9CA3AF;
+  padding: 0 16rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ===== 日期展示 ===== */
+.date-display {
+  font-size: 28rpx;
+  color: #1F2937;
+  padding: 20rpx 32rpx;
+}
+
+/* ===== 提交栏 ===== */
+.submit-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: row;
+  gap: 24rpx;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+  z-index: 100;
+}
+
+.submit-bar .t-button {
+  flex: 1;
+}
+
+/* ===== 通用数字高亮 ===== */
+.num-highlight {
+  color: #1E3A5F;
+  font-weight: 600;
+  font-size: 32rpx;
+}

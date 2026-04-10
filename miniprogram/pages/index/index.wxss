@@ -1,0 +1,197 @@
+/* pages/index/index.wxss */
+.page-index {
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 顶部 */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+  background: var(--color-card);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.user-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.user-role {
+  margin-top: 4rpx;
+}
+
+.header-right {
+  padding: 12rpx;
+}
+
+/* 统计 */
+.stats-section {
+  padding: var(--spacing-md);
+}
+
+.stats-grid {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.stat-card {
+  flex: 1;
+  background: var(--color-card);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-sm);
+  text-align: center;
+  box-shadow: var(--shadow-card);
+}
+
+.stat-number {
+  font-size: 48rpx;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-weight: 700;
+  margin-bottom: 4rpx;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+
+/* 区块 */
+.section {
+  padding: 0 var(--spacing-md) var(--spacing-md);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+}
+
+.section-more {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
+.action-grid {
+  background: var(--color-card);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) 0;
+  box-shadow: var(--shadow-card);
+}
+
+/* 机房卡片 */
+.dc-card {
+  padding: var(--spacing-md);
+}
+
+.dc-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+}
+
+.dc-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: var(--spacing-sm);
+}
+
+.dc-tag {
+  font-size: 20rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  white-space: nowrap;
+}
+
+.dc-card-body {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.dc-info-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.dc-info-text {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
+.dc-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dc-date {
+  font-size: 22rpx;
+  color: var(--color-text-placeholder);
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+.dc-creator {
+  font-size: 22rpx;
+  color: var(--color-text-placeholder);
+}
+
+/* 空状态 */
+.empty-state {
+  padding: 80rpx 40rpx;
+  text-align: center;
+}
+
+.empty-state text {
+  display: block;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-sm);
+}
+
+.empty-hint {
+  font-size: 22rpx !important;
+  color: var(--color-text-placeholder) !important;
+  margin-top: 8rpx !important;
+}

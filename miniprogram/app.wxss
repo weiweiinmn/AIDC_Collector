@@ -1,0 +1,37 @@
+/* app.wxss - AIDC Collector 全局样式 */
+
+/* 重置 */
+page {
+  background: #F5F7FA;
+  color: #1F2937;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+/* 通用 */
+view, text, navigator, image {
+  box-sizing: border-box;
+}
+
+/* 主题色变量 */
+page {
+  --color-primary: #1E3A5F;
+  --color-accent: #E8843C;
+  --color-success: #00B42A;
+  --color-danger: #E34D59;
+  --color-warning: #E8843C;
+  --color-bg: #F5F7FA;
+  --color-card: #FFFFFF;
+  --color-text: #1F2937;
+  --color-text-secondary: #6B7280;
+  --color-text-placeholder: #9CA3AF;
+  --color-border: #E5E7EB;
+  --radius-sm: 8rpx;
+  --radius-md: 12rpx;
+  --radius-lg: 16rpx;
+  --spacing-xs: 8rpx;
+  --spacing-sm: 16rpx;
+  --spacing-md: 24rpx;
+  --spacing-lg: 32rpx;
+}

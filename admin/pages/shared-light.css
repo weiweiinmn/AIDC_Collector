@@ -1,0 +1,565 @@
+/* ============================================================
+   AIDC Collector — 浅色主题 shared-light.css v1.0.0
+   基于 shared.css v3.0.0 暗色主题 | 2026-04-10
+   使用方式：切换 body.theme-light 类即可
+   ============================================================ */
+
+/* ========== 浅色主题设计令牌 ========== */
+body.theme-light {
+  /* 品牌色 — 保持不变，保证品牌识别 */
+  --brand:           #0EA5E9;
+  --brand-light:     #38BDF8;
+  --brand-dark:      #0284C7;
+  --brand-dim:       rgba(14,165,233,0.1);
+
+  /* 强调色 */
+  --accent:          #16A34A;
+  --accent-light:    #22C55E;
+  --accent-dark:     #15803D;
+  --accent-dim:       rgba(22,163,74,0.1);
+
+  /* 语义色 */
+  --success:         #16A34A;
+  --success-bg:      rgba(22,163,74,0.08);
+  --success-border:  rgba(22,163,74,0.15);
+  --warning:         #D97706;
+  --warning-bg:      rgba(217,119,6,0.08);
+  --warning-border:  rgba(217,119,6,0.15);
+  --danger:          #DC2626;
+  --danger-bg:       rgba(220,38,38,0.08);
+  --danger-border:   rgba(220,38,38,0.15);
+  --info:            #0EA5E9;
+  --info-bg:         rgba(14,165,233,0.08);
+  --info-border:     rgba(14,165,233,0.15);
+
+  /* 中性色 — 浅色模式专用阶梯 */
+  --gray-50:         #FFFFFF;
+  --gray-100:        #F8FAFC;
+  --gray-200:        #F1F5F9;
+  --gray-300:        #E2E8F0;
+  --gray-400:        #CBD5E1;
+  --gray-500:        #94A3B8;
+  --gray-600:        #64748B;
+  --gray-700:        #475569;
+  --gray-800:        #334155;
+  --gray-900:        #1E293B;
+  --gray-950:        #0F172A;
+
+  /* 背景（浅色）*/
+  --bg-page:         #F1F5F9;
+  --bg-card:         #FFFFFF;
+  --bg-card-hover:   #F8FAFC;
+  --bg-hover:        rgba(0,0,0,0.04);
+  --bg-active:       rgba(0,0,0,0.06);
+
+  /* 边框 */
+  --border:          #E2E8F0;
+  --border-light:    #F1F5F9;
+  --border-strong:   #CBD5E1;
+
+  /* 文字 */
+  --text-primary:    #0F172A;
+  --text-secondary:  #475569;
+  --text-muted:      #94A3B8;
+
+  /* 阴影 */
+  --shadow-xs:   0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:   0 4px 6px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:   0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+  --shadow-xl:   0 20px 25px rgba(0,0,0,0.08), 0 8px 10px rgba(0,0,0,0.04);
+  --shadow-glow-green: 0 0 20px rgba(34,197,94,0.1);
+  --shadow-glow-blue:  0 0 20px rgba(14,165,233,0.1);
+}
+
+/* ========== 导航栏浅色适配 ========== */
+body.theme-light .navbar {
+  background: rgba(255,255,255,0.95);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+body.theme-light .nav-item {
+  color: var(--gray-600);
+}
+
+body.theme-light .nav-item:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+body.theme-light .nav-item.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+body.theme-light .nav-item.active::after {
+  background: var(--accent);
+}
+
+body.theme-light .nav-logout {
+  color: var(--gray-400);
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+body.theme-light .nav-logout:hover {
+  color: var(--danger);
+  border-color: var(--danger-border);
+  background: var(--danger-bg);
+}
+
+/* ========== 按钮浅色适配 ========== */
+body.theme-light .btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(22,163,74,0.25);
+}
+
+body.theme-light .btn-primary:hover {
+  background: var(--accent-dark);
+  box-shadow: 0 4px 12px rgba(22,163,74,0.3);
+}
+
+body.theme-light .btn-secondary {
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card);
+}
+
+body.theme-light .btn-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+body.theme-light .btn-danger {
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+  background: var(--danger-bg);
+}
+
+body.theme-light .btn-danger:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+body.theme-light .btn-text {
+  color: var(--gray-500);
+}
+
+body.theme-light .btn-text:hover {
+  color: var(--accent);
+}
+
+/* ========== 统计卡片浅色适配 ========== */
+body.theme-light .stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+body.theme-light .stat-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+body.theme-light .stat-card.highlight {
+  border-color: var(--accent-border);
+}
+
+body.theme-light .stat-card.highlight:hover {
+  box-shadow: var(--shadow-md), var(--shadow-glow-green);
+}
+
+/* ========== 数据表格浅色适配 ========== */
+body.theme-light .data-table {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+body.theme-light .data-table thead th {
+  background: var(--gray-50);
+  color: var(--gray-600);
+  border-bottom: 1px solid var(--border);
+}
+
+body.theme-light .data-table tbody tr {
+  border-bottom: 1px solid var(--border-light);
+}
+
+body.theme-light .data-table tbody tr:hover td:first-child {
+  border-left: 2px solid var(--accent);
+  padding-left: 22px;
+}
+
+body.theme-light .data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ========== 表单元素浅色适配 ========== */
+body.theme-light .form-input,
+body.theme-light .form-textarea,
+body.theme-light .form-select {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+}
+
+body.theme-light .form-input:focus,
+body.theme-light .form-textarea:focus,
+body.theme-light .form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.1), 0 0 0 1px var(--accent);
+}
+
+body.theme-light .form-label {
+  color: var(--text-secondary);
+}
+
+body.theme-light .form-section {
+  border-top: 1px solid var(--border);
+}
+
+body.theme-light .form-section-title {
+  color: var(--text-primary);
+  background: var(--gray-50);
+}
+
+body.theme-light .form-section-title::before {
+  background: var(--accent);
+}
+
+/* ========== 详情网格浅色适配 ========== */
+body.theme-light .detail-item {
+  border-bottom: 1px solid var(--border-light);
+}
+
+body.theme-light .detail-item .detail-label {
+  color: var(--gray-500);
+}
+
+/* ========== 模态框浅色适配 ========== */
+body.theme-light .modal-overlay {
+  background: rgba(15,23,42,0.5);
+}
+
+body.theme-light .modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-xl);
+}
+
+body.theme-light .modal-footer {
+  border-top: 1px solid var(--border);
+}
+
+/* ========== Toast 浅色适配 ========== */
+body.theme-light .toast.success {
+  color: var(--success);
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+body.theme-light .toast.error {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+
+body.theme-light .toast.warning {
+  color: var(--warning);
+  background: var(--warning-bg);
+  border-color: var(--warning-border);
+}
+
+body.theme-light .toast.info {
+  color: var(--info);
+  background: var(--info-bg);
+  border-color: var(--info-border);
+}
+
+/* ========== 空状态浅色适配 ========== */
+body.theme-light .empty-state {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+body.theme-light .empty-icon svg {
+  color: var(--gray-400);
+}
+
+/* ========== 上传区浅色适配 ========== */
+body.theme-light .upload-zone {
+  border: 2px dashed var(--border-strong);
+  background: var(--gray-50);
+}
+
+body.theme-light .upload-zone:hover {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+/* ========== 功能卡片浅色适配 ========== */
+body.theme-light .feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+body.theme-light .feature-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ========== 登录页浅色适配 ========== */
+body.theme-light .login-container {
+  background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 50%, #0369A1 100%);
+}
+
+body.theme-light .login-card {
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 40px rgba(14,165,233,0.1);
+}
+
+body.theme-light .login-logo {
+  color: var(--brand);
+}
+
+body.theme-light .login-form .form-input {
+  background: var(--gray-50);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+}
+
+body.theme-light .login-form .form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+}
+
+body.theme-light .login-form .btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  box-shadow: 0 4px 16px rgba(22,163,74,0.3);
+}
+
+body.theme-light .login-form .btn-primary:hover {
+  background: var(--accent-dark);
+  box-shadow: 0 6px 20px rgba(22,163,74,0.4);
+}
+
+body.theme-light .login-hint {
+  color: var(--gray-500);
+  border-top: 1px solid var(--border);
+}
+
+body.theme-light .login-divider {
+  background: var(--border);
+}
+
+body.theme-light .login-toggle {
+  color: var(--brand);
+  background: var(--info-bg);
+  border: 1px solid var(--info-border);
+}
+
+body.theme-light .login-toggle:hover {
+  color: var(--brand-dark);
+  background: var(--brand-dim);
+}
+
+/* ========== 滚动条浅色适配 ========== */
+body.theme-light ::-webkit-scrollbar-track {
+  background: var(--gray-100);
+}
+
+body.theme-light ::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 3px;
+}
+
+body.theme-light ::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+}
+
+/* ========== 选中文字浅色适配 ========== */
+body.theme-light ::selection {
+  background: rgba(22,163,74,0.15);
+  color: var(--text-primary);
+}
+
+/* ========== 复选框网格浅色适配 ========== */
+body.theme-light .checkbox-item {
+  background: var(--gray-50);
+  border: 1px solid var(--border);
+}
+
+body.theme-light .checkbox-item:hover {
+  border-color: var(--border-strong);
+  background: var(--gray-100);
+}
+
+body.theme-light .checkbox-item.checked {
+  background: var(--success-bg);
+  border-color: rgba(22,163,74,0.25);
+}
+
+body.theme-light .checkbox-item .checkbox-marker {
+  border-color: var(--gray-400);
+}
+
+/* ========== 客户标签浅色适配 ========== */
+body.theme-light .customer-tag {
+  background: rgba(139,92,246,0.08);
+  border-color: rgba(139,92,246,0.15);
+  color: #7C3AED;
+}
+
+/* ========== 客户列表浅色适配 ========== */
+body.theme-light .customer-list-item {
+  background: var(--gray-50);
+  border: 1px solid var(--border);
+}
+
+body.theme-light .customer-list-item:hover {
+  border-color: var(--border-strong);
+  background: var(--gray-100);
+}
+
+body.theme-light .customer-list-item .customer-delete:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* ========== 导出选项浅色适配 ========== */
+body.theme-light .export-option {
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+}
+
+body.theme-light .export-option:hover {
+  border-color: var(--accent);
+}
+
+body.theme-light .export-option.selected {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+/* ========== 滤镜栏浅色适配 ========== */
+body.theme-light .filter-bar {
+  background: var(--gray-50);
+  border: 1px solid var(--border);
+}
+
+/* ========== 工具提示浅色适配 ========== */
+body.theme-light .tooltip {
+  background: var(--gray-900);
+  color: #fff;
+}
+
+/* ========== 时间线浅色适配 ========== */
+body.theme-light .timeline-dot {
+  box-shadow: 0 0 6px rgba(22,163,74,0.3);
+}
+
+body.theme-light .timeline-content {
+  background: var(--gray-50);
+  border: 1px solid var(--border);
+}
+
+/* ========== 状态标签浅色适配 ========== */
+body.theme-light .status-tag {
+  border: 1px solid transparent;
+}
+
+body.theme-light .status-tag.new {
+  background: var(--info-bg);
+  color: var(--info);
+  border-color: var(--info-border);
+}
+
+body.theme-light .status-tag.collected {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: var(--success-border);
+}
+
+body.theme-light .status-tag.pending {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-color: var(--warning-border);
+}
+
+body.theme-light .status-tag.rejected {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-color: var(--danger-border);
+}
+
+/* ========== 动作图标浅色适配 ========== */
+body.theme-light .action-btn {
+  color: var(--gray-500);
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+body.theme-light .action-btn:hover {
+  color: var(--brand);
+  background: var(--info-bg);
+  border-color: var(--info-border);
+}
+
+/* ========== 分页浅色适配 ========== */
+body.theme-light .page-btn {
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+body.theme-light .page-btn.active,
+body.theme-light .page-btn:hover {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: rgba(22,163,74,0.25);
+}
+
+/* ========== 卡片头部浅色适配 ========== */
+body.theme-light .card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+body.theme-light .card-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--gray-50);
+}
+
+/* ========== 页面标题浅色适配 ========== */
+body.theme-light .page-header {
+  border-bottom: 1px solid var(--border);
+}
+
+/* ========== 进度条浅色适配 ========== */
+body.theme-light .dist-bar {
+  background: var(--gray-200);
+}
+
+/* ========== 导航用户信息浅色适配 ========== */
+body.theme-light .nav-user-name {
+  color: var(--text-primary);
+}
+
+body.theme-light .nav-user-role {
+  color: var(--gray-500);
+}
+
+/* ========== 统计数字浅色适配 ========== */
+body.theme-light .stat-value {
+  color: var(--text-primary);
+}
+
+body.theme-light .stat-label {
+  color: var(--gray-500);
+}
