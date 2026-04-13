@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5">
+  <title>机房详情 - AIDC Collector 管理后台</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="shared-light.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+:root{--primary:#1E3A5F;--primary-light:#2C5282;--primary-lighter:#EBF0F7;--accent:#E8843C;--accent-light:#FBF0E6;--accent-dark:#C96B28;--success:#2D9E6C;--success-bg:#ECFDF5;--warning:#D97706;--warning-bg:#FFFBEB;--danger:#DC2626;--danger-bg:#FEF2F2;--info:#3B82F6;--info-bg:#EFF6FF;--bg:#F4F6F9;--card:#FFFFFF;--border:#E5E7EB;--border-light:#F3F4F6;--text:#111827;--text-secondary:#6B7280;--text-muted:#9CA3AF;--shadow:0 1px 3px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.06);--shadow-md:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -1px rgba(0,0,0,.04);--shadow-lg:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -2px rgba(0,0,0,.04);--radius:12px;--radius-sm:8px;--font-ui:'DM Sans',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;--font-mono:'JetBrains Mono','Fira Code',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.sidebar-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--border-light);min-height:64px}
+.sidebar-logo{display:flex;align-items:center;gap:10px;overflow:hidden}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0}
+.logo-text{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden}
+.sidebar-toggle{width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:background-color .2s,color .2s}
+.sidebar-toggle:hover{background-color:var(--bg);color:var(--primary)}
+.sidebar-toggle svg{width:16px;height:16px}
+.sidebar-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 8px}
+.sidebar-nav::-webkit-scrollbar{width:4px}
+.sidebar-nav::-webkit-scrollbar-thumb{background-color:#D1D5DB;border-radius:2px}
+
+
+
+
+
+
+
+
+
+.submenu-arrow{width:14px;height:14px;flex-shrink:0;color:var(--text-muted);transition:transform .2s}
+
+
+
+
+
+
+
+.sidebar-footer{padding:12px 16px;border-top:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between}
+.user-profile{display:flex;align-items:center;gap:10px;overflow:hidden}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600;flex-shrink:0}
+.user-info{display:flex;flex-direction:column;overflow:hidden}
+.user-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:11px;color:var(--text-muted)}
+.footer-actions{display:flex;gap:4px}
+.action-btn{width:28px;height:28px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:background-color .15s,color .15s}
+.action-btn:hover{background-color:var(--bg);color:var(--primary)}
+.action-btn svg{width:16px;height:16px}
+.main-content{flex:1;display:flex;flex-direction:column}
+.page-header{background:var(--card);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.header-left{display:flex;align-items:center;gap:16px}
+.back-btn{display:flex;align-items:center;gap:5px;color:var(--text-secondary);text-decoration:none;font-size:13px;cursor:pointer;transition:color .15s;padding:6px 10px;border-radius:var(--radius-sm)}
+.back-btn:hover{color:var(--primary);background:var(--primary-lighter)}
+.back-btn svg{width:16px;height:16px}
+.header-title-group{display:flex;align-items:center;gap:12px}
+.header-title{font-size:18px;font-weight:700;color:var(--text)}
+.status-tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;font-family:var(--font-ui)}
+.status-tag.new{background:#E0F2FE;color:#0369A1}
+.status-tag.visited{background:#FEF3C7;color:#92400E}
+.status-tag.negotiating{background:#F3E8FF;color:#7C3AED}
+.status-tag.contracted{background:#DCFCE7;color:#166534}
+.status-tag.rejected{background:#FEE2E2;color:#991B1B}
+.header-meta{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--text-muted)}
+.header-meta span{display:flex;align-items:center;gap:4px}
+.header-meta svg{width:13px;height:13px}
+.header-actions{display:flex;align-items:center;gap:8px}
+.btn{padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:5px;transition:all .15s;font-family:var(--font-ui);white-space:nowrap}
+.btn svg{width:15px;height:15px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light)}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-accent:hover{background:var(--accent-dark)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{background:var(--bg)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:#B91C1C}
+.btn-ghost{background:transparent;color:var(--text-secondary)}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-sm svg{width:13px;height:13px}
+.page-body{padding:24px 28px;flex:1}
+.section-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:16px;overflow:hidden}
+.section-card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border-light);background:var(--bg)}
+.section-card-title{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--text)}
+.section-card-title .icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.section-card-title .icon svg{width:16px;height:16px}
+.section-card-title .icon.primary{background:var(--primary-lighter);color:var(--primary)}
+.section-card-title .icon.accent{background:var(--accent-light);color:var(--accent)}
+.section-card-title .icon.success{background:var(--success-bg);color:var(--success)}
+.section-card-title .icon.info{background:var(--info-bg);color:var(--info)}
+.section-card-title .icon.warning{background:var(--warning-bg);color:var(--warning)}
+.section-card-title .icon.danger{background:var(--danger-bg);color:var(--danger)}
+.section-card-title .badge{font-size:11px;font-weight:400;color:var(--text-muted);background:rgba(0,0,0,.04);padding:1px 7px;border-radius:10px}
+.section-card-actions{display:flex;gap:6px}
+.section-card-body{padding:20px}
+.field-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.field-item{display:flex;flex-direction:column;gap:5px}
+.field-item.full-width{grid-column:1/-1}
+.field-item.span-2{grid-column:span 2}
+.field-label{font-size:12px;color:var(--text-secondary);font-weight:500;display:flex;align-items:center;gap:4px}
+.field-label .required{color:var(--danger);font-size:13px}
+.field-value{font-size:13.5px;color:var(--text);padding:8px 12px;background:var(--bg);border-radius:6px;min-height:36px;display:flex;align-items:center;line-height:1.5;font-family:var(--font-ui)}
+.field-value .mono{font-family:var(--font-mono);font-size:13px}
+.field-value .tag-yes{color:var(--success);font-weight:600}
+.field-value .tag-no{color:var(--danger);font-weight:600}
+.field-value .unit{color:var(--text-muted);margin-left:4px;font-size:12px}
+.field-value .unit-inline{color:var(--text-muted);font-size:12px}
+.field-value.empty{color:var(--text-muted);font-style:italic}
+.field-value.highlight{background:var(--primary-lighter);color:var(--primary);font-weight:500;border:1px solid rgba(30,58,95,.15)}
+.field-value.accent-highlight{background:var(--accent-light);color:var(--accent-dark);font-weight:600;border:1px solid rgba(232,132,60,.2)}
+.field-value.cost-highlight{background:#FFF7ED;color:#C2410C;font-weight:600;border:1px solid rgba(194,65,12,.15)}
+.field-input,.field-select,.field-textarea{width:100%;padding:7px 11px;border:1px solid var(--border);border-radius:6px;font-size:13.5px;font-family:var(--font-ui);outline:none;transition:border-color .15s,box-shadow .15s;background:var(--card);color:var(--text)}
+.field-input:focus,.field-select:focus,.field-textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,58,95,.1)}
+.field-input.mono,.field-select.mono{font-family:var(--font-mono)}
+.field-textarea{resize:vertical;min-height:72px}
+.field-divider{grid-column:1/-1;height:1px;background:var(--border-light);margin:4px 0}
+.badge-inline{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:600}
+.badge-t4{background:#DCFCE7;color:#166534}
+.badge-t3{background:#E0F2FE;color:#0369A1}
+.badge-t2{background:#FEF3C7;color:#92400E}
+.badge-t1{background:#F3F4F6;color:#6B7280}
+.badge-yes{background:var(--success-bg);color:var(--success)}
+.badge-no{background:var(--danger-bg);color:var(--danger)}
+.badge-pending{background:var(--warning-bg);color:var(--warning)}
+.photo-gallery{display:flex;gap:10px;flex-wrap:wrap}
+.photo-thumb{width:100px;height:75px;border-radius:8px;object-fit:cover;border:1px solid var(--border);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.photo-thumb:hover{transform:scale(1.05);box-shadow:var(--shadow-md)}
+.history-section{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-top:8px}
+.history-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.history-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;color:var(--text)}
+.history-title svg{width:16px;height:16px;color:var(--primary)}
+.history-list{max-height:320px;overflow-y:auto}
+.history-item{padding:12px 20px;border-bottom:1px solid var(--border-light);display:flex;align-items:flex-start;gap:10px}
+.history-item:last-child{border-bottom:none}
+.history-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;flex-shrink:0}
+.history-content{flex:1}
+.history-meta{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.history-user{font-weight:600;font-size:13px}
+.history-time{font-size:12px;color:var(--text-muted)}
+.history-change{font-size:13px;color:var(--text-secondary);background:var(--bg);padding:6px 10px;border-radius:6px;display:inline-block}
+.history-change .field-name{color:var(--primary);font-weight:500}
+.history-change .old-val{color:var(--danger);text-decoration:line-through}
+.history-change .new-val{color:var(--success);font-weight:500}
+.toast{position:fixed;top:20px;right:20px;padding:11px 20px;border-radius:var(--radius-sm);font-size:13.5px;font-weight:500;z-index:1000;transform:translateX(120%);transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;font-family:var(--font-ui)}
+.toast.show{transform:translateX(0)}
+.toast.success{background:var(--success);color:#fff}
+.toast.error{background:var(--danger);color:#fff}
+.toast.info{background:var(--primary);color:#fff}
+.toast svg{width:16px;height:16px;flex-shrink:0}}.sidebar{display:none}
+.main-content{margin-left:0}
+.page-header{padding:12px 16px;flex-wrap:wrap;gap:10px}
+.page-body{padding:16px}
+.field-grid{grid-template-columns:1fr}
+.field-item.span-2{grid-column:span 1}
+.header-meta{display:none}}
+  </style>
+<!-- 登录态校验 -->
+<script>
+(function(){
+  var u = null;
+  try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
+  if (!u) { window.location.href = "../index.html"; return; }
+})();
+</script>
+<script src="api.js"></script>
+
+    <style>
+    .theme-toggle {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-strong);
+      background: transparent; color: var(--text-secondary);
+      cursor: pointer; transition: all var(--transition-base); flex-shrink: 0;
+    }
+    .theme-toggle:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--brand); }
+    .theme-toggle .icon-sun, .theme-toggle .icon-moon { width: 18px; height: 18px; }
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    body.theme-light .theme-toggle .icon-sun { display: block; }
+    body.theme-light .theme-toggle .icon-moon { display: none; }
+    
+    </style>
+
+</head>
+<body>
+<!-- 统一顶部导航 -->
+
+
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <div class="nav-brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+            </div>
+            <span class="nav-brand-text">AIDC Collector</span>
+        </div>
+        <div class="nav-menu" id="navMenu">
+            <a href="dashboard-v2.html" class="nav-item" data-page="dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                仪表盘
+            </a>
+            <a href="datacenter-list.html" class="nav-item" data-page="datacenter-list" class="active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="15" x2="22" y2="15"/><line x1="9" y1="3" x2="9" y2="9"/></svg>
+                机房列表
+            </a>
+            <a href="datacenter-form.html" class="nav-item" data-page="datacenter-form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                添加机房
+            </a>
+            <a href="datacenter-import.html" class="nav-item" data-page="import">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                导入导出
+            </a>
+            <a href="gantt.html" class="nav-item" data-page="gantt">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                项目进度
+            </a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式" aria-label="切换主题">
+                <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            </button>
+            <div class="nav-user" id="navUser"></div>
+            <a href="login.html" class="nav-logout" id="navLogout" title="退出登录">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </a>
+        </div>
+    </nav>
+
+
+
+<!-- 页面主体 -->
+<div class="page-container">
+  <header class="page-header">
+    <div class="header-left">
+      <a href="datacenter-list.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>返回列表</a>
+      <div class="header-title-group">
+        <h1 class="header-title" id="pageTitle">机房详情</h1>
+        <span class="status-tag new" id="statusTag">新建</span>
+      </div>
+      <div class="header-meta">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg><span id="createdAt">—</span></span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span id="createdBy">—</span></span>
+        <span>ID: <span id="recordId" style="font-family:var(--font-mono);font-size:12px">—</span></span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" id="ganttBtn" onclick="openGantt()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>项目进度</button>
+      <button class="btn btn-outline" onclick="window.print()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>打印</button>
+      <button class="btn btn-accent" onclick="downloadPdf()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>导出</button>
+      <button class="btn btn-primary" id="editBtn" onclick="toggleEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>编辑</button>
+      <button class="btn btn-danger hidden" id="saveBtn" onclick="saveData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>保存</button>
+    </div>
+  </header>
+</div><!-- end .page-container -->
+  <main class="page-body" id="pageBody" style="margin-top:64px;">
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          基础信息<span class="badge">6字段</span>
+        </div>
+        <div class="section-card-actions"><button class="btn btn-sm btn-ghost" onclick="collapseSection(this)">收起</button></div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">机房名称 <span class="required">*</span></div><div class="field-value" id="dc_name">—</div><input class="field-input" id="dc_name_input" data-field="dc_name" placeholder="请输入机房名称"></div>
+          <div class="field-item"><div class="field-label">机房编号</div><div class="field-value" id="dc_code"><span class="mono">—</span></div><input class="field-input mono" id="dc_code_input" data-field="dc_code" placeholder="自动生成"></div>
+          <div class="field-item"><div class="field-label">所属客户 <span class="required">*</span></div><div class="field-value" id="customer_name">—</div><input class="field-input" id="customer_name_input" data-field="customer_name" placeholder="请选择客户"></div>
+          <div class="field-item"><div class="field-label">合作状态 <span class="required">*</span></div><div class="field-value" id="cooperation_status">—</div><select class="field-select" id="cooperation_status_input" data-field="cooperation_status"><option value="">请选择</option><option value="new">新建</option><option value="visited">已拜访</option><option value="negotiating">洽谈中</option><option value="contracted">已签约</option><option value="rejected">已拒绝</option></select></div>
+          <div class="field-item"><div class="field-label">客户对接人</div><div class="field-value" id="contact_person">—</div><input class="field-input" id="contact_person_input" data-field="contact_person" placeholder="姓名"></div>
+          <div class="field-item"><div class="field-label">对接人职位</div><div class="field-value" id="contact_title">—</div><input class="field-input" id="contact_title_input" data-field="contact_title" placeholder="如：运维总监"></div>
+          <div class="field-item"><div class="field-label">对接人电话</div><div class="field-value" id="contact_phone"><span class="mono">—</span></div><input class="field-input mono" id="contact_phone_input" data-field="contact_phone" placeholder="手机号"></div>
+          <div class="field-item full-width"><div class="field-label">对接人微信</div><div class="field-value" id="contact_wechat"><span class="mono">—</span></div><input class="field-input mono" id="contact_wechat_input" data-field="contact_wechat" placeholder="微信号"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          机房地址<span class="badge">5字段</span>
+        </div>
+        <div class="section-card-actions"><button class="btn btn-sm btn-ghost" onclick="collapseSection(this)">收起</button></div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">国家</div><div class="field-value" id="country">—</div><input class="field-input" id="country_input" data-field="country" placeholder="如：中国"></div>
+          <div class="field-item"><div class="field-label">省份/州</div><div class="field-value" id="province">—</div><input class="field-input" id="province_input" data-field="province" placeholder="省/州"></div>
+          <div class="field-item"><div class="field-label">城市</div><div class="field-value" id="city">—</div><input class="field-input" id="city_input" data-field="city" placeholder="城市"></div>
+          <div class="field-item"><div class="field-label">详细地址</div><div class="field-value" id="address">—</div><input class="field-input" id="address_input" data-field="address" placeholder="详细地址"></div>
+          <div class="field-item full-width"><div class="field-label">机房坐标</div><div class="field-value" id="coordinates"><span class="mono">—</span></div><input class="field-input mono" id="coordinates_input" data-field="coordinates" placeholder="经度,纬度"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon accent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="15" x2="22" y2="15"/><line x1="9" y1="3" x2="9" y2="9"/></svg></div>
+          基础设施<span class="badge">7字段</span>
+        </div>
+        <div class="section-card-actions"><button class="btn btn-sm btn-ghost" onclick="collapseSection(this)">收起</button></div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">机房总面积</div><div class="field-value" id="total_area"><span class="mono">—</span><span class="unit">m2</span></div><input class="field-input mono" id="total_area_input" data-field="total_area" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">机柜总数</div><div class="field-value" id="total_racks"><span class="mono">—</span><span class="unit">个</span></div><input class="field-input mono" id="total_racks_input" data-field="total_racks" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">机房等级</div><div class="field-value" id="dc_tier">—</div><select class="field-select" id="dc_tier_input" data-field="dc_tier"><option value="">请选择</option><option value="T4">T4</option><option value="T3">T3</option><option value="T2">T2</option><option value="T1">T1</option></select></div>
+          <div class="field-item"><div class="field-label">承重能力</div><div class="field-value" id="floor_load"><span class="mono">—</span><span class="unit">kg/m2</span></div><input class="field-input mono" id="floor_load_input" data-field="floor_load" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">机柜尺寸</div><div class="field-value" id="rack_size">—</div><select class="field-select" id="rack_size_input" data-field="rack_size"><option value="">请选择</option><option value="42U">42U</option><option value="45U">45U</option><option value="48U">48U</option><option value="定制">定制</option></select></div>
+          <div class="field-item"><div class="field-label">单机柜功率</div><div class="field-value" id="rack_power"><span class="mono">—</span><span class="unit">kW</span></div><input class="field-input mono" id="rack_power_input" data-field="rack_power" placeholder="0"></div>
+          <div class="field-item full-width"><div class="field-label">建筑类型</div><div class="field-value" id="building_type">—</div><select class="field-select" id="building_type_input" data-field="building_type"><option value="">请选择</option><option value="自建">自建</option><option value="租赁">租赁</option><option value="合租">合租</option><option value="托管">托管</option></select></div>
+        </div>
+      </div>
+    </div>
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><circle cx="12" cy="20" r="1"/></svg></div>
+          网络条件<span class="badge">9字段</span>
+        </div>
+        <div class="section-card-actions"><button class="btn btn-sm btn-ghost" onclick="collapseSection(this)">收起</button></div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">网络运营商</div><div class="field-value" id="isps">—</div><input class="field-input" id="isps_input" data-field="isps" placeholder="如：电信/联通/移动"></div>
+          <div class="field-item"><div class="field-label">BGP类型</div><div class="field-value" id="bgp_type">—</div><select class="field-select" id="bgp_type_input" data-field="bgp_type"><option value="">请选择</option><option value="三线BGP">三线BGP</option><option value="双线BGP">双线BGP</option><option value="单线">单线</option><option value="无BGP">无BGP</option></select></div>
+          <div class="field-item"><div class="field-label">总出口带宽</div><div class="field-value" id="total_bandwidth"><span class="mono">—</span><span class="unit">Gbps</span></div><input class="field-input mono" id="total_bandwidth_input" data-field="total_bandwidth" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">专线数量</div><div class="field-value" id="private_lines"><span class="mono">—</span><span class="unit">条</span></div><input class="field-input mono" id="private_lines_input" data-field="private_lines" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">网络冗余</div><div class="field-value" id="network_redundancy">—</div><select class="field-select" id="network_redundancy_input" data-field="network_redundancy"><option value="">请选择</option><option value="多路由">多路由</option><option value="双路由">双路由</option><option value="单路由">单路由</option></select></div>
+          <div class="field-item"><div class="field-label">延迟(至北京)</div><div class="field-value" id="latency_to_beijing"><span class="mono">—</span><span class="unit">ms</span></div><input class="field-input mono" id="latency_to_beijing_input" data-field="latency_to_beijing" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">延迟(至上海)</div><div class="field-value" id="latency_to_shanghai"><span class="mono">—</span><span class="unit">ms</span></div><input class="field-input mono" id="latency_to_shanghai_input" data-field="latency_to_shanghai" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">延迟(至广州)</div><div class="field-value" id="latency_to_guangzhou"><span class="mono">—</span><span class="unit">ms</span></div><input class="field-input mono" id="latency_to_guangzhou_input" data-field="latency_to_guangzhou" placeholder="0"></div>
+          <div class="field-item full-width"><div class="field-label">网络备注</div><div class="field-value" id="network_notes">—</div><textarea class="field-textarea" id="network_notes_input" data-field="network_notes" placeholder="其他网络条件说明"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg></div>
+          电力条件<span class="badge">8字段</span>
+        </div>
+        <div class="section-card-actions"><button class="btn btn-sm btn-ghost" onclick="collapseSection(this)">收起</button></div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">市电容量</div><div class="field-value" id="utility_power"><span class="mono">—</span><span class="unit">kVA</span></div><input class="field-input mono" id="utility_power_input" data-field="utility_power" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">UPS配置</div><div class="field-value" id="ups_config">—</div><select class="field-select" id="ups_config_input" data-field="ups_config"><option value="">请选择</option><option value="2N">2N</option><option value="N+1">N+1</option><option value="N">N</option><option value="无">无</option></select></div>
+          <div class="field-item"><div class="field-label">UPS续航</div><div class="field-value" id="ups_runtime"><span class="mono">—</span><span class="unit">min</span></div><input class="field-input mono" id="ups_runtime_input" data-field="ups_runtime" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">柴发配置</div><div class="field-value" id="generator_config">—</div><select class="field-select" id="generator_config_input" data-field="generator_config"><option value="">请选择</option><option value="N+1">N+1</option><option value="N">N</option><option value="2N">2N</option><option value="无">无</option></select></div>
+          <div class="field-item"><div class="field-label">柴发储油时长</div><div class="field-value" id="generator_runtime"><span class="mono">—</span><span class="unit">h</span></div><input class="field-input mono" id="generator_runtime_input" data-field="generator_runtime" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">PUE值</div><div class="field-value" id="pue_value"><span class="mono">—</span></div><input class="field-input mono" id="pue_value_input" data-field="pue_value" placeholder="如：1.4"></div>
+          <div class="field-item"><div class="field-label">可用功率密度</div><div class="field-value" id="power_density"><span class="mono">—</span><span class="unit">kW/机柜</span></div><input class="field-input mono" id="power_density_input" data-field="power_density" placeholder="0"></div>
+          <div class="field-item full-width"><div class="field-label">电力备注</div><div class="field-value" id="power_notes">—</div><textarea class="field-textarea" id="power_notes_input" data-field="power_notes" placeholder="其他电力条件说明"></textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          空调与消防<span class="badge">6字段</span>
+        </div>
+        <div class="section-card-actions"><button class="btn btn-sm btn-ghost" onclick="collapseSection(this)">收起</button></div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">空调配置</div><div class="field-value" id="cooling_type">—</div><select class="field-select" id="cooling_type_input" data-field="cooling_type"><option value="">请选择</option><option value="水冷">水冷</option><option value="风冷">风冷</option><option value="冷冻水">冷冻水</option><option value="液冷">液冷</option><option value="混合">混合</option></select></div>
+          <div class="field-item"><div class="field-label">冷热通道</div><div class="field-value" id="hot_cold_aisle">—</div><select class="field-select" id="hot_cold_aisle_input" data-field="hot_cold_aisle"><option value="">请选择</option><option value="已隔离">已隔离</option><option value="未隔离">未隔离</option></select></div>
+          <div class="field-item"><div class="field-label">机柜送风</div><div class="field-value" id="rack_airflow">—</div><select class="field-select" id="rack_airflow_input" data-field="rack_airflow"><option value="">请选择</option><option value="下送风">下送风</option><option value="上送风">上送风</option><option value="侧送风">侧送风</option></select></div>
+          <div class="field-item"><div class="field-label">消防系统</div><div class="field-value" id="fire_system">—</div><select class="field-select" id="fire_system_input" data-field="fire_system"><option value="">请选择</option><option value="气体灭火">气体灭火</option><option value="水喷淋">水喷淋</option><option value="预作用">预作用</option><option value="其他">其他</option></select></div>
+          <div class="field-item"><div class="field-label">温湿度监控</div><div class="field-value" id="env_monitoring">—</div><select class="field-select" id="env_monitoring_input" data-field="env_monitoring"><option value="">请选择</option><option value="有">有</option><option value="无">无</option></select></div>
+          <div class="field-item full-width"><div class="field-label">环境备注</div><div class="field-value" id="env_notes">—</div><textarea class="field-textarea" id="env_notes_input" data-field="env_notes" placeholder="其他环境条件说明"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+          安保与合规<span class="badge">7字段</span>
+        </div>
+        <div class="section-card-actions"><button class="btn btn-sm btn-ghost" onclick="collapseSection(this)">收起</button></div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">门禁系统</div><div class="field-value" id="access_control">—</div><select class="field-select" id="access_control_input" data-field="access_control"><option value="">请选择</option><option value="生物识别">生物识别</option><option value="刷卡">刷卡</option><option value="密码">密码</option><option value="无">无</option></select></div>
+          <div class="field-item"><div class="field-label">视频监控</div><div class="field-value" id="video_surveillance">—</div><select class="field-select" id="video_surveillance_input" data-field="video_surveillance"><option value="">请选择</option><option value="有">有</option><option value="无">无</option></select></div>
+          <div class="field-item"><div class="field-label">安保人员</div><div class="field-value" id="security_staff">—</div><select class="field-select" id="security_staff_input" data-field="security_staff"><option value="">请选择</option><option value="24h驻场">24h驻场</option><option value="定期巡检">定期巡检</option><option value="无">无</option></select></div>
+          <div class="field-item"><div class="field-label">ISO认证</div><div class="field-value" id="iso_cert">—</div><select class="field-select" id="iso_cert_input" data-field="iso_cert"><option value="">请选择</option><option value="ISO27001">ISO27001</option><option value="ISO9001">ISO9001</option><option value="均有">均有</option><option value="无">无</option></select></div>
+          <div class="field-item"><div class="field-label">SOC2报告</div><div class="field-value" id="soc2_report">—</div><select class="field-select" id="soc2_report_input" data-field="soc2_report"><option value="">请选择</option><option value="有">有</option><option value="无">无</option></select></div>
+          <div class="field-item"><div class="field-label">等保等级</div><div class="field-value" id="security_level">—</div><select class="field-select" id="security_level_input" data-field="security_level"><option value="">请选择</option><option value="等保三级">等保三级</option><option value="等保二级">等保二级</option><option value="无">无</option></select></div>
+          <div class="field-item full-width"><div class="field-label">合规备注</div><div class="field-value" id="compliance_notes">—</div><textarea class="field-textarea" id="compliance_notes_input" data-field="compliance_notes" placeholder="其他合规说明"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon accent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          成本字段<span class="badge">5字段 &middot; 美元/卡时 &middot; 元/kW/月 &middot; 元/度</span>
+        </div>
+        <div class="section-card-actions"><button class="btn btn-sm btn-ghost" onclick="collapseSection(this)">收起</button></div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">GPU卡时单价 <span class="required">*</span></div><div class="field-value cost-highlight" id="gpu_price"><span class="mono">—</span><span class="unit-inline">美元/卡时</span></div><input class="field-input mono" id="gpu_price_input" data-field="gpu_price" placeholder="0.00"></div>
+          <div class="field-item"><div class="field-label">机柜月租单价 <span class="required">*</span></div><div class="field-value cost-highlight" id="rack_price"><span class="mono">—</span><span class="unit-inline">元/kW/月</span></div><input class="field-input mono" id="rack_price_input" data-field="rack_price" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">电费单价</div><div class="field-value cost-highlight" id="electricity_price"><span class="mono">—</span><span class="unit-inline">元/度</span></div><input class="field-input mono" id="electricity_price_input" data-field="electricity_price" placeholder="0.00"></div>
+          <div class="field-item"><div class="field-label">带宽单价</div><div class="field-value cost-highlight" id="bandwidth_price"><span class="mono">—</span><span class="unit-inline">元/Gbps/月</span></div><input class="field-input mono" id="bandwidth_price_input" data-field="bandwidth_price" placeholder="0"></div>
+          <div class="field-item full-width"><div class="field-label">成本备注</div><div class="field-value" id="cost_notes">—</div><textarea class="field-textarea" id="cost_notes_input" data-field="cost_notes" placeholder="价格条款、付款方式等"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          其他信息<span class="badge">6字段</span>
+        </div>
+        <div class="section-card-actions"><button class="btn btn-sm btn-ghost" onclick="collapseSection(this)">收起</button></div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid">
+          <div class="field-item"><div class="field-label">上柜率</div><div class="field-value" id="rack_utilization"><span class="mono">—</span><span class="unit">%</span></div><input class="field-input mono" id="rack_utilization_input" data-field="rack_utilization" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">预计可部署</div><div class="field-value" id="deployable_racks"><span class="mono">—</span><span class="unit">个</span></div><input class="field-input mono" id="deployable_racks_input" data-field="deployable_racks" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">机柜押金</div><div class="field-value" id="rack_deposit"><span class="mono">—</span><span class="unit">元/柜</span></div><input class="field-input mono" id="rack_deposit_input" data-field="rack_deposit" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">最短租期</div><div class="field-value" id="min_lease_term"><span class="mono">—</span><span class="unit">月</span></div><input class="field-input mono" id="min_lease_term_input" data-field="min_lease_term" placeholder="0"></div>
+          <div class="field-item"><div class="field-label">付款方式</div><div class="field-value" id="payment_terms">—</div><select class="field-select" id="payment_terms_input" data-field="payment_terms"><option value="">请选择</option><option value="月付">月付</option><option value="季付">季付</option><option value="半年付">半年付</option><option value="年付">年付</option></select></div>
+          <div class="field-item full-width"><div class="field-label">备注</div><div class="field-value" id="remarks">—</div><textarea class="field-textarea" id="remarks_input" data-field="remarks" placeholder="其他备注信息"></textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h6"/><path d="M23 19a2 2 0 002-2v-5a2 2 0 00-2-2"/><circle cx="12" cy="8" r="3"/></svg></div>
+          照片附件<span class="badge">2字段</span>
+        </div>
+        <div class="section-card-actions"><button class="btn btn-sm btn-accent" onclick="addPhoto()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>上传</button></div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid">
+          <div class="field-item full-width">
+            <div class="field-label">机房照片</div>
+            <div class="photo-gallery" id="photoGallery">
+              <div class="field-value empty" style="padding:16px;width:100%;justify-content:center;color:var(--text-muted);font-size:13px;">暂无照片</div>
+            </div>
+          </div>
+          <div class="field-item full-width">
+            <div class="field-label">附件列表</div>
+            <div id="attachmentList">
+              <div class="field-value empty" style="padding:16px;width:100%;justify-content:center;color:var(--text-muted);font-size:13px;">暂无附件</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="icon primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
+          操作记录
+        </div>
+      </div>
+      <div class="section-card-body" id="historyBody" style="padding:0">
+        <div class="history-list" id="historyList">
+          <div class="history-item" style="justify-content:center">
+            <div style="color:var(--text-muted);font-size:13px;padding:20px 0">暂无操作记录</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+// ===== App State =====
+let appData = { record: {}, originalData: {}, isEditing: false, recordId: null };
+
+// ===== Status Config =====
+const STATUS_MAP = {
+  new:          { label: '新建',         cls: 'new' },
+  visited:      { label: '已拜访',        cls: 'visited' },
+  negotiating:  { label: '洽谈中',        cls: 'negotiating' },
+  contracted:   { label: '已签约',        cls: 'contracted' },
+  rejected:     { label: '已拒绝',        cls: 'rejected' }
+};
+const TIER_MAP = { T4: 'badge-t4', T3: 'badge-t3', T2: 'badge-t2', T1: 'badge-t1' };
+const SELECT_LABELS = {
+  bgp_type: { '三线BGP': '三线BGP', '双线BGP': '双线BGP', '单线': '单线', '无BGP': '无BGP' },
+  ups_config: { '2N': '2N冗余', 'N+1': 'N+1冗余', 'N': 'N冗余', '无': '无' },
+  generator_config: { '2N': '2N冗余', 'N+1': 'N+1冗余', 'N': 'N冗余', '无': '无' },
+  cooling_type: { '水冷': '水冷', '风冷': '风冷', '冷冻水': '冷冻水', '液冷': '液冷', '混合': '混合' },
+  hot_cold_aisle: { '已隔离': '已隔离', '未隔离': '未隔离' },
+  rack_airflow: { '下送风': '下送风', '上送风': '上送风', '侧送风': '侧送风' },
+  fire_system: { '气体灭火': '气体灭火', '水喷淋': '水喷淋', '预作用': '预作用', '其他': '其他' },
+  env_monitoring: { '有': '有', '无': '无' },
+  access_control: { '生物识别': '生物识别', '刷卡': '刷卡', '密码': '密码', '无': '无' },
+  video_surveillance: { '有': '有', '无': '无' },
+  security_staff: { '24h驻场': '24h驻场', '定期巡检': '定期巡检', '无': '无' },
+  iso_cert: { 'ISO27001': 'ISO27001', 'ISO9001': 'ISO9001', '均有': '均有', '无': '无' },
+  soc2_report: { '有': '有', '无': '无' },
+  security_level: { '等保三级': '等保三级', '等保二级': '等保二级', '无': '无' },
+  building_type: { '自建': '自建', '租赁': '租赁', '合租': '合租', '托管': '托管' },
+  rack_size: { '42U': '42U', '45U': '45U', '48U': '48U', '定制': '定制' },
+  payment_terms: { '月付': '月付', '季付': '季付', '半年付': '半年付', '年付': '年付' },
+  network_redundancy: { '多路由': '多路由', '双路由': '双路由', '单路由': '单路由' },
+  dc_tier: { 'T4': 'T4', 'T3': 'T3', 'T2': 'T2', 'T1': 'T1' }
+};
+const MONO_FIELDS = ['dc_code','contact_phone','contact_wechat','total_area','total_racks','floor_load','rack_power','total_bandwidth','private_lines','latency_to_beijing','latency_to_shanghai','latency_to_guangzhou','utility_power','ups_runtime','generator_runtime','pue_value','power_density','gpu_price','rack_price','electricity_price','bandwidth_price','rack_utilization','deployable_racks','rack_deposit','min_lease_term','coordinates'];
+const COST_FIELDS = ['gpu_price','rack_price','electricity_price','bandwidth_price'];
+const UNIT_LABELS = { total_area:'㎡',total_racks:'个',floor_load:'kg/㎡',rack_power:'kW',total_bandwidth:'Gbps',private_lines:'条',latency_to_beijing:'ms',latency_to_shanghai:'ms',latency_to_guangzhou:'ms',utility_power:'kVA',ups_runtime:'min',generator_runtime:'h',pue_value:'',power_density:'kW/机柜',gpu_price:'美元/卡时',rack_price:'元/kW/月',electricity_price:'元/度',bandwidth_price:'元/Gbps/月',rack_utilization:'%',deployable_racks:'个',rack_deposit:'元/柜',min_lease_term:'月' };
+
+// ===== Core Render =====
+function renderFieldValue(field, value) {
+  if (value === null || value === undefined || value === '') {
+    const unit = UNIT_LABELS[field] || '';
+    return unit ? '<span class="mono">—</span><span class="unit">' + unit + '</span>' : '—';
+  }
+  if (SELECT_LABELS[field] && SELECT_LABELS[field][value] !== undefined) {
+    const label = SELECT_LABELS[field][value];
+    if (field === 'dc_tier') return '<span class="badge-inline ' + (TIER_MAP[value] || '') + '">' + label + '</span>';
+    return label;
+  }
+  const unit = UNIT_LABELS[field] || '';
+  const unitHtml = unit ? '<span class="unit">' + unit + '</span>' : '';
+  return '<span class="mono">' + escHtml(String(value)) + '</span>' + unitHtml;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function syncViewToEdit(field) {
+  const viewEl = document.getElementById(field);
+  const inputEl = document.getElementById(field + '_input');
+  if (!viewEl || !inputEl) return;
+  const val = appData.record[field] ?? '';
+  if (SELECT_LABELS[field]) {
+    inputEl.value = val;
+  } else {
+    inputEl.value = val;
+  }
+}
+
+function populateAllFields() {
+  const r = appData.record;
+  const status = r.cooperation_status || 'new';
+  const st = STATUS_MAP[status] || STATUS_MAP.new;
+  document.getElementById('statusTag').textContent = st.label;
+  document.getElementById('statusTag').className = 'status-tag ' + st.cls;
+  document.getElementById('pageTitle').textContent = r.dc_name || '机房详情';
+  document.getElementById('createdAt').textContent = r.created_at || '—';
+  document.getElementById('createdBy').textContent = r.created_by || '—';
+  document.getElementById('recordId').textContent = r.id || '—';
+
+  MONO_FIELDS.forEach(function(f) {
+    const viewEl = document.getElementById(f);
+    if (!viewEl) return;
+    viewEl.innerHTML = renderFieldValue(f, r[f]);
+  });
+
+  ['cooperation_status','dc_tier','building_type','rack_size','bgp_type','network_redundancy','ups_config','generator_config','cooling_type','hot_cold_aisle','rack_airflow','fire_system','env_monitoring','access_control','video_surveillance','security_staff','iso_cert','soc2_report','security_level','payment_terms'].forEach(function(f) {
+    const viewEl = document.getElementById(f);
+    if (!viewEl) return;
+    viewEl.innerHTML = renderFieldValue(f, r[f]);
+  });
+
+  ['dc_name','customer_name','contact_person','contact_title','isps','network_notes','power_notes','env_notes','compliance_notes','cost_notes','remarks','country','province','city','address'].forEach(function(f) {
+    const viewEl = document.getElementById(f);
+    if (!viewEl) return;
+    viewEl.innerHTML = escHtml(r[f] || '—');
+  });
+
+  if (r.photos && r.photos.length) {
+    document.getElementById('photoGallery').innerHTML = r.photos.map(function(p) {
+      return '<img class="photo-thumb" src="' + escHtml(p) + '" onclick="previewPhoto(this)" alt="机房照片">';
+    }).join('');
+  }
+  if (r.attachments && r.attachments.length) {
+    document.getElementById('attachmentList').innerHTML = r.attachments.map(function(a) {
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border-radius:6px;margin-bottom:6px;font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg><a href="' + escHtml(a.url) + '" target="_blank" style="color:var(--primary);text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escHtml(a.name) + '</a><span style="color:var(--text-muted);font-size:12px;">' + escHtml(a.size || '') + '</span></div>';
+    }).join('');
+  }
+  if (r.history && r.history.length) {
+    document.getElementById('historyList').innerHTML = r.history.map(function(h) {
+      return '<div class="history-item"><div class="history-avatar">' + escHtml(h.user ? h.user.charAt(0) : '?') + '</div><div class="history-content"><div class="history-meta"><span class="history-user">' + escHtml(h.user || '') + '</span><span class="history-time">' + escHtml(h.time || '') + '</span></div><div class="history-change"><span class="field-name">' + escHtml(h.field || '') + '</span>: <span class="old-val">' + escHtml(h.old || '') + '</span> → <span class="new-val">' + escHtml(h.new || '') + '</span></div></div></div>';
+    }).join('');
+  }
+
+  MONO_FIELDS.forEach(function(f) { syncViewToEdit(f); });
+  ['cooperation_status','dc_tier','building_type','rack_size','bgp_type','network_redundancy','ups_config','generator_config','cooling_type','hot_cold_aisle','rack_airflow','fire_system','env_monitoring','access_control','video_surveillance','security_staff','iso_cert','soc2_report','security_level','payment_terms'].forEach(function(f) { syncViewToEdit(f); });
+  ['dc_name','customer_name','contact_person','contact_title','isps','network_notes','power_notes','env_notes','compliance_notes','cost_notes','remarks','country','province','city','address'].forEach(function(f) { syncViewToEdit(f); });
+}
+
+// ===== Load Data =====
+function loadData(id) {
+  var demoData = {
+    id: id || 'DC-2024-0001',
+    dc_name: '北京亦庄数据中心 B区',
+    dc_code: 'BJS-YYZ-DC-01',
+    customer_name: '北京华算科技有限公司',
+    cooperation_status: 'negotiating',
+    contact_person: '李明',
+    contact_title: 'IT运维总监',
+    contact_phone: '13800138001',
+    contact_wechat: 'liming_ai',
+    country: '中国',
+    province: '北京市',
+    city: '北京市',
+    address: '北京经济技术开发区荣华路10号',
+    coordinates: '116.5076,39.7954',
+    total_area: '8500',
+    total_racks: '1200',
+    dc_tier: 'T3',
+    floor_load: '1200',
+    rack_size: '42U',
+    rack_power: '8',
+    building_type: '自建',
+    isps: '电信/联通/移动',
+    bgp_type: '三线BGP',
+    total_bandwidth: '800',
+    private_lines: '24',
+    network_redundancy: '多路由',
+    latency_to_beijing: '3',
+    latency_to_shanghai: '28',
+    latency_to_guangzhou: '35',
+    network_notes: '支持IPv6，多线BGP接入，可提供专线服务',
+    utility_power: '20000',
+    ups_config: '2N',
+    ups_runtime: '30',
+    generator_config: 'N+1',
+    generator_runtime: '48',
+    pue_value: '1.42',
+    power_density: '8',
+    power_notes: '双路市电+柴发，2N UPS保障',
+    cooling_type: '冷冻水',
+    hot_cold_aisle: '已隔离',
+    rack_airflow: '下送风',
+    fire_system: '气体灭火',
+    env_monitoring: '有',
+    env_notes: '温湿度实时监控，N+1精密空调',
+    access_control: '生物识别',
+    video_surveillance: '有',
+    security_staff: '24h驻场',
+    iso_cert: 'ISO27001',
+    soc2_report: '有',
+    security_level: '等保三级',
+    compliance_notes: '已通过等保三级认证，定期第三方审计',
+    gpu_price: '2.85',
+    rack_price: '1200',
+    electricity_price: '0.68',
+    bandwidth_price: '80000',
+    cost_notes: '付款方式：季付，押金2个月机柜费',
+    rack_utilization: '78',
+    deployable_racks: '264',
+    rack_deposit: '2400',
+    min_lease_term: '6',
+    payment_terms: '季付',
+    remarks: '合作潜力高，适合大规模GPU集群部署',
+    created_at: '2024-11-15 10:30',
+    created_by: '张三',
+    photos: [],
+    attachments: [],
+    history: [
+      { user: '张三', time: '2024-11-15 10:30', field: '合作状态', old: '新建', new: '洽谈中' },
+      { user: '张三', time: '2024-11-15 10:28', field: '机房名称', old: '', new: '北京亦庄数据中心 B区' }
+    ]
+  };
+  appData.record = Object.assign({}, demoData);
+  appData.originalData = JSON.parse(JSON.stringify(demoData));
+  appData.recordId = demoData.id;
+  populateAllFields();
+}
+
+// ===== Edit Mode =====
+function toggleEdit() {
+  appData.isEditing = !appData.isEditing;
+  var body = document.getElementById('pageBody');
+  var editBtn = document.getElementById('editBtn');
+  var saveBtn = document.getElementById('saveBtn');
+  if (appData.isEditing) {
+    body.classList.add('edit-mode');
+    body.classList.remove('view-mode');
+    editBtn.classList.add('hidden');
+    saveBtn.classList.remove('hidden');
+  } else {
+    body.classList.remove('edit-mode');
+    body.classList.add('view-mode');
+    editBtn.classList.remove('hidden');
+    saveBtn.classList.add('hidden');
+  }
+}
+
+function saveData() {
+  var inputs = document.querySelectorAll('#pageBody .field-input, #pageBody .field-select, #pageBody .field-textarea');
+  inputs.forEach(function(input) {
+    var field = input.dataset.field;
+    if (field) appData.record[field] = input.value;
+  });
+  toggleEdit();
+  populateAllFields();
+  showToast('保存成功', 'success');
+}
+
+// ===== Utility =====
+function showToast(msg, type) {
+  var toast = document.getElementById('toast');
+  var toastMsg = document.getElementById('toastMsg');
+  toastMsg.textContent = msg;
+  toast.className = 'toast ' + (type || 'info');
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 3000);
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(function() {
+    showToast('链接已复制', 'success');
+  }).catch(function() {
+    showToast('复制失败', 'error');
+  });
+}
+
+function downloadPdf() {
+  showToast('PDF导出功能开发中', 'info');
+}
+
+function openGantt() {
+  var id = (typeof appData !== 'undefined' && appData.record && appData.record.id) ? appData.record.id : null;
+  var url = 'gantt.html';
+  if (id) url += '?dcId=' + encodeURIComponent(id);
+  window.open(url, '_blank', 'width=1400,height=800,scrollbars=yes');
+}
+
+function previewPhoto(el) {
+  var win = window.open(el.src, '_blank');
+  if (win) win.focus();
+}
+
+function addPhoto() {
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.multiple = true;
+  input.onchange = function(e) {
+    Array.from(e.target.files).forEach(function(file) {
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var gallery = document.getElementById('photoGallery');
+        if (gallery.querySelector('.empty')) gallery.innerHTML = '';
+        var img = document.createElement('img');
+        img.className = 'photo-thumb';
+        img.src = ev.target.result;
+        img.onclick = function() { previewPhoto(img); };
+        gallery.appendChild(img);
+        appData.record.photos = appData.record.photos || [];
+        appData.record.photos.push(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+  input.click();
+}
+
+function collapseSection(btn) {
+  var card = btn.closest('.section-card');
+  var body = card.querySelector('.section-card-body');
+  if (body.style.display === 'none') {
+    body.style.display = '';
+    btn.textContent = '收起';
+  } else {
+    body.style.display = 'none';
+    btn.textContent = '展开';
+  }
+}
+
+// ===== Init =====
+document.addEventListener('DOMContentLoaded', function() {
+  // 顶部导航
+  var u = null;
+  try { u = JSON.parse(localStorage.getItem('aidc_user')); } catch(e){}
+  if (u) {
+    var nu = document.getElementById('navUser');
+    if (nu) nu.innerHTML = '<span>' + (u.name||'') + '</span>';
+  }
+  // 导航高亮
+  var cur = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.nav-item').forEach(function(a){
+    if (a.getAttribute('href') === cur) a.classList.add('active');
+  });
+  // 退出登录
+  var lo = document.getElementById('navLogout');
+  if (lo) lo.addEventListener('click', function(){
+    if (confirm('确定退出登录？')) {
+      localStorage.removeItem('aidc_user');
+      window.location.href = 'login.html';
+    }
+  });
+
+  loadData();
+  var body = document.getElementById('pageBody');
+  if (body) body.classList.add('view-mode');
+});
+<\/script>
+<script>
+/* ── 统一导航栏初始化 ── */
+(function(){
+  function esc(s){var d=document.createElement("div");d.textContent=s||"";return d.innerHTML;}
+  var u=null;try{u=JSON.parse(localStorage.getItem("aidc_user"))}catch(e){}
+  var nu=document.getElementById("navUser");
+  if(nu&&u){nu.innerHTML='<div class="nav-avatar">'+(u.name||"管").charAt(0)+'</div><span>'+esc(u.name||"管理员")+'</span>';}
+  var lo=document.getElementById("navLogout");
+  if(lo){lo.addEventListener("click",function(e){e.preventDefault();if(window.AIDC_API)AIDC_API.logout();else{localStorage.removeItem("aidc_user");window.location.href="login.html";}});}
+  var tt=document.getElementById("themeToggle");
+  if(tt){tt.addEventListener("click",function(){var isL=document.body.classList.toggle("theme-light");localStorage.setItem("aidc_theme",isL?"light":"dark");});}
+  var t=localStorage.getItem("aidc_theme");if(t==="light")document.body.classList.add("theme-light");
+})();
+
+
+(function(){
+    var u = null;
+    try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
+    if (u) {
+        var nu = document.getElementById('navUser');
+        if (nu) nu.innerHTML = '<div class="nav-avatar">'+(u.name||'管').charAt(0)+'</div><span>'+(u.name||'管理员')+'</span>';
+    }
+    var tt = document.getElementById('themeToggle');
+    if (tt) tt.addEventListener('click', function(){ document.body.classList.toggle('theme-light'); });
+    document.getElementById('navLogout') && document.getElementById('navLogout').addEventListener('click', function(){
+        localStorage.removeItem('aidc_user');
+        window.location.href = 'login.html';
+    });
+})();
+
+</script>
+</body>
+</html>

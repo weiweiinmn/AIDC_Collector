@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5">
+    <title>机房详情 - AIDC Collector</title>
+    <link rel="stylesheet" href="shared.css?v=20260410t1845">
+<link rel="stylesheet" href="shared-light.css">
+<!-- 登录态校验 -->
+<script>
+(function(){
+  var u = null;
+  try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
+  if (!u) { window.location.href = "login.html"; return; }
+})();
+</script>
+<script src="api.js"></script>
+<style>
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--brand);
+}
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon { width: 18px; height: 18px; }
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+body.theme-light .theme-toggle .icon-sun { display: block; }
+body.theme-light .theme-toggle .icon-moon { display: none; }
+</style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    
+
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <div class="nav-brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+            </div>
+            <span class="nav-brand-text">AIDC Collector</span>
+        </div>
+        <div class="nav-menu" id="navMenu">
+            <a href="dashboard-v2.html" class="nav-item" data-page="dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                仪表盘
+            </a>
+            <a href="datacenter-list.html" class="nav-item" data-page="datacenter-list" class="active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="15" x2="22" y2="15"/><line x1="9" y1="3" x2="9" y2="9"/></svg>
+                机房列表
+            </a>
+            <a href="datacenter-form.html" class="nav-item" data-page="datacenter-form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                添加机房
+            </a>
+            <a href="datacenter-import.html" class="nav-item" data-page="import">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                导入导出
+            </a>
+            <a href="gantt.html" class="nav-item" data-page="gantt">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                项目进度
+            </a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式" aria-label="切换主题">
+                <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            </button>
+            <div class="nav-user" id="navUser"></div>
+            <a href="login.html" class="nav-logout" id="navLogout" title="退出登录">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </a>
+        </div>
+    </nav>
+
+
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <div class="page-title-icon brand">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <span id="datacenter-name">机房详情</span>
+            </h1>
+            <div class="page-actions">
+                <button class="btn btn-secondary" onclick="goBack()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    返回
+                </button>
+                <a href="#" id="edit-btn" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    编辑
+                </a>
+            </div>
+        </div>
+
+        <!-- 统计概览 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon brand">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="stat-cabinet">-</div>
+                    <div class="stat-label">机柜总数</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="stat-available">-</div>
+                    <div class="stat-label">可用机柜</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="stat-server">-</div>
+                    <div class="stat-label">服务器数量</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="stat-pue">-</div>
+                    <div class="stat-label">PUE值</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 基本信息 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon brand">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                    </div>
+                    <span class="section-title">基本信息</span>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">机房名称</span>
+                        <span class="detail-value" id="detail-name">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">区域</span>
+                        <span class="detail-value" id="detail-region">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">机房编码</span>
+                        <span class="detail-value" id="detail-code">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">状态</span>
+                        <span class="detail-value"><span class="status-tag" id="detail-status">-</span></span>
+                    </div>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">详细地址</span>
+                        <span class="detail-value" id="detail-address">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">签约方</span>
+                        <span class="detail-value" id="detail-source">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">对接同事</span>
+                        <span class="detail-value" id="detail-liaison">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">KYC 状态</span>
+                        <span class="detail-value"><span class="kyc-tag" id="detail-kycStatus">-</span></span>
+                    </div>
+                    <div class="detail-item full-width" id="kyc-remark-row" style="display:none">
+                        <span class="detail-label">KYC 卡点</span>
+                        <span class="detail-value" id="detail-kycRemark">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 联系信息 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon success">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </div>
+                    <span class="section-title">联系信息</span>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">联系人</span>
+                        <span class="detail-value" id="detail-contact">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">联系电话</span>
+                        <span class="detail-value" id="detail-phone">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">联系邮箱</span>
+                        <span class="detail-value" id="detail-email">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">官方网站</span>
+                        <span class="detail-value" id="detail-website">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 认证资质 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon info">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                    </div>
+                    <span class="section-title">认证与资质</span>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">ISO认证</span>
+                        <span class="detail-value" id="detail-iso">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">等级认证</span>
+                        <span class="detail-value" id="detail-level">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">运营商资质</span>
+                        <span class="detail-value" id="detail-operator">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">合规证书</span>
+                        <span class="detail-value" id="detail-compliance">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 备注 -->
+        <div class="card" id="remark-section" style="display: none;">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon accent">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
+                    <span class="section-title">备注信息</span>
+                </div>
+                <div class="detail-value" id="detail-remark" style="white-space: pre-wrap;">-</div>
+            </div>
+        </div>
+
+        <!-- 操作记录 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="section-header">
+                    <div class="section-icon danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <span class="section-title">操作记录</span>
+                </div>
+                <div class="changelog-section" id="changelog-section">
+                    <div class="changelog-toggle" onclick="toggleChangelog(this)">
+                        <div class="toggle-left">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="toggle-icon"><polyline points="9 18 15 12 9 6"/></svg>
+                            <span class="section-title">变更记录</span>
+                            <span class="changelog-count" id="changelog-count">0 条</span>
+                        </div>
+                        <span class="changelog-latest" id="changelog-latest"></span>
+                    </div>
+                    <div class="changelog-body" id="changelog-body">
+                        <div class="changelog-empty" id="changelog-empty">暂无变更记录</div>
+                        <div class="changelog-list" id="changelog-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let recordId = null;
+        let record = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            recordId = urlParams.get('id');
+            if (!recordId) { showToast('缺少机房ID', 'error'); setTimeout(function(){ window.location.href = 'datacenter-list.html'; }, 1500); return; }
+            loadData();
+        });
+
+        function loadData() {
+            var res = AIDC_API.getDatacenters({ pageSize: 1000 });
+            var list = res.data.list || [];
+            record = list.find(function(d){ return d.id === recordId; });
+            if (!record) { showToast('机房记录不存在', 'error'); setTimeout(function(){ window.location.href = 'datacenter-list.html'; }, 1500); return; }
+            renderData();
+        }
+
+        var KYC_MAP = {
+            'not_started':  { label: '未开始',     cls: 'kyc-info'    },
+            'in_progress':  { label: '进行中',     cls: 'kyc-warning' },
+            'pending_doc':  { label: '待补充材料', cls: 'kyc-warning' },
+            'approved':     { label: '已完成',     cls: 'kyc-success' },
+            'rejected':     { label: '已驳回',     cls: 'kyc-danger'  },
+            'not_required': { label: '不需要',     cls: 'kyc-accent'  },
+        };
+
+        function renderData() {
+            var name = record.name || '机房详情';
+            document.getElementById('datacenter-name').textContent = name;
+            document.title = name + ' - AIDC Collector';
+            document.getElementById('edit-btn').href = 'datacenter-form.html?id=' + recordId;
+
+            document.getElementById('stat-cabinet').textContent   = record.rackCount || 0;
+            document.getElementById('stat-available').textContent = '-';
+            document.getElementById('stat-server').textContent    = record.powerPerRack || '-';
+            document.getElementById('stat-pue').textContent       = record.pue || '-';
+
+            setDetailValue('name',    record.name);
+            setDetailValue('region',  (record.country||'') + (record.province?' '+record.province:'') + (record.city?' '+record.city:''));
+            setDetailValue('address', record.address);
+            setDetailValue('source',  record.source);
+            setDetailValue('liaison', record.liaison);
+
+            var kycEl = document.getElementById('detail-kycStatus');
+            var km = KYC_MAP[record.kycStatus] || { label: record.kycStatus||'-', cls: 'kyc-info' };
+            kycEl.textContent = km.label;
+            kycEl.className   = 'kyc-tag ' + km.cls;
+            if (record.kycRemark) {
+                document.getElementById('kyc-remark-row').style.display = '';
+                setDetailValue('kycRemark', record.kycRemark);
+            }
+
+            var statusEl = document.getElementById('detail-status');
+            statusEl.textContent = AIDC_API.getStatusLabel(record.status);
+            statusEl.className   = 'status-tag ' + AIDC_API.getStatusCls(record.status);
+
+            if (record.remark) {
+                document.getElementById('remark-section').style.display = 'block';
+                setDetailValue('remark', record.remark);
+            }
+
+            renderChangelog();
+        }
+
+        function renderChangelog() {
+            var res = AIDC_API.getDatacenterChangelogs(recordId);
+            var logs = (res && res.data) || [];
+            var countEl  = document.getElementById('changelog-count');
+            var emptyEl  = document.getElementById('changelog-empty');
+            var listEl   = document.getElementById('changelog-list');
+            var latestEl = document.getElementById('changelog-latest');
+
+            countEl.textContent = logs.length + ' 条';
+            if (logs.length === 0) {
+                emptyEl.style.display = '';
+                listEl.innerHTML = '';
+                latestEl.textContent = '';
+                return;
+            }
+            emptyEl.style.display = 'none';
+            latestEl.textContent = (logs[0].operatorName||'') + ' · ' + formatTime(logs[0].createdAt);
+
+            var iconSvg = {
+                create: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+                delete: '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+                update: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+                status: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+            };
+            var typeLabel = { create: '新增', update: '修改', delete: '删除', status: '状态变更' };
+
+            listEl.innerHTML = logs.map(function(log) {
+                var ic = log.type === 'create' ? 'success' : (log.type === 'delete' ? 'danger' : 'info');
+                return '<div class="changelog-item ' + ic + '">' +
+                    '<div class="changelog-icon ' + ic + '">' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + (iconSvg[log.type]||iconSvg.update) + '</svg>' +
+                    '</div>' +
+                    '<div class="changelog-content">' +
+                    '<div class="changelog-header">' +
+                    '<span class="changelog-type ' + ic + '">' + (typeLabel[log.type]||'变更') + '</span>' +
+                    '<span class="changelog-op">' + esc(log.operatorName||'') + '</span>' +
+                    '<span class="changelog-time">' + formatTime(log.createdAt) + '</span>' +
+                    '</div>' +
+                    '<div class="changelog-text">' + esc(log.content||'') + '</div>' +
+                    '</div></div>';
+            }).join('');
+        }
+
+        function toggleChangelog(el) {
+            var body = el.nextElementSibling;
+            var icon = el.querySelector('.toggle-icon');
+            body.style.display = body.style.display === 'none' ? '' : 'none';
+            icon.style.transform = body.style.display === 'none' ? '' : 'rotate(90deg)';
+        }
+
+        function formatTime(isoStr) {
+            if (!isoStr) return '';
+            var d = new Date(isoStr);
+            return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+        }
+
+        function esc(s) {
+            var d = document.createElement('div');
+            d.textContent = s || '';
+            return d.innerHTML;
+        }
+
+        function setDetailValue(key, value) {
+            var el = document.getElementById('detail-' + key);
+            if (el) {
+                el.textContent = value || '-';
+                if (!value) el.classList.add('empty');
+            }
+        }
+
+        function goBack() { window.location.href = 'datacenter-list.html'; }
+
+        function showToast(message, type) {
+            type = type || 'success';
+            var existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            var icons = {
+                success: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+                error:   '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+            };
+            toast.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+(icons[type]||icons.success)+'</svg><span>'+message+'</span>';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+<script>
+(function(){
+  var btn = document.getElementById('themeToggle');
+  if (!btn) return;
+  // 读取本地存储的偏好
+  var saved = localStorage.getItem('aidc_theme');
+  if (saved === 'light') {
+    document.body.classList.add('theme-light');
+  }
+  btn.addEventListener('click', function(){
+    document.body.classList.toggle('theme-light');
+    var isLight = document.body.classList.contains('theme-light');
+    localStorage.setItem('aidc_theme', isLight ? 'light' : 'dark');
+  });
+  // 监听 OS 级深色模式（可选支持）
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  if (!saved && !mq.matches) {
+    document.body.classList.add('theme-light');
+  }
+})();
+</script>
+<script>
+/* ── 统一导航栏初始化 ── */
+(function(){
+  function esc(s){var d=document.createElement("div");d.textContent=s||"";return d.innerHTML;}
+  var u=null;try{u=JSON.parse(localStorage.getItem("aidc_user"))}catch(e){}
+  var nu=document.getElementById("navUser");
+  if(nu&&u){nu.innerHTML='<div class="nav-avatar">'+(u.name||"管").charAt(0)+'</div><span>'+esc(u.name||"管理员")+'</span>';}
+  var lo=document.getElementById("navLogout");
+  if(lo){lo.addEventListener("click",function(e){e.preventDefault();if(window.AIDC_API)AIDC_API.logout();else{localStorage.removeItem("aidc_user");window.location.href="login.html";}});}
+  var tt=document.getElementById("themeToggle");
+  if(tt){tt.addEventListener("click",function(){var isL=document.body.classList.toggle("theme-light");localStorage.setItem("aidc_theme",isL?"light":"dark");});}
+  var t=localStorage.getItem("aidc_theme");if(t==="light")document.body.classList.add("theme-light");
+})();
+
+
+(function(){
+    var u = null;
+    try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
+    if (u) {
+        var nu = document.getElementById('navUser');
+        if (nu) nu.innerHTML = '<div class="nav-avatar">'+(u.name||'管').charAt(0)+'</div><span>'+(u.name||'管理员')+'</span>';
+    }
+    var tt = document.getElementById('themeToggle');
+    if (tt) tt.addEventListener('click', function(){ document.body.classList.toggle('theme-light'); });
+    document.getElementById('navLogout') && document.getElementById('navLogout').addEventListener('click', function(){
+        localStorage.removeItem('aidc_user');
+        window.location.href = 'login.html';
+    });
+})();
+
+</script>
+</body>
+</html>
