@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5">
     <title>登录 - AIDC Collector</title>
     <link rel="stylesheet" href="shared.css?v=20260410t1845">
 <link rel="stylesheet" href="shared-light.css">
@@ -61,7 +61,7 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
             </form>
 
             <div class="login-footer">
-                <p class="login-tip">测试账号：admin / admin123</p>
+                <p class="login-tip">请使用管理员分配的账号登录</p>
             </div>
 
             <div class="login-features">
@@ -88,67 +88,23 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
     </div>
 
     <script>
-        // ── 全局 API（localStorage 模拟云函数）──────────────────────────────────────
-        window.AIDC_API = {
-            login(username, password) {
-                return new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                        if (username === 'admin' && password === 'admin123') {
-                            const user = { id: 'u001', name: '管理员', username: 'admin', role: 'admin', loginAt: new Date().toISOString() };
-                            localStorage.setItem('aidc_user', JSON.stringify(user));
-                            resolve({ code: 0, data: user });
-                        } else {
-                            reject({ code: 1, message: '用户名或密码错误' });
-                        }
-                    }, 300);
-                });
-            },
-            logout() { localStorage.removeItem('aidc_user'); window.location.href = '../index.html'; },
-            getUser() { try { return JSON.parse(localStorage.getItem('aidc_user')); } catch { return null; } },
-            getDatacenters(params = {}) {
-                const { page = 1, pageSize = 20, keyword = '', status = '', region = '' } = params;
-                let list = JSON.parse(localStorage.getItem('aidc_datacenters') || '[]');
-                if (keyword) list = list.filter(d => d.name.includes(keyword) || (d.address || '').includes(keyword));
-                if (status) list = list.filter(d => d.status === status);
-                const total = list.length;
-                const start = (page - 1) * pageSize;
-                const data = list.slice(start, start + pageSize);
-                const today = new Date().toDateString();
-                return { code: 0, data: { list: data, total, todayCount: list.filter(d => new Date(d.createdAt).toDateString() === today).length, monthCount: 0, myCount: 0 } };
-            },
-            createDatacenter(data) {
-                const record = { ...data, id: 'dc' + Date.now(), status: 'new', createdBy: 'u001', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-                const list = JSON.parse(localStorage.getItem('aidc_datacenters') || '[]');
-                list.unshift(record);
-                localStorage.setItem('aidc_datacenters', JSON.stringify(list));
-                return { code: 0, data: record };
-            },
-            updateDatacenter(id, data) {
-                const list = JSON.parse(localStorage.getItem('aidc_datacenters') || '[]');
-                const idx = list.findIndex(d => d.id === id);
-                if (idx === -1) return { code: 1, message: '记录不存在' };
-                list[idx] = { ...list[idx], ...data, updatedAt: new Date().toISOString() };
-                localStorage.setItem('aidc_datacenters', JSON.stringify(list));
-                return { code: 0, data: list[idx] };
-            },
-            deleteDatacenter(id) {
-                const list = JSON.parse(localStorage.getItem('aidc_datacenters') || '[]').filter(d => d.id !== id);
-                localStorage.setItem('aidc_datacenters', JSON.stringify(list));
-                return { code: 0 };
-            },
-            getCustomers() { return { code: 0, data: JSON.parse(localStorage.getItem('aidc_customers') || '[]') }; },
-            getUsers() { return { code: 0, data: JSON.parse(localStorage.getItem('aidc_users') || '[]') }; }
-        };
-
         function handleLogin(e) {
             e.preventDefault();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
+            if (!username || !password) {
+                showToast('请输入用户名和密码', 'error');
+                return;
+            }
             AIDC_API.login(username, password).then(res => {
-                showToast('登录成功，正在跳转...', 'success');
-                setTimeout(() => { window.location.href = 'dashboard-v2.html'; }, 1000);
+                if (res.code === 0) {
+                    showToast('登录成功，正在跳转...', 'success');
+                    setTimeout(() => { window.location.href = 'dashboard-v2.html'; }, 800);
+                } else {
+                    showToast(res.message || '登录失败', 'error');
+                }
             }).catch(err => {
-                showToast(err.message || '登录失败', 'error');
+                showToast((err && err.message) || '登录失败，请重试', 'error');
             });
         }
 

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5">
     <title>考察任务 - AIDC Collector</title>
     <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="shared-light.css">
@@ -324,24 +324,16 @@
             background: var(--success-bg);
             color: var(--success);
         }
-
-        /* 响应式 */
-        @media (max-width: 1200px) {
-            .visit-stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        @media (max-width: 768px) {
-            .visit-stats-grid { grid-template-columns: 1fr; }
-            .task-card { flex-direction: column; }
-            .task-actions { flex-direction: row; }
-        }
+        
     </style>
 <!-- 登录态校验 -->
 <script>
 (function(){
   var u = null;
   try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
-  if (!u) { window.location.href = "../index.html"; return; }
+  if (!u) { window.location.href = "login.html"; return; }
 })();
 </script>
 <script src="api.js"></script>
@@ -383,27 +375,8 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
             <span>AIDC Collector</span>
         </div>
         <div class="nav-menu">
-            <a href="dashboard-v2.html" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                仪表盘
-            </a>
-            <a href="datacenter-list.html" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                机房列表
-            </a>
-            <a href="customers.html" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                客户管理
-            </a>
-            <a href="visits.html" class="nav-item active">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                考察任务
-            </a>
-            <a href="users.html" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                用户管理
-            </a>
-        </div>
+<a href="dashboard-v2.html" class="nav-item" data-page="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3 7 9 1 14 3 7 5 1 14 12 7 9 1 3 16 7 5 1"/></svg>仪表盘</a><a href="datacenter-list.html" class="nav-item" data-page="datacenter-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3 20 18 2 2 1 2 9 22 2 9 2 1 15 22 2 15 9 3 9 2 9"/></svg>机房列表</a><a href="datacenter-form.html" class="nav-item" data-page="datacenter-form"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2 6 2 2 0 2 2 2 16 2 2 2 2 8z 14,2 14,8 20,8 12 18 12 12 9 15 15 15"/></svg>添加机房</a><a href="datacenter-import.html" class="nav-item" data-page="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4 17,8 12,3 7,8 12 3 12 15"/></svg>导入导出</a><a href="gantt.html" class="nav-item" data-page="gantt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6 21 6 8 12 21 12 8 18 21 18 3 6 3.01 6 3 12 3.01 12 3 18 3.01 18"/></svg>项目进度</a>
+    </div>
         <div class="nav-right">
                         <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式" aria-label="切换主题">
                 <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -605,17 +578,13 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // 模拟任务数据
-        let tasks = [
-            { id: 1, datacenter: 'Equinix SG2', city: '新加坡', status: 'scheduled', date: '2026-04-12', time: '10:00', assignee: '陈思远', purpose: '实地查看电力配置' },
-            { id: 2, datacenter: 'Digital Realty SIN10', city: '新加坡', status: 'pending', date: '', time: '', assignee: '王明', purpose: '' },
-            { id: 3, datacenter: 'AirTrunk SYD1', city: '悉尼', status: 'completed', date: '2026-04-05', time: '14:00', assignee: '李婷婷', purpose: '制冷系统评估' },
-            { id: 4, datacenter: 'Keppel DC SGP 1', city: '新加坡', status: 'overdue', date: '2026-04-01', time: '09:00', assignee: '陈思远', purpose: '机柜资源核查' },
-            { id: 5, datacenter: 'Telstra Melbourne', city: '墨尔本', status: 'scheduled', date: '2026-04-15', time: '11:00', assignee: '王明', purpose: '客户陪同考察' },
-            { id: 6, datacenter: 'NTT Tokyo 1', city: '东京', status: 'completed', date: '2026-04-03', time: '10:00', assignee: '李婷婷', purpose: '网络接入确认' },
-            { id: 7, datacenter: 'AWS Singapore', city: '新加坡', status: 'pending', date: '', time: '', assignee: '陈思远', purpose: '' },
-            { id: 8, datacenter: 'Google Sydney', city: '悉尼', status: 'scheduled', date: '2026-04-18', time: '15:00', assignee: '王明', purpose: '新机房考察' }
-        ];
+        let tasks = [];
+
+        function loadTasks() {
+            var res = AIDC_API.getVisits();
+            tasks = res.success ? res.data : [];
+            renderTasks();
+        }
 
         const STATUS_MAP = {
             'pending': '待安排',
@@ -624,11 +593,12 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
             'overdue': '已逾期'
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderTasks();
+        document.addEventListener('DOMContentLoaded', function(){
+            loadTasks();
         });
 
-        function renderTasks(data = tasks) {
+        function renderTasks(data) {
+            if (!data) data = tasks;
             const container = document.getElementById('taskList');
             container.innerHTML = data.map(t => `
                 <div class="task-card">
@@ -759,11 +729,12 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
         }
 
         function completeTask(id) {
-            const task = tasks.find(t => t.id === id);
-            if (task) {
-                task.status = 'completed';
-                renderTasks();
+            var res = AIDC_API.updateVisit(id, { status: 'completed' });
+            if (res.success) {
                 showToast('任务已标记为完成', 'success');
+                loadTasks();
+            } else {
+                showToast('操作失败', 'error');
             }
         }
 
@@ -776,16 +747,32 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
         }
 
         function saveVisit() {
-            const datacenter = document.getElementById('visitDatacenter').value;
-            const date = document.getElementById('visitDate').value;
+            var datacenter = document.getElementById('visitDatacenter').value;
+            var date       = document.getElementById('visitDate').value;
+            var time       = document.getElementById('visitTime').value;
+            var assignee   = document.getElementById('visitAssignee').value;
+            var purpose    = document.getElementById('visitPurpose').value;
 
             if (!datacenter || !date) {
                 showToast('请填写必填项', 'error');
                 return;
             }
 
-            showToast('考察已安排', 'success');
-            closeModal();
+            var res = AIDC_API.createVisit({
+                datacenter: datacenter,
+                date: date,
+                time: time || '',
+                assignee: assignee,
+                purpose: purpose || ''
+            });
+
+            if (res.success) {
+                showToast('考察已安排', 'success');
+                closeModal();
+                loadTasks();
+            } else {
+                showToast('保存失败', 'error');
+            }
         }
 
         function exportVisits() {

@@ -14,6 +14,7 @@
     users:      'aidc_users',
     loginLogs:  'aidc_loginLogs',
     changelogs: 'aidc_changelogs',
+    visits:    'aidc_visits',
   };
 
   function uid()  { return 'u' + Date.now(); }
@@ -48,9 +49,9 @@
     var raw = localStorage.getItem(K.users);
     if (raw && JSON.parse(raw).length > 0) return;
     var seed = [
-      { id: 'u001', name: '管理员', username: 'admin',    phone: '13800000001', role: 'admin',   status: 'active',   createdAt: now() },
-      { id: 'u002', name: '张三',   username: 'zhangsan', phone: '13800000002', role: 'editor',  status: 'active',   createdAt: now() },
-      { id: 'u003', name: '李四',   username: 'lisi',     phone: '13800000003', role: 'editor',  status: 'disabled', createdAt: now() },
+      { id: 'u001', name: '管理员', username: 'admin',    phone: '13800000001', password: 'Admin@2026', role: 'admin',     status: 'active',   createdAt: now() },
+      { id: 'u002', name: '张三',   username: 'zhangsan', phone: '13800000002', password: 'Abc@12345',  role: 'collector', status: 'active',   createdAt: now() },
+      { id: 'u003', name: '李四',   username: 'lisi',     phone: '13800000003', password: 'Abc@12345',  role: 'collector', status: 'disabled', createdAt: now() },
     ];
     localStorage.setItem(K.users, JSON.stringify(seed));
   }
@@ -60,18 +61,17 @@
     var raw = localStorage.getItem(K.datacenters);
     if (raw && JSON.parse(raw).length > 0) return;
     var seed = [
-      { id: 'dc001', name: 'etix Bangkok #1',   country: '中国', province: '上海', city: '上海', address: '上海市浦东新区',    status: 'collected',  customer: 'etix',    rackCount: 1200, powerPerRack: 8,  pue: 1.35, createdBy: 'u001', createdByName: '管理员', createdAt: new Date(Date.now()-86400000*5).toISOString(), updatedAt: now() },
-      { id: 'dc002', name: 'STT Bangkok 1',     country: '泰国', province: '曼谷', city: '曼谷', address: 'Bang Khen, Bangkok', status: 'new',        customer: 'STT',     rackCount: 800,  powerPerRack: 10, pue: 1.42, createdBy: 'u001', createdByName: '管理员', createdAt: new Date(Date.now()-86400000*2).toISOString(), updatedAt: now() },
-      { id: 'dc003', name: 'GPB Jakarta 1',     country: '印尼', province: '雅加达', city: '雅加达', address: 'Jakarta Barat',    status: 'collected',  customer: 'GPB',     rackCount: 600,  powerPerRack: 6,  pue: 1.5,  createdBy: 'u002', createdByName: '张三',   createdAt: new Date(Date.now()-86400000).toISOString(),   updatedAt: now() },
-      { id: 'dc004', name: 'Supernap Bangkok',  country: '泰国', province: '曼谷', city: '曼谷', address: 'Suvarnabhumi, Bangkok', status: 'negotiating', customer: 'Supernap', rackCount: 2000, powerPerRack: 15, pue: 1.38, createdBy: 'u001', createdByName: '管理员', createdAt: now(), updatedAt: now() },
-      { id: 'dc005', name: 'AirTrunk SYD1',    country: '澳大利亚', province: '新南威尔士', city: '悉尼', address: 'Sydney, NSW',  status: 'signed',     customer: 'AirTrunk', rackCount: 3000, powerPerRack: 12, pue: 1.3,  createdBy: 'u002', createdByName: '张三',   createdAt: new Date(Date.now()-86400000*3).toISOString(), updatedAt: now() },
+      { id: 'dc001', name: 'Equinix SG2',         country: '新加坡',  province: '新加坡', city: '新加坡', address: '1 Genting Lane, Singapore 349544', status: 'collected',   customer: 'Equinix',   rackCount: 1800, powerPerRack: 10, pue: 1.35, createdBy: 'u001', createdByName: '管理员', createdAt: new Date(Date.now()-86400000*5).toISOString(), updatedAt: now() },
+      { id: 'dc002', name: 'STT Bangkok 1',        country: '泰国',    province: '曼谷',   city: '曼谷',  address: 'Bang Khen District, Bangkok 10220', status: 'new',         customer: 'STT GDC',   rackCount: 800,  powerPerRack: 10, pue: 1.42, createdBy: 'u001', createdByName: '管理员', createdAt: new Date(Date.now()-86400000*2).toISOString(), updatedAt: now() },
+      { id: 'dc003', name: 'DCI Indonesia JK01',   country: '印尼',    province: '雅加达', city: '雅加达', address: 'Jl. Kebayoran Lama, Jakarta Barat', status: 'collected',   customer: 'DCI',       rackCount: 600,  powerPerRack: 6,  pue: 1.5,  createdBy: 'u002', createdByName: '张三',   createdAt: new Date(Date.now()-86400000).toISOString(),   updatedAt: now() },
+      { id: 'dc004', name: 'Supernap Thailand 1',  country: '泰国',    province: '曼谷',   city: '曼谷',  address: 'Suvarnabhumi Area, Bangkok 10540', status: 'negotiating', customer: 'Supernap',  rackCount: 2000, powerPerRack: 15, pue: 1.38, createdBy: 'u001', createdByName: '管理员', createdAt: now(), updatedAt: now() },
+      { id: 'dc005', name: 'Keppel DC Singapore 2',country: '新加坡',  province: '新加坡', city: '新加坡', address: '55 Ayer Rajah Crescent, Singapore', status: 'signed',      customer: 'Keppel DC', rackCount: 2500, powerPerRack: 12, pue: 1.3,  createdBy: 'u002', createdByName: '张三',   createdAt: new Date(Date.now()-86400000*3).toISOString(), updatedAt: now() },
     ];
-    // 给 dc001 dc002 dc003 加变更记录
-    addChangelog('dc001', 'etix Bangkok #1', 'create', '新增机房 [etix Bangkok #1]', '管理员');
-    addChangelog('dc002', 'STT Bangkok 1',   'create', '新增机房 [STT Bangkok 1]',   '管理员');
-    addChangelog('dc003', 'GPB Jakarta 1',   'create', '新增机房 [GPB Jakarta 1]',   '张三');
-    addChangelog('dc001', 'etix Bangkok #1', 'update', '更新字段：status、customer', '管理员');
-    addChangelog('dc005', 'AirTrunk SYD1',   'status', '状态变更为：已签约', '管理员');
+    addChangelog('dc001', 'Equinix SG2',          'create', '新增机房 [Equinix SG2]',          '管理员');
+    addChangelog('dc002', 'STT Bangkok 1',         'create', '新增机房 [STT Bangkok 1]',         '管理员');
+    addChangelog('dc003', 'DCI Indonesia JK01',    'create', '新增机房 [DCI Indonesia JK01]',    '张三');
+    addChangelog('dc001', 'Equinix SG2',           'update', '更新字段：status、customer',        '管理员');
+    addChangelog('dc005', 'Keppel DC Singapore 2', 'status', '状态变更为：已签约',               '管理员');
     localStorage.setItem(K.datacenters, JSON.stringify(seed));
   }
 
@@ -139,7 +139,7 @@
       var country  = params.country  || '';
       var kyc      = params.kyc      || '';
 
-      var list = JSON.parse(localStorage.getItem(K.datacenters) || '[]');
+      var list = JSON.parse(localStorage.getItem(K.datacenters) || '[]').filter(function(d){ return !d._deleted; });
       if (keyword) {
         var kw = keyword.toLowerCase();
         list = list.filter(function(d) {
@@ -155,13 +155,15 @@
       var total     = list.length;
       var start     = (page - 1) * pageSize;
       var paged     = list.slice(start, start + pageSize);
-      var today     = new Date().toDateString();
+      var today      = new Date().toDateString();
       var monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+      var weekStart  = new Date(); weekStart.setDate(weekStart.getDate() - weekStart.getDay() || 7); weekStart.setDate(weekStart.getDate() - 6); weekStart.setHours(0,0,0,0);
 
       return ok({
         list:       paged,
         total:      total,
         todayCount: list.filter(function(d){ return new Date(d.createdAt).toDateString() === today;     }).length,
+        weekCount:  list.filter(function(d){ return new Date(d.createdAt) >= weekStart;                }).length,
         monthCount: list.filter(function(d){ return new Date(d.createdAt) >= monthStart;                }).length,
         myCount:    list.filter(function(d){ return d.createdBy === (this.getUser()||{}).id; }, this).length,
       });
@@ -207,8 +209,18 @@
     },
 
     deleteDatacenter: function(id) {
-      var list = JSON.parse(localStorage.getItem(K.datacenters) || '[]').filter(function(d){ return d.id !== id; });
+      var list = JSON.parse(localStorage.getItem(K.datacenters) || '[]');
+      var idx  = list.findIndex(function(d){ return d.id === id; });
+      if (idx === -1) return err('记录不存在');
+      var user = this.getUser();
+      list[idx] = Object.assign({}, list[idx], {
+        _deleted:      true,
+        deletedAt:     now(),
+        deletedBy:     user ? user.id : '',
+        deletedByName: user ? user.name : '未知'
+      });
       localStorage.setItem(K.datacenters, JSON.stringify(list));
+      addChangelog(list[idx].id, list[idx].name, 'delete', '软删除机房记录', user ? user.name : '未知');
       return ok({});
     },
 
@@ -245,6 +257,34 @@
       return ok({});
     },
 
+    // ══ 考察任务 ═══════════════════════════════════════════════════════════
+    getVisits: function() {
+      return ok(JSON.parse(localStorage.getItem(K.visits) || '[]'));
+    },
+
+    createVisit: function(data) {
+      var record = Object.assign({ id: 'v' + Date.now(), status: 'scheduled', createdAt: now() }, data);
+      var list  = JSON.parse(localStorage.getItem(K.visits) || '[]');
+      list.push(record);
+      localStorage.setItem(K.visits, JSON.stringify(list));
+      return ok(record);
+    },
+
+    updateVisit: function(id, data) {
+      var list = JSON.parse(localStorage.getItem(K.visits) || '[]');
+      var idx  = list.findIndex(function(v){ return v.id === id; });
+      if (idx === -1) return err('任务不存在');
+      list[idx] = Object.assign({}, list[idx], data);
+      localStorage.setItem(K.visits, JSON.stringify(list));
+      return ok(list[idx]);
+    },
+
+    deleteVisit: function(id) {
+      var list = JSON.parse(localStorage.getItem(K.visits) || '[]').filter(function(v){ return v.id !== id; });
+      localStorage.setItem(K.visits, JSON.stringify(list));
+      return ok({});
+    },
+
     // ══ 用户 ══════════════════════════════════════════════════════════════
     getUsers: function() {
       return ok(JSON.parse(localStorage.getItem(K.users) || '[]'));
@@ -261,14 +301,16 @@
 
     // ══ 仪表盘 ═══════════════════════════════════════════════════════════
     getStats: function() {
-      var all        = JSON.parse(localStorage.getItem(K.datacenters) || '[]');
+      var all        = JSON.parse(localStorage.getItem(K.datacenters) || '[]').filter(function(d){ return !d._deleted; });
       var today      = new Date().toDateString();
       var monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+      var weekStart  = new Date(); weekStart.setDate(weekStart.getDate() - weekStart.getDay() || 7); weekStart.setDate(weekStart.getDate() - 6); weekStart.setHours(0,0,0,0);
       var statusDist = {};
       all.forEach(function(d) { statusDist[d.status] = (statusDist[d.status]||0) + 1; });
       return ok({
         total:      all.length,
         todayCount: all.filter(function(d){ return new Date(d.createdAt).toDateString() === today;     }).length,
+        weekCount:  all.filter(function(d){ return new Date(d.createdAt) >= weekStart;                }).length,
         monthCount: all.filter(function(d){ return new Date(d.createdAt) >= monthStart;                }).length,
         statusDist: statusDist,
       });

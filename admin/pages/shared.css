@@ -892,10 +892,10 @@ input, select, textarea { font-family: inherit; }
 .form-select,
 .form-textarea {
   width: 100%;
-  padding: 10px 14px;
+  padding: 4px 9px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-primary);
   background: var(--gray-950);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
@@ -916,15 +916,35 @@ input, select, textarea { font-family: inherit; }
   box-shadow: 0 0 0 3px rgba(34,197,94,0.1), var(--shadow-glow-green);
 }
 
+
+/* ── 全局输入框 placeholder 40% 透明 ── */
 .form-input::placeholder,
-.form-textarea::placeholder { color: var(--gray-600); }
+.form-textarea::placeholder {
+    color: var(--gray-500);
+    opacity: 0.4;
+}
+.theme-light .form-input::placeholder,
+.theme-light .form-textarea::placeholder {
+    color: var(--gray-400);
+    opacity: 0.4;
+}
+
+/* ── 下拉框「请选择」弱化 ── */
+.form-select option:first-child { color: var(--gray-500); }
+.theme-light .form-select option:first-child { color: var(--gray-400); }
+
 
 .form-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
+  background-position: right 8px center;
+  padding: 4px 26px 4px 9px;
   cursor: pointer;
+  font-size: 13px;
+
+    .form-select option {
+  font-size: 12px;
+  padding: 2px 4px;
 }
 
 .form-textarea {
@@ -935,11 +955,11 @@ input, select, textarea { font-family: inherit; }
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  grid-template-columns: var(--form-cols, minmax(72px, 1fr) minmax(100px, 1.4fr) minmax(128px, 1.8fr) minmax(100px, 1.4fr) minmax(128px, 1.8fr) minmax(100px, 1.4fr));
+  gap: var(--form-gap, 14px 12px);
 }
 
-.form-group.full-width { grid-column: span 2; }
+.form-group.full-width { grid-column: span var(--form-span-full, 6); }
 
 /* 客户多选网格 */
 .checkbox-grid {
@@ -1012,8 +1032,8 @@ input, select, textarea { font-family: inherit; }
 
 .form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+  justify-content: center;
+  gap: 16px;
   margin-top: 28px;
   padding-top: 20px;
   border-top: 1px solid var(--border);
@@ -1025,7 +1045,6 @@ input, select, textarea { font-family: inherit; }
 }
 
 .search-box input {
-  padding-left: 40px;
   background: var(--gray-950);
   border-color: var(--border-strong);
 }
@@ -1037,7 +1056,7 @@ input, select, textarea { font-family: inherit; }
   transform: translateY(-50%);
   width: 18px;
   height: 18px;
-  color: var(--gray-500);
+  color: var(--gray-600);
 }
 
 /* ========== 详情网格 ========== */
@@ -1465,3 +1484,11 @@ input, select, textarea { font-family: inherit; }
 .kyc-td.kyc-success { background:var(--success-bg); color:var(--success); }
 .kyc-td.kyc-danger  { background:var(--danger-bg);  color:var(--danger);  }
 .kyc-td.kyc-accent  { background:var(--accent-dim); color:var(--accent);  }
+
+
+/* 是否可扩容标签 */
+.expand-tag { display:inline-block; padding:1px 8px; border-radius:10px; font-size:11px; font-weight:500; border:1px solid; }
+.expand-tag.yes { background:rgba(34,197,94,0.12); color:#16a34a; border-color:rgba(34,197,94,0.25); }
+.expand-tag.no  { background:rgba(239,68,68,0.1);  color:#dc2626; border-color:rgba(239,68,68,0.2); }
+.theme-light .expand-tag.yes { background:rgba(22,163,74,0.1);  color:#15803d; border-color:rgba(22,163,74,0.2); }
+.theme-light .expand-tag.no  { background:rgba(185,28,28,0.08); color:#991b1b; border-color:rgba(185,28,28,0.2); }

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5">
     <title>客户管理 - AIDC Collector</title>
     <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="shared-light.css">
@@ -142,22 +142,16 @@
         }
 
         .datacenter-count svg { width: 14px; height: 14px; }
-
-        /* 响应式 */
-        @media (max-width: 1200px) {
-            .customer-stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        @media (max-width: 768px) {
-            .customer-stats-grid { grid-template-columns: 1fr; }
-        }
+        
     </style>
 <!-- 登录态校验 -->
 <script>
 (function(){
   var u = null;
   try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
-  if (!u) { window.location.href = "../index.html"; return; }
+  if (!u) { window.location.href = "login.html"; return; }
 })();
 </script>
 <script src="api.js"></script>
@@ -199,27 +193,8 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
             <span>AIDC Collector</span>
         </div>
         <div class="nav-menu">
-            <a href="dashboard-v2.html" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                仪表盘
-            </a>
-            <a href="datacenter-list.html" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                机房列表
-            </a>
-            <a href="customers.html" class="nav-item active">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                客户管理
-            </a>
-            <a href="visits.html" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                考察任务
-            </a>
-            <a href="users.html" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                用户管理
-            </a>
-        </div>
+<a href="dashboard-v2.html" class="nav-item" data-page="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3 7 9 1 14 3 7 5 1 14 12 7 9 1 3 16 7 5 1"/></svg>仪表盘</a><a href="datacenter-list.html" class="nav-item" data-page="datacenter-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3 20 18 2 2 1 2 9 22 2 9 2 1 15 22 2 15 9 3 9 2 9"/></svg>机房列表</a><a href="datacenter-form.html" class="nav-item" data-page="datacenter-form"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2 6 2 2 0 2 2 2 16 2 2 2 2 8z 14,2 14,8 20,8 12 18 12 12 9 15 15 15"/></svg>添加机房</a><a href="datacenter-import.html" class="nav-item" data-page="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4 17,8 12,3 7,8 12 3 12 15"/></svg>导入导出</a><a href="gantt.html" class="nav-item" data-page="gantt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6 21 6 8 12 21 12 8 18 21 18 3 6 3.01 6 3 12 3.01 12 3 18 3.01 18"/></svg>项目进度</a>
+    </div>
         <div class="nav-right">
                         <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式" aria-label="切换主题">
                 <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -434,21 +409,14 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // 模拟客户数据
-        let customers = [
-            { id: 1, name: '字节跳动', industry: '互联网', level: 'A', manager: '陈思远', status: 'negotiating', datacenters: 5, lastFollow: '2026-04-09' },
-            { id: 2, name: '阿里巴巴', industry: '互联网', level: 'A', manager: '王明', status: 'sent', datacenters: 3, lastFollow: '2026-04-08' },
-            { id: 3, name: '美团', industry: '互联网', level: 'A', manager: '李婷婷', status: 'signed', datacenters: 2, lastFollow: '2026-04-10' },
-            { id: 4, name: '腾讯', industry: '互联网', level: 'A', manager: '陈思远', status: 'negotiating', datacenters: 4, lastFollow: '2026-04-07' },
-            { id: 5, name: '京东', industry: '电商', level: 'B', manager: '王明', status: 'initial', datacenters: 2, lastFollow: '2026-04-05' },
-            { id: 6, name: '网易', industry: '互联网', level: 'B', manager: '李婷婷', status: 'sent', datacenters: 1, lastFollow: '2026-04-06' },
-            { id: 7, name: '百度', industry: '互联网', level: 'A', manager: '陈思远', status: 'signed', datacenters: 3, lastFollow: '2026-04-04' },
-            { id: 8, name: '小米', industry: '互联网', level: 'B', manager: '王明', status: 'lost', datacenters: 1, lastFollow: '2026-03-28' },
-            { id: 9, name: '拼多多', industry: '电商', level: 'A', manager: '李婷婷', status: 'negotiating', datacenters: 4, lastFollow: '2026-04-08' },
-            { id: 10, name: '快手', industry: '互联网', level: 'B', manager: '陈思远', status: 'initial', datacenters: 2, lastFollow: '2026-04-03' },
-            { id: 11, name: '滴滴', industry: '互联网', level: 'B', manager: '王明', status: 'signed', datacenters: 1, lastFollow: '2026-04-01' },
-            { id: 12, name: 'B站', industry: '互联网', level: 'C', manager: '李婷婷', status: 'initial', datacenters: 1, lastFollow: '2026-04-02' }
-        ];
+        // 从 API 加载
+        let customers = [];
+
+        function loadCustomers() {
+            var res = AIDC_API.getCustomers();
+            customers = res.success ? res.data : [];
+            renderCustomers();
+        }
 
         const STATUS_MAP = {
             'initial': '初步沟通',
@@ -459,10 +427,11 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            renderCustomers();
+            loadCustomers();
         });
 
-        function renderCustomers(data = customers) {
+        function renderCustomers(data) {
+            if (!data) data = customers;
             const tbody = document.getElementById('customerTableBody');
             tbody.innerHTML = data.map(c => `
                 <tr>
@@ -522,6 +491,7 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
         }
 
         function showAddModal() {
+            _editingCustomerId = null;
             document.getElementById('modalTitle').textContent = '添加客户';
             document.getElementById('customerName').value = '';
             document.getElementById('customerIndustry').value = '互联网';
@@ -533,15 +503,17 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
         }
 
         function editCustomer(id) {
-            const customer = customers.find(c => c.id === id);
+            var customer = customers.find(function(c){ return c.id === id; });
             if (!customer) return;
+            _editingCustomerId = id;
 
             document.getElementById('modalTitle').textContent = '编辑客户';
-            document.getElementById('customerName').value = customer.name;
-            document.getElementById('customerIndustry').value = customer.industry;
-            document.getElementById('customerLevel').value = customer.level;
-            document.getElementById('customerManager').value = customer.manager;
-            document.getElementById('customerStatus').value = customer.status;
+            document.getElementById('customerName').value = customer.name || '';
+            document.getElementById('customerIndustry').value = customer.industry || '互联网';
+            document.getElementById('customerLevel').value = customer.level || 'B';
+            document.getElementById('customerManager').value = customer.manager || '';
+            document.getElementById('customerStatus').value = customer.status || 'initial';
+            document.getElementById('customerNote').value = customer.note || '';
             document.getElementById('customerModal').classList.add('show');
         }
 
@@ -549,22 +521,44 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
             document.getElementById('customerModal').classList.remove('show');
         }
 
+        let _editingCustomerId = null;
+
         function saveCustomer() {
-            const name = document.getElementById('customerName').value.trim();
-            if (!name) {
-                showToast('请输入客户名称', 'error');
-                return;
+            var name     = document.getElementById('customerName').value.trim();
+            var industry = document.getElementById('customerIndustry').value.trim();
+            var level    = document.getElementById('customerLevel').value.trim();
+            var manager  = document.getElementById('customerManager').value.trim();
+            var status   = document.getElementById('customerStatus').value;
+            var note     = document.getElementById('customerNote').value.trim();
+
+            if (!name) { showToast('请输入客户名称', 'error'); return; }
+
+            var data = { name: name, industry: industry, level: level, manager: manager, status: status, note: note };
+
+            var res;
+            if (_editingCustomerId) {
+                res = AIDC_API.updateCustomer(_editingCustomerId, data);
+            } else {
+                res = AIDC_API.createCustomer(data);
             }
 
-            showToast('保存成功', 'success');
-            closeModal();
+            if (res.success) {
+                showToast(_editingCustomerId ? '客户已更新' : '客户已添加', 'success');
+                closeModal();
+                loadCustomers();
+            } else {
+                showToast('保存失败：' + (res.error||'未知错误'), 'error');
+            }
         }
 
         function deleteCustomer(id) {
-            if (confirm('确定要删除这个客户吗？')) {
-                customers = customers.filter(c => c.id !== id);
-                renderCustomers();
+            if (!confirm('确定要删除这个客户吗？')) return;
+            var res = AIDC_API.deleteCustomer(id);
+            if (res.success) {
                 showToast('删除成功', 'success');
+                loadCustomers();
+            } else {
+                showToast('删除失败', 'error');
             }
         }
 
