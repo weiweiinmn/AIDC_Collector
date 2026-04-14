@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>诊断 — AIDC Collector</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; background: #f5f5f5; }
+.card { background: #fff; padding: 20px; margin-bottom: 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+h1 { margin: 0 0 16px; font-size: 20px; }
+h2 { margin: 16px 0 8px; font-size: 16px; color: #666; }
+pre { background: #f0f0f0; padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 12px; }
+.error { color: #e53935; }
+.success { color: #43a047; }
+button { background: #1E3A5F; color: #fff; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; margin-right: 8px; margin-bottom: 8px; }
+button:hover { background: #2a4a73; }
+.btn-danger { background: #e53935; }
+</style>
+</head>
+<body>
+<h1>🔧 AIDC Collector 诊断页面</h1>
+
+<div class="card">
+  <h2>1. JS 加载检查</h2>
+  <pre id="jsCheck">检查中...</pre>
+</div>
+
+<div class="card">
+  <h2>2. localStorage 数据检查</h2>
+  <pre id="storageCheck">检查中...</pre>
+</div>
+
+<div class="card">
+  <h2>3. 用户数据</h2>
+  <pre id="usersCheck">检查中...</pre>
+</div>
+
+<div class="card">
+  <h2>4. 机房数据</h2>
+  <pre id="datacentersCheck">检查中...</pre>
+</div>
+
+<div class="card">
+  <h2>操作</h2>
+  <button onclick="resetData()">🗑️ 重置所有数据</button>
+  <button onclick="testLogin()">🔐 测试登录 (admin/Admin@2026)</button>
+  <button onclick="location.href='login.html'">📱 返回登录页</button>
+</div>
+
+<script src="../js/api.js?v=debug"></script>
+<script>
+// 1. JS 加载检查
+var jsCheckEl = document.getElementById('jsCheck');
+if (typeof AIDC_API === 'undefined') {
+  jsCheckEl.innerHTML = '<span class="error">❌ AIDC_API 未定义！api.js 加载失败</span>';
+} else if (typeof AIDC_RESET_SEED === 'undefined') {
+  jsCheckEl.innerHTML = '<span class="error">❌ AIDC_RESET_SEED 未定义！</span>';
+} else {
+  jsCheckEl.innerHTML = '<span class="success">✅ api.js 加载成功</span>';
+}
+
+// 2. localStorage 检查
+var storageCheckEl = document.getElementById('storageCheck');
+try {
+  var keys = ['aidc_user', 'aidc_users', 'aidc_datacenters', 'aidc_customers', 'aidc_changelogs'];
+  var info = {};
+  keys.forEach(function(k) {
+    var v = localStorage.getItem(k);
+    info[k] = v ? (v.length + ' chars') : 'null';
+  });
+  storageCheckEl.textContent = JSON.stringify(info, null, 2);
+} catch (e) {
+  storageCheckEl.innerHTML = '<span class="error">❌ localStorage 错误: ' + e.message + '</span>';
+}
+
+// 3. 用户数据
+var usersCheckEl = document.getElementById('usersCheck');
+try {
+  var users = JSON.parse(localStorage.getItem('aidc_users') || '[]');
+  if (users.length === 0) {
+    usersCheckEl.innerHTML = '<span class="error">❌ 用户数据为空！需要重置数据</span>';
+  } else {
+    usersCheckEl.textContent = JSON.stringify(users.map(function(u) {
+      return { id: u.id, name: u.name, username: u.username, role: u.role };
+    }), null, 2);
+  }
+} catch (e) {
+  usersCheckEl.innerHTML = '<span class="error">❌ 用户数据解析错误: ' + e.message + '</span>';
+}
+
+// 4. 机房数据
+var datacentersCheckEl = document.getElementById('datacentersCheck');
+try {
+  var dcs = JSON.parse(localStorage.getItem('aidc_datacenters') || '[]');
+  if (dcs.length === 0) {
+    datacentersCheckEl.innerHTML = '<span class="error">❌ 机房数据为空！需要重置数据</span>';
+  } else {
+    datacentersCheckEl.textContent = '共 ' + dcs.length + ' 条机房数据\n' + 
+      JSON.stringify(dcs.slice(0, 3).map(function(d) {
+        return { id: d.id, name: d.name, status: d.status };
+      }), null, 2);
+  }
+} catch (e) {
+  datacentersCheckEl.innerHTML = '<span class="error">❌ 机房数据解析错误: ' + e.message + '</span>';
+}
+
+// 操作函数
+function resetData() {
+  if (confirm('确定要清除所有数据并重新初始化吗？')) {
+    localStorage.clear();
+    AIDC_RESET_SEED();
+    alert('✅ 数据已重置！点击确定后刷新页面。');
+    location.reload();
+  }
+}
+
+function testLogin() {
+  AIDC_API.login('admin', 'Admin@2026').then(function(res) {
+    if (res.code === 0) {
+      alert('✅ 登录成功！用户: ' + res.data.name);
+      location.href = 'login.html';
+    } else {
+      alert('❌ 登录失败: ' + res.message);
+    }
+  }).catch(function(e) {
+    alert('❌ 登录出错: ' + e);
+  });
+}
+</script>
+</body>
+</html>

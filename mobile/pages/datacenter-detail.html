@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>机房详情 — AIDC Collector</title>
+<link rel="stylesheet" href="../css/mobile.css?v=20260413-7">
+</head>
+<body>
+
+<div class="page-wrapper">
+  <!-- 顶部导航 -->
+  <header class="navbar">
+    <div class="nav-btn nav-back" onclick="history.back()" aria-label="返回">‹</div>
+    <div class="nav-title">机房详情</div>
+    <div class="nav-btn" onclick="Drawer.toggle()" aria-label="菜单"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+  </header>
+
+  <main style="padding-top:56px;padding-bottom:80px" class="page-content" id="mainContent">
+    <!-- Hero + KPI -->
+    <div class="detail-hero" id="detailHero">
+      <div class="detail-name" id="heroName">数据加载中...</div>
+      <div class="detail-location" id="heroLocation"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C16.4183 2 20 5.58172 20 10C20 16.5 12 22 12 22C12 22 4 16.4992 4 10C4 5.58172 7.58172 2 12 2ZM12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13C13.6569 13 15 11.6569 15 10C15 8.34315 13.6569 7 12 7Z" fill="none"/>
+<path d="M20 10C20 16.5 12 22 12 22C12 22 4 16.4992 4 10C4 5.58172 7.58172 2 12 2C16.4183 2 20 5.58172 20 10Z" stroke="currentColor" stroke-width="1.5"/>
+<path d="M15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10Z" stroke="currentColor" stroke-width="1.5"/></svg></div>
+      <div class="detail-badges" id="heroBadges"></div>
+      <div class="detail-kpi-row">
+        <div class="detail-kpi-item">
+          <div class="detail-kpi-val" id="kpiTotal">...</div>
+          <div class="detail-kpi-label">总机柜</div>
+        </div>
+        <div class="detail-kpi-item">
+          <div class="detail-kpi-val" id="kpiUsed">...</div>
+          <div class="detail-kpi-label">已用</div>
+        </div>
+        <div class="detail-kpi-item">
+          <div class="detail-kpi-val" id="kpiPower">...</div>
+          <div class="detail-kpi-label">主电路</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 备注 -->
+    <div class="card" id="remarkBlock" style="margin:0 16px 0;border-left:4px solid #F59E0B;border-radius: var(--radius-md) 0 0 var(--radius-md)">
+      <div class="card-body" style="padding:14px 16px">
+        <div class="remark-label"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 备注</div>
+        <div id="remarkText" style="font-size:13px;color:#92400E;line-height:1.6"></div>
+      </div>
+    </div>
+
+    <!-- 折叠分组 -->
+    <div id="accordionGroups"><div class="loading-hint" style="padding:20px;text-align:center;color:var(--c-text-muted)">正在加载数据...</div></div>
+
+    <!-- 操作日志 -->
+    <div class="log-section" id="logSection">
+      <div class="log-header">
+        <span class="log-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+        <span class="log-title">操作记录</span>
+        <span class="log-count" id="logCount">0</span>
+      </div>
+      <div class="log-list" id="logList"></div>
+    </div>
+
+    <div style="height:20px"></div>
+  </main>
+
+  <!-- 底部操作栏 -->
+  <div class="action-bar" id="actionBar">
+    <button class="btn btn-secondary btn-block" onclick="doEdit()" style="flex:1">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.0001 20.9999L7.5 20.9999L17.5 11L13 6.5L3.0001 16.5L3.0001 20.9999Z" fill="none"/>
+<path d="M21.5 7L17 2.5L13 6.5L17.5 11L21.5 7Z" fill="none"/>
+<path d="M12.9999 6.5L3 16.5L3 20.9999L7.4999 20.9999L17.4999 11M12.9999 6.5L17.4999 11M12.9999 6.5L16.9999 2.5L21.4999 7L17.4999 11" stroke="currentColor" stroke-width="1.5"/></svg> 编辑
+    </button>
+    <button class="btn btn-danger btn-block hidden" id="deleteBtn" onclick="doDelete()" style="flex:1">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5H19L18.5 22H5.5L5 5Z" fill="none"/>
+<path d="M21 5H3M5 5H19L18.5 22H5.5L5 5ZM8.5 2H15.5V5H8.5V2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M12 9V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 删除
+    </button>
+  </div>
+</div>
+
+<!-- 抽屉 -->
+<div class="drawer-overlay hidden" id="drawerOverlay" onclick="Drawer.toggle()">
+  <div class="drawer" onclick="event.stopPropagation()">
+    <div class="drawer-header">
+      <div class="drawer-close" onclick="Drawer.toggle()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.9503 7.05029L12.0005 12M12.0005 12L7.05078 16.9498M12.0005 12L16.9503 16.9498M12.0005 12L7.05078 7.05029" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="drawer-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" fill="none"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" fill="none"/>
+
+
+<path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="drawer-name" id="drawerName">用户</div>
+      <div class="drawer-role" id="drawerRole"></div>
+    </div>
+    <div class="drawer-nav">
+      <div class="drawer-menu-item" onclick="Drawer.nav('index.html')"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10L12 2.5L21 10V21H3V10Z" fill="none"/>
+<path d="M9 14H15V21H9V14Z" fill="none"/>
+<path d="M9 14H15V21H9V14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M3 10L12 2.5L21 10V21H3V10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>仪表盘</div>
+      <div class="drawer-menu-item" onclick="Drawer.nav('datacenter-list.html')"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>机房列表</div>
+      <div class="drawer-menu-item" onclick="Drawer.nav('datacenter-form.html')"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5L12 19M19 12L5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>添加机房</div>
+      <div class="drawer-menu-item" onclick="Drawer.nav('settings.html')"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.6604 7L12.0001 2L3.33984 7V17L12.0001 22L20.6604 17V7ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="none"/>
+<path d="M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" fill="none"/>
+<path d="M12.0001 2L20.6604 7V17L12.0001 22L3.33984 17V7L12.0001 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>系统设置</div>
+      <div class="drawer-menu-item danger" onclick="doLogout()"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 6.5L5.5 12L11 17.5M6.75 12H19.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>退出登录</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/api.js?v=20260413-7"></script>
+<script src="../js/drawer.js?v=20260413-7"></script>
+<script>
+var dcId = null;
+var dcData = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+  Drawer.init();
+
+  if (!AIDC_API.isLoggedIn()) {
+    window.location.href = 'login.html';
+    return;
+  }
+  dcId = new URLSearchParams(window.location.search).get('id');
+  if (!dcId) {
+    showToast('缺少参数');
+    setTimeout(function(){ history.back(); }, 1500);
+    return;
+  }
+  loadDetail();
+});
+
+async function loadDetail() {
+  var res = await AIDC_API.getDatacenter(dcId);
+  if (res.code !== 0) {
+    showToast(res.message || '加载失败');
+    return;
+  }
+  dcData = res.data;
+  renderDetail(dcData);
+}
+
+function renderDetail(d) {
+  if (!d) return;
+
+  // Hero
+  document.getElementById('heroName').textContent = d.name || '';
+  document.getElementById('heroLocation').innerHTML = '📍 ' + (d.city||'') + (d.country ? ' · ' + d.country : '');
+  document.getElementById('kpiTotal').textContent = d.rackCount || '–';
+  document.getElementById('kpiUsed').textContent = d.powerPerRack ? d.powerPerRack + 'kW' : '–';
+  document.getElementById('kpiPower').textContent = d.pue || '–';
+
+  // 状态 badge
+  var statusLabel = AIDC_API.getStatusLabel(d.status);
+  var statusCls = AIDC_API.getStatusCls(d.status);
+  var sBadge = '<span class="badge badge-' + statusCls + '">' + statusLabel + '</span>';
+  var kycBadge = d.kycStatus ? '<span class="badge" style="background:rgba(255,255,255,0.15);color:#fff;">' + AIDC_API.getKycLabel(d.kycStatus) + '</span>' : '';
+  document.getElementById('heroBadges').innerHTML = sBadge + kycBadge;
+
+  // KPI 标签修正：第二个是"功率密度"而非"已用"，第三个是"PUE"而非"主电路"
+  document.getElementById('kpiUsed').parentElement.querySelector('.detail-kpi-label').textContent = '功率密度';
+  document.getElementById('kpiPower').parentElement.querySelector('.detail-kpi-label').textContent = 'PUE';
+
+  // 备注
+  var remarkEl = document.getElementById('remarkBlock');
+  if (d.remark && d.remark.trim()) {
+    document.getElementById('remarkText').textContent = d.remark;
+    remarkEl.classList.remove('hidden');
+  } else {
+    remarkEl.classList.add('hidden');
+  }
+
+  // 折叠分组
+  var groups = [
+    { icon:'📍', title:'基础信息', rows:[
+      ['机房名称', d.name], ['客户/业主', d.customer],
+      ['国家', d.country], ['省/州', d.province],
+      ['城市', d.city], ['地址', d.address],
+      ['状态', statusLabel],
+      ['创建人', d.createdByName], ['创建时间', formatTime(d.createdAt)],
+      ['更新时间', formatTime(d.updatedAt)]
+    ]},
+    { icon:'🏢️', title:'机柜资源', rows:[
+      ['机柜数量', d.rackCount ? d.rackCount + ' 柜' : ''],
+      ['单柜功率', d.powerPerRack ? d.powerPerRack + ' kW' : ''],
+    ]},
+    { icon:'▪', title:'电力与效率', rows:[
+      ['PUE', d.pue],
+      ['KYC状态', AIDC_API.getKycLabel(d.kycStatus)]
+    ]},
+  ];
+
+  // 过滤空行
+  groups.forEach(function(g) {
+    g.rows = g.rows.filter(function(r) { return r[1] !== undefined && r[1] !== null && r[1] !== ''; });
+  });
+  groups = groups.filter(function(g) { return g.rows.length > 0; });
+
+  var el = document.getElementById('accordionGroups');
+  el.innerHTML = groups.map(function(g, i) {
+    var content = g.rows.map(function(r) {
+      return '<div class="detail-row"><span class="detail-row-key">' + r[0] + '</span><span class="detail-row-val">' + r[1] + '</span></div>';
+    }).join('');
+    return '<div class="accordion-section">' +
+      '<div class="accordion-header' + (i===0?' open':'') + '" onclick="toggleAccordion(this)">' +
+        '<div class="accordion-title"><span class="accordion-icon">' + g.icon + '</span>' + g.title + '</div>' +
+        '<span class="accordion-arrow">▼</span>' +
+      '</div>' +
+      '<div class="accordion-body"' + (i===0?' style="max-height:800px"':'') + '>' +
+        content +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  // 操作日志
+  var logRes = AIDC_API.getDatacenterChangelogs(dcId);
+  var logs = logRes.data || [];
+  var countEl = document.getElementById('logCount');
+  if (countEl) countEl.textContent = logs.length;
+  var logEl = document.getElementById('logList');
+  if (!logEl) return;
+  if (!logs.length) {
+    logEl.innerHTML = '<div style="color:var(--c-text-muted);text-align:center;padding:16px">暂无操作记录</div>';
+  } else {
+    logEl.innerHTML = logs.map(function(log) {
+      return '<div class="log-item" style="padding:8px 0;border-bottom:1px solid var(--c-border)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+          '<span style="font-weight:500">' + escHtml(log.content||'') + '</span>' +
+          '<span style="font-size:11px;color:var(--c-text-muted)">' + escHtml(log.operatorName||'') + '</span>' +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--c-text-muted);margin-top:2px">' + formatTime(log.createdAt) + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // 权限
+  if (AIDC_API.isAdmin()) {
+    var delBtn = document.getElementById('deleteBtn');
+    if (delBtn) delBtn.classList.remove('hidden');
+  }
+}
+
+function toggleAccordion(header) {
+  var body = header.nextElementSibling;
+  var isOpen = header.classList.contains('open');
+  header.classList.toggle('open');
+  body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
+}
+
+function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function formatTime(iso) {
+  if (!iso) return '';
+  var d = new Date(iso);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+async function doEdit() {
+  window.location.href = 'datacenter-form.html?id=' + dcId;
+}
+
+async function doDelete() {
+  if (!confirm('确定删除该机房记录？')) return;
+  var res = await AIDC_API.deleteDatacenter(dcId);
+  if (res.code === 0) {
+    showToast('已删除', 'success');
+    setTimeout(function(){ window.location.href = 'datacenter-list.html'; }, 800);
+  } else {
+    showToast(res.message || '删除失败');
+  }
+}
+
+function showToast(msg, type) {
+  type = type || 'error';
+  var tc = document.getElementById('toastContainer');
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.innerHTML = msg;
+  tc.appendChild(t);
+  setTimeout(function(){ t.classList.add('toast-fadeout'); setTimeout(function(){ t.remove(); }, 300); }, 2000);
+}
+</script>
+</body>
+</html>

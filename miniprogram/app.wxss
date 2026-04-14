@@ -1,3 +1,9 @@
+/* ===== 数字高亮（全局可用）===== */
+.num-highlight {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
 /* app.wxss - AIDC Collector 全局样式 */
 
 /* 重置 */

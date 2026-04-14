@@ -9,6 +9,88 @@
       <view class="detail-tags">
         <view class="dc-tag tag-{{detail.status || 'new'}}">{{statusLabel}}</view>
         <view class="dc-tag tag-source" wx:if="{{detail.importedByName}}">Excel导入</view>
+        <view class="dc-tag tag-source" wx:if="{{detail.source}}">{{detail.source}}</view>
+      </view>
+    </view>
+
+    <!-- ===== 重点信息概览卡 ===== -->
+    <view class="hero-card-wrapper">
+      <!-- 第一行：电力 | 交付 | 制冷 -->
+      <view class="hero-row hero-row-3">
+        <view class="hero-item">
+          <view class="hero-label">可用电力</view>
+          <view class="hero-value">{{detail.availablePower || '—'}}<text class="hero-unit">MW</text></view>
+        </view>
+        <view class="hero-sep"></view>
+        <view class="hero-item">
+          <view class="hero-label">预计交付</view>
+          <view class="hero-value small">{{detail.expectedDelivery || '—'}}</view>
+        </view>
+        <view class="hero-sep"></view>
+        <view class="hero-item">
+          <view class="hero-label">制冷方式</view>
+          <view class="hero-value small">{{detail.mainCoolingType || '—'}}</view>
+        </view>
+      </view>
+
+      <!-- 第二行：可扩容 | 有机电 | 液冷改造 -->
+      <view class="hero-row hero-row-3">
+        <view class="hero-item">
+          <view class="hero-label">可扩容</view>
+          <view class="hero-value small">
+            <text class="badge badge-{{detail.expandable === '可扩容' ? 'yes' : 'no'}}">{{detail.expandable || '—'}}</text>
+          </view>
+        </view>
+        <view class="hero-sep"></view>
+        <view class="hero-item">
+          <view class="hero-label">有机电</view>
+          <view class="hero-value small">
+            <text class="badge badge-{{detail.hasGenerator === '是' ? 'yes' : 'no'}}">{{detail.hasGenerator || '—'}}</text>
+          </view>
+        </view>
+        <view class="hero-sep"></view>
+        <view class="hero-item">
+          <view class="hero-label">液冷改造</view>
+          <view class="hero-value small">
+            <text class="badge badge-{{detail.liquidCoolRetrofit === '是' ? 'yes' : detail.liquidCoolRetrofit === '否' ? 'no' : 'warn'}}">{{detail.liquidCoolRetrofit || '—'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 第三行：PUE | 拜访日期 | 联系人 -->
+      <view class="hero-row hero-row-3">
+        <view class="hero-item">
+          <view class="hero-label">PUE值</view>
+          <view class="hero-value">{{detail.pueDesign || '—'}}</view>
+        </view>
+        <view class="hero-sep"></view>
+        <view class="hero-item">
+          <view class="hero-label">拜访日期</view>
+          <view class="hero-value small">{{detail.visitDate || '—'}}</view>
+        </view>
+        <view class="hero-sep"></view>
+        <view class="hero-item">
+          <view class="hero-label">联系人</view>
+          <view class="hero-value small no-overflow">{{detail.contactPerson || '—'}}</view>
+        </view>
+      </view>
+
+      <!-- 第四行：液冷规格 | 可扩容电力 | 联系方式 -->
+      <view class="hero-row hero-row-3" wx:if="{{detail.liquidCooling || detail.expandablePower || detail.contactInfo}}">
+        <view class="hero-item" wx:if="{{detail.liquidCooling}}">
+          <view class="hero-label">冷板液冷</view>
+          <view class="hero-value small">{{detail.liquidCooling}}</view>
+        </view>
+        <view class="hero-sep" wx:if="{{detail.liquidCooling && detail.expandablePower}}"></view>
+        <view class="hero-item" wx:if="{{detail.expandablePower}}">
+          <view class="hero-label">可扩容上限</view>
+          <view class="hero-value">{{detail.expandablePower}}<text class="hero-unit">MW</text></view>
+        </view>
+        <view class="hero-sep" wx:if="{{(detail.liquidCooling || detail.expandablePower) && detail.contactInfo}}"></view>
+        <view class="hero-item" wx:if="{{detail.contactInfo}}">
+          <view class="hero-label">联系方式</view>
+          <view class="hero-value small no-overflow">{{detail.contactInfo}}</view>
+        </view>
       </view>
     </view>
 
@@ -373,7 +455,7 @@
 
     <!-- 操作按钮 -->
     <view class="detail-actions">
-      <t-button theme="primary" variant="outline" icon="edit" bindtap="handleEdit">编辑</t-button>
+      <t-button theme="primary" variant="outline" icon="edit" bindtap="handleEdit" wx:if="{{canEdit}}">编辑</t-button>
       <t-button theme="danger" variant="outline" icon="delete" bindtap="handleDelete" wx:if="{{isAdmin}}">删除</t-button>
     </view>
   </view>

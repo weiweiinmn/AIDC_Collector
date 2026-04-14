@@ -345,10 +345,7 @@
             .charts-grid { grid-template-columns: 1fr; }
         }
 
-        @media (max-width: 768px) {
-            .stats-overview { grid-template-columns: 1fr; }
-            .pie-chart { flex-direction: column; }
-        }
+        
     </style>
 <!-- 登录态校验 -->
 <script>
@@ -388,8 +385,15 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
 </style>
 </head>
 <body>
-    <!-- 顶部导航 -->
-    <nav class="top-nav">
+<!-- 移动端显示/隐藏控制 -->
+    <style>
+    .desktop-only { display: flex !important; }
+    .mobile-only  { display: none  !important; }
+    
+    </style>
+
+    <!-- 顶部导航（桌面端） -->
+    <nav class="top-nav desktop-only">
         <div class="nav-brand">
             <div class="nav-brand-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
@@ -408,10 +412,6 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
             <a href="customers.html" class="nav-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
                 客户管理
-            </a>
-            <a href="visits.html" class="nav-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
-                考察任务
             </a>
             <a href="statistics.html" class="nav-item active">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -794,5 +794,15 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
   }
 })();
 </script>
-</body>
+
+    /* 移动端导航 */
+    (function(){
+        var menuBtn=document.getElementById('mobileMenuBtn');
+        var overlay=document.getElementById('mobileMenuOverlay');
+        var closeBtn=document.getElementById('mobileMenuClose');
+        if(menuBtn)menuBtn.addEventListener('click',function(){overlay.classList.add('open');});
+        if(closeBtn)closeBtn.addEventListener('click',function(){overlay.classList.remove('open');});
+        if(overlay)overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.classList.remove('open');});
+    })();
+    function logout(){localStorage.removeItem('aidc_user');window.location.href='index.html';}</body>
 </html>

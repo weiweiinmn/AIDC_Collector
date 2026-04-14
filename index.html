@@ -3,192 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登录 - AIDC Collector</title>
-    <link rel="stylesheet" href="shared.css?v=20260410t1845">
-<link rel="stylesheet" href="shared-light.css">
-<script src="api.js"></script>
-<style>
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-strong);
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  flex-shrink: 0;
-}
-.theme-toggle:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-  border-color: var(--brand);
-}
-.theme-toggle .icon-sun,
-.theme-toggle .icon-moon { width: 18px; height: 18px; }
-.theme-toggle .icon-sun { display: none; }
-.theme-toggle .icon-moon { display: block; }
-body.theme-light .theme-toggle .icon-sun { display: block; }
-body.theme-light .theme-toggle .icon-moon { display: none; }
-</style>
-</head>
-<body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="login-logo">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg>
-                </div>
-                <h1 class="login-title">AIDC Collector</h1>
-                <p class="login-subtitle">机房信息采集与管理平台</p>
-            </div>
-
-            <form id="login-form" class="login-form" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label class="form-label">用户名</label>
-                    <input type="text" id="username" class="form-input" placeholder="请输入用户名" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">密码</label>
-                    <input type="password" id="password" class="form-input" placeholder="请输入密码" required>
-                </div>
-                <button type="submit" class="btn-login">
-                    登录系统
-                </button>
-            </form>
-
-            <div class="login-footer">
-                <p class="login-tip">测试账号：admin / admin123</p>
-            </div>
-
-            <div class="login-features">
-                <div class="feature-item">
-                    <div class="feature-item-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                    </div>
-                    <div class="feature-item-text">机房录入</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-item-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    </div>
-                    <div class="feature-item-text">数据查询</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-item-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    </div>
-                    <div class="feature-item-text">导入导出</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <title>AIDC Collector — 重定向</title>
     <script>
-        // ── 全局 API（localStorage 模拟云函数）──────────────────────────────────────
-        window.AIDC_API = {
-            login(username, password) {
-                return new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                        if (username === 'admin' && password === 'admin123') {
-                            const user = { id: 'u001', name: '管理员', username: 'admin', role: 'admin', loginAt: new Date().toISOString() };
-                            localStorage.setItem('aidc_user', JSON.stringify(user));
-                            resolve({ code: 0, data: user });
-                        } else {
-                            reject({ code: 1, message: '用户名或密码错误' });
-                        }
-                    }, 300);
-                });
-            },
-            logout() { localStorage.removeItem('aidc_user'); window.location.href = '../index.html'; },
-            getUser() { try { return JSON.parse(localStorage.getItem('aidc_user')); } catch { return null; } },
-            getDatacenters(params = {}) {
-                const { page = 1, pageSize = 20, keyword = '', status = '', region = '' } = params;
-                let list = JSON.parse(localStorage.getItem('aidc_datacenters') || '[]');
-                if (keyword) list = list.filter(d => d.name.includes(keyword) || (d.address || '').includes(keyword));
-                if (status) list = list.filter(d => d.status === status);
-                const total = list.length;
-                const start = (page - 1) * pageSize;
-                const data = list.slice(start, start + pageSize);
-                const today = new Date().toDateString();
-                return { code: 0, data: { list: data, total, todayCount: list.filter(d => new Date(d.createdAt).toDateString() === today).length, monthCount: 0, myCount: 0 } };
-            },
-            createDatacenter(data) {
-                const record = { ...data, id: 'dc' + Date.now(), status: 'new', createdBy: 'u001', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-                const list = JSON.parse(localStorage.getItem('aidc_datacenters') || '[]');
-                list.unshift(record);
-                localStorage.setItem('aidc_datacenters', JSON.stringify(list));
-                return { code: 0, data: record };
-            },
-            updateDatacenter(id, data) {
-                const list = JSON.parse(localStorage.getItem('aidc_datacenters') || '[]');
-                const idx = list.findIndex(d => d.id === id);
-                if (idx === -1) return { code: 1, message: '记录不存在' };
-                list[idx] = { ...list[idx], ...data, updatedAt: new Date().toISOString() };
-                localStorage.setItem('aidc_datacenters', JSON.stringify(list));
-                return { code: 0, data: list[idx] };
-            },
-            deleteDatacenter(id) {
-                const list = JSON.parse(localStorage.getItem('aidc_datacenters') || '[]').filter(d => d.id !== id);
-                localStorage.setItem('aidc_datacenters', JSON.stringify(list));
-                return { code: 0 };
-            },
-            getCustomers() { return { code: 0, data: JSON.parse(localStorage.getItem('aidc_customers') || '[]') }; },
-            getUsers() { return { code: 0, data: JSON.parse(localStorage.getItem('aidc_users') || '[]') }; }
-        };
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            AIDC_API.login(username, password).then(res => {
-                showToast('登录成功，正在跳转...', 'success');
-                setTimeout(() => { window.location.href = 'dashboard-v2.html'; }, 1000);
-            }).catch(err => {
-                showToast(err.message || '登录失败', 'error');
-            });
+    (function() {
+        var ua = navigator.userAgent || '';
+        var w = window.innerWidth;
+        // 检查是否为手机/平板：UA含Mobile/Android/iPhone，或屏幕宽度<768px
+        var isMobile = /Android|iPhone|iPad|iPod|Mobile|iOS|webOS|BlackBerry/i.test(ua) || w < 768;
+        if (isMobile) {
+            window.location.replace('mobile/index.html');
+        } else {
+            window.location.replace('dashboard-v2.html');
         }
-
-        function showToast(message, type = 'success') {
-            const existing = document.querySelector('.toast');
-            if (existing) existing.remove();
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            const iconSvg = type === 'success'
-                ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
-                : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
-            toast.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconSvg}</svg><span>${message}</span>`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if (AIDC_API.getUser()) window.location.href = 'dashboard-v2.html';
-        });
+    })();
     </script>
-<script>
-(function(){
-  var btn = document.getElementById('themeToggle');
-  if (!btn) return;
-  // 读取本地存储的偏好
-  var saved = localStorage.getItem('aidc_theme');
-  if (saved === 'light') {
-    document.body.classList.add('theme-light');
-  }
-  btn.addEventListener('click', function(){
-    document.body.classList.toggle('theme-light');
-    var isLight = document.body.classList.contains('theme-light');
-    localStorage.setItem('aidc_theme', isLight ? 'light' : 'dark');
-  });
-  // 监听 OS 级深色模式（可选支持）
-  var mq = window.matchMedia('(prefers-color-scheme: dark)');
-  if (!saved && !mq.matches) {
-    document.body.classList.add('theme-light');
-  }
-})();
-</script>
-</body>
+    <noscript>
+        <p>请启用 JavaScript 访问 <a href="dashboard-v2.html">电脑端</a> 或 <a href="mobile/index.html">手机端</a>。</p>
+    </noscript>
+</head>
 </html>

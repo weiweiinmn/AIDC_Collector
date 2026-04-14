@@ -222,3 +222,80 @@
 .detail-actions .t-button {
   flex: 1;
 }
+
+/* ===== 重点信息概览卡 ===== */
+.hero-card-wrapper {
+  margin: 24rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(30, 58, 95, 0.1);
+  overflow: hidden;
+}
+
+.hero-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1rpx solid #F1F5F9;
+}
+
+.hero-row:last-child {
+  border-bottom: none;
+}
+
+.hero-item {
+  flex: 1;
+  padding: 24rpx 16rpx;
+  text-align: center;
+}
+
+.hero-sep {
+  width: 1rpx;
+  background: #F1F5F9;
+  flex-shrink: 0;
+}
+
+.hero-label {
+  font-size: 22rpx;
+  color: #9CA3AF;
+  margin-bottom: 8rpx;
+  font-weight: normal;
+}
+
+.hero-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #1E3A5F;
+  line-height: 1.2;
+}
+
+.hero-value.small {
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.hero-value.no-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hero-unit {
+  font-size: 22rpx;
+  color: #6B7280;
+  font-weight: normal;
+  margin-left: 2rpx;
+}
+
+/* 标签徽章 */
+.badge {
+  display: inline-block;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.badge-yes { background: #DCFCE7; color: #16A34A; }
+.badge-no  { background: #FEE2E2; color: #EF4444; }
+.badge-warn { background: #FEF9C3; color: #CA8A04; }

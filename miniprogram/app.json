@@ -8,16 +8,14 @@
     "pages/export/export",
     "pages/import/import",
     "pages/settings/settings",
-    "pages/settings/changePassword/changePassword"
+    "pages/settings/changePassword"
   ],
-
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#1E3A5F",
     "navigationBarTitleText": "AIDC Collector",
     "navigationBarTextStyle": "white"
   },
-
   "tabBar": {
     "custom": false,
     "color": "#6B7280",
@@ -45,7 +43,6 @@
       }
     ]
   },
-
   "usingComponents": {
     "t-button": "tdesign-miniprogram/button/button",
     "t-input": "tdesign-miniprogram/input/input",
@@ -78,7 +75,6 @@
     "t-skeleton": "tdesign-miniprogram/skeleton/skeleton",
     "watermark": "/components/watermark/watermark"
   },
-
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
   "permission": {

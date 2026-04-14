@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>客户录入测试 v3</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:#0a1628;color:#e2e8f0;min-height:100vh;padding:32px}
+h1{font-size:20px;color:#38bdf8;margin-bottom:20px}
+.box{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:24px;max-width:480px}
+.lbl{font-size:13px;font-weight:600;color:#94a3b8;margin-bottom:8px;display:block}
+.r{display:flex;gap:10px;margin-bottom:16px}
+.e{flex:1;height:40px;padding:0 14px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#fff;font-size:14px}
+.b{height:40px;padding:0 20px;border-radius:8px;border:none;background:#0ea5e9;color:#fff;font-size:14px;cursor:pointer;font-weight:500}
+.b:hover{background:#0284c7}
+.t{min-height:36px;display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.g{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:16px;background:rgba(14,165,233,.15);color:#38bdf8;font-size:13px}
+.x{width:16px;height:16px;border-radius:50%;background:rgba(14,165,233,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#38bdf8}
+.x:hover{background:#ef4444;color:#fff}
+.n{font-size:12px;color:#64748b;margin-top:8px}
+.log{background:#000;border:1px solid #1a3a2a;border-radius:8px;padding:12px;margin-top:16px;font-family:monospace;font-size:12px;color:#22c55e;white-space:pre-wrap;min-height:80px;max-height:200px;overflow:auto}
+</style>
+</head>
+<body>
+<h1>客户录入测试 v3</h1>
+<div class="box">
+  <label class="lbl">预留客户</label>
+  <div class="r">
+    <input type="text" class="e" id="in" placeholder="输入客户名称，多个用逗号分隔" onkeydown="hk(event)">
+    <button class="b" onclick="ac()">录入客户</button>
+  </div>
+  <div class="t" id="tg"></div>
+  <div class="n">输入后点击"录入客户"或按 Enter 键添加。点击 x 删除。</div>
+</div>
+<div class="log" id="lg">page loaded\n</div>
+
+<script>
+var cs = [];
+function lg(m){document.getElementById('lg').textContent += m+'\n'}
+function hk(e){if(e.key==='Enter'){e.preventDefault();lg('Enter pressed');ac()}}
+function ac(){
+  var v=(document.getElementById('in').value||'').trim();
+  lg('ac() called, value="' + v + '"');
+  if(!v){lg('empty, returning');return}
+  var ns=v.split(/[,，]/).map(function(s){return s.trim()}).filter(function(s){return s});
+  lg('parsed names: ' + JSON.stringify(ns));
+  ns.forEach(function(n){if(cs.indexOf(n)===-1)cs.push(n)});
+  document.getElementById('in').value='';
+  rd();lg('cs: ' + JSON.stringify(cs))
+}
+function rm(n){var i=cs.indexOf(n);if(i>-1){cs.splice(i,1);rd();lg('removed: '+n)}}
+function rd(){
+  var el=document.getElementById('tg'),h='';
+  cs.forEach(function(n){h+='<span class=g>'+n+'<span class=x onclick=rm("'+n.replace(/"/g,'\\"')+'")>x</span></span>'});
+  el.innerHTML=h
+}
+lg('script ok, cs='+JSON.stringify(cs));
+</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>首页 — AIDC Collector</title>
+<link rel="stylesheet" href="../css/mobile.css?v=20260413-7">
+</head>
+<body>
+
+<div class="page-wrapper">
+  <!-- 顶部导航 -->
+  <header class="navbar">
+    <div class="nav-btn nav-menu-btn" onclick="Drawer.toggle()" aria-label="菜单"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <div class="nav-title">AIDC Collector</div>
+    <div class="nav-btn" onclick="Drawer.toggle()" aria-label="菜单" style="visibility:hidden"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+  </header>
+
+  <main style="padding-top:56px" class="page-content">
+    <!-- Hero 区域 -->
+    <div class="index-hero">
+      <div class="hero-greeting" id="greetingText">早上好</div>
+      <div class="hero-name" id="userName">加载中…</div>
+      <div class="hero-date" id="currentDate"></div>
+      <div class="hero-role-badge" id="roleBadge">加载中</div>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="stats-grid">
+      <div class="stat-card" onclick="goList()">
+        <div class="stat-value" id="statTotal">–</div>
+        <div class="stat-label">机房总数</div>
+      </div>
+      <div class="stat-card green" onclick="goList('new')">
+        <div class="stat-value" id="statIdle">–</div>
+        <div class="stat-label">本周新增</div>
+      </div>
+      <div class="stat-card orange" onclick="goList('signed')">
+        <div class="stat-value" id="statRented">–</div>
+        <div class="stat-label">已签约</div>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-value" id="statPower">–</div>
+        <div class="stat-label">总电力</div>
+      </div>
+    </div>
+
+    
+    <!-- 待跟进工作 -->
+    <div class="section-block" id="taskSection" style="display:none">
+      <div class="section-title"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> 待跟进</div>
+      <div id="taskList"></div>
+    </div>
+
+    <!-- 国家分布 -->
+    <div class="section-block">
+      <div class="card">
+        <div class="card-body">
+          <div class="section-title"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="none"/>
+<path d="M11.9998 22C17.5226 22 21.9998 17.5228 21.9998 12C21.9998 11.6454 21.9813 11.2951 21.9453 10.95L19.9949 12.0839L16.4862 16.151L14.9825 13.1007L11.9751 12.0839V8.01678L8.96765 7L6.9627 9.03356L3.04978 7.55C2.51284 8.62877 2.15726 9.81824 2.04199 11.075L7.96517 13.1007L4.94978 19.1C6.74978 20.9 9.30455 22 11.9998 22Z" fill="none"/>
+<path d="M2.04102 11.0886L7.9654 13.1007L4.94772 19.0898M3.04078 7.55301L6.96292 9.03356L8.96787 7L11.9753 8.01678V12.0839L14.9827 13.1007L16.4864 16.151L19.9951 12.0839L21.9389 10.9542M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="1.5"/></svg> 国家分布</div>
+          <div id="countryBars"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 最近添加 -->
+    <div class="section-block">
+      <div class="section-title" style="padding:0 0 12px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 最近添加</div>
+      <div class="card">
+        <div class="card-body" id="recentList">
+          <!-- 骨架 -->
+          <div class="sk-card"><div class="skeleton sk-line"></div><div class="skeleton sk-line short"></div></div>
+          <div class="sk-card"><div class="skeleton sk-line"></div><div class="skeleton sk-line short"></div></div>
+          <div class="sk-card"><div class="skeleton sk-line"></div><div class="skeleton sk-line short"></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="height:20px"></div>
+  </main>
+
+  <!-- 底部 Tab -->
+  <nav class="tab-bar">
+    <div class="tab-item active" onclick="Drawer.goTab('index.html')">
+      <div class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10L12 2.5L21 10V21H3V10Z" fill="none"/>
+<path d="M9 14H15V21H9V14Z" fill="none"/>
+<path d="M9 14H15V21H9V14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M3 10L12 2.5L21 10V21H3V10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tab-label">首页</div>
+    </div>
+    <div class="tab-item" onclick="Drawer.goTab('datacenter-list.html')">
+      <div class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tab-label">机房</div>
+    </div>
+    <div class="tab-add-btn" onclick="Drawer.goTab('datacenter-form.html')">
+      <div class="tab-add-circle">+</div>
+    </div>
+    <div class="tab-item" onclick="Drawer.goTab('datacenter-records.html')">
+      <div class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tab-label">记录</div>
+    </div>
+    <div class="tab-item" onclick="if(!AIDC_API.isLoggedIn()){window.location.href='login.html';}else{Drawer.toggle();}">
+      <div class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" fill="none"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" fill="none"/>
+
+
+<path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tab-label">我的</div>
+    </div>
+  </nav>
+</div>
+
+<!-- 抽屉菜单 -->
+<div class="drawer-overlay hidden" id="drawerOverlay" onclick="Drawer.toggle()">
+  <div class="drawer" onclick="event.stopPropagation()">
+    <div class="drawer-header">
+      <div class="drawer-close" onclick="Drawer.toggle()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.9503 7.05029L12.0005 12M12.0005 12L7.05078 16.9498M12.0005 12L16.9503 16.9498M12.0005 12L7.05078 7.05029" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="drawer-avatar" id="drawerAvatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" fill="none"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" fill="none"/>
+
+
+<path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="drawer-name" id="drawerName">加载中</div>
+      <div class="drawer-role" id="drawerRole"></div>
+    </div>
+    <div class="drawer-nav">
+      <div class="drawer-menu-item" onclick="Drawer.nav('index.html')">
+        <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10L12 2.5L21 10V21H3V10Z" fill="none"/>
+<path d="M9 14H15V21H9V14Z" fill="none"/>
+<path d="M9 14H15V21H9V14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M3 10L12 2.5L21 10V21H3V10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>仪表盘
+      </div>
+      <div class="drawer-menu-item" onclick="Drawer.nav('datacenter-list.html')">
+        <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>机房列表
+      </div>
+      <div class="drawer-menu-item" onclick="Drawer.nav('datacenter-form.html')">
+        <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5L12 19M19 12L5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>添加机房
+      </div>
+      <div class="drawer-menu-item" onclick="Drawer.nav('settings.html')">
+        <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.6604 7L12.0001 2L3.33984 7V17L12.0001 22L20.6604 17V7ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="none"/>
+<path d="M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" fill="none"/>
+<path d="M12.0001 2L20.6604 7V17L12.0001 22L3.33984 17V7L12.0001 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>系统设置
+      </div>
+      <div class="drawer-menu-item danger" onclick="doLogout()">
+        <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.448 13C20.9483 17.7767 16.909 21.5 12 21.5C8.18227 21.5 4.89052 19.248 3.38065 16M2.5 20.5V15.5H5.5M2.55176 11C3.05145 6.22334 7.09079 2.5 11.9998 2.5C15.8175 2.5 19.1092 4.75197 20.6191 8M21.4998 3.5V8.5H18.4998" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>退出登录
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <div style="font-size:11px;color:var(--c-text-muted);text-align:center;">AIDC Collector v1.0</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/api.js?v=20260413-7"></script>
+<script src="../js/drawer.js?v=20260413-7"></script>
+<script>
+// ── 初始化 ────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  Drawer.init();
+  if (!AIDC_API.isLoggedIn()) {
+    window.location.href = 'login.html';
+    return;
+  }
+  var user = AIDC_API.getUser();
+  renderUser(user);
+  loadStats();
+});
+
+function renderUser(user) {
+  var hour = new Date().getHours();
+  var greet = hour < 12 ? '早上好' : hour < 18 ? '下午好' : '晚上好';
+  document.getElementById('greetingText').textContent = greet;
+  document.getElementById('userName').textContent = user.name || '用户';
+  document.getElementById('currentDate').textContent = formatDate(new Date());
+  var roleMap = { admin:'管理员', manager:'BD经理', user:'商务拓展' };
+  document.getElementById('roleBadge').textContent = roleMap[user.role] || '商务拓展';
+  document.getElementById('drawerName').textContent = user.name || '用户';
+  document.getElementById('drawerRole').textContent = roleMap[user.role] || '商务拓展';
+}
+
+function formatDate(d) {
+  var w = ['周日','周一','周二','周三','周四','周五','周六'];
+  return d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日 ' + w[d.getDay()];
+}
+
+async function loadStats() {
+  console.log('[DEBUG] loadStats called');
+  try {
+    var res = await AIDC_API.getStats();
+    if (res.code !== 0) { console.error('[ERROR] getStats failed:', res.message); return; }
+    var s = res.data || {};
+    var dist = s.statusDist || {};
+
+    // 四个统计：总数 / 本周新增 / 已签约 / 总电力
+    document.getElementById('statTotal').textContent = s.total || 0;
+    document.getElementById('statIdle').textContent = dist.new || 0;   // API 的 new = 本周新增
+    document.getElementById('statRented').textContent = dist.signed || 0;
+
+    // 合计电力（功率密度 × 机柜数）
+    var allRes = await AIDC_API.getDatacenters();
+    var all = (allRes.data && allRes.data.list) ? allRes.data.list : [];
+    var totalPower = 0;
+    all.forEach(function(d) { totalPower += (d.powerPerRack || 0) * (d.rackCount || 0); });
+    document.getElementById('statPower').textContent = totalPower >= 1000
+      ? (totalPower / 1000).toFixed(1) + 'GW'
+      : totalPower + 'MW';
+
+    // ── 待跟进 ─────────────────────────────────────────
+    var taskSection = document.getElementById('taskSection');
+    var taskListEl = document.getElementById('taskList');
+    var tasks = [];
+    all.forEach(function(d) {
+      if (!d) return;
+      // 签约推进中 / 商务跟进中
+      if (d.status === 'in_progress' || d.status === 'negotiating') {
+        var label = d.status === 'in_progress' ? '签约推进中' : '商务跟进中';
+        tasks.push({ id: d.id, name: d.name||'', city: d.city||'', status: d.status, label: label, color: '#D97706' });
+      }
+      // KYC 进行中
+      var kyc = ((d.kycRemark||'') + (d.remark||'')).toLowerCase();
+      if (kyc.includes('进行') || kyc.includes('pending') || kyc.includes('待') || kyc.includes('kyc')) {
+        tasks.push({ id: d.id, name: d.name||'', city: d.city||'', status: d.status, label: 'KYC 进行中', color: '#2563EB' });
+      }
+      // 已签约但无电力配置
+      if (d.status === 'signed' && (!d.powerCapacity || d.powerCapacity < 100)) {
+        tasks.push({ id: d.id, name: d.name||'', city: d.city||'', status: d.status, label: '电力待配置', color: '#DC2626' });
+      }
+    });
+
+    if (taskSection && taskListEl) {
+      if (tasks.length === 0) {
+        taskSection.style.display = 'none';
+      } else {
+        taskSection.style.display = 'block';
+        taskListEl.innerHTML = tasks.slice(0, 5).map(function(t) {
+          var sl = AIDC_API.getStatusLabel(t.status);
+          var sc = AIDC_API.getStatusCls(t.status);
+          return '<div class="dc-card" onclick="goDetail(\'' + t.id + '\')" style="cursor:pointer">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">' +
+              '<div style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;font-size:14px">' + t.name + '</div>' +
+              '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;background:' + t.color + ';color:#fff;flex-shrink:0;letter-spacing:0.02em">' + t.label + '</span>' +
+            '</div>' +
+            '<div style="font-size:12px;color:var(--c-text-secondary);margin-top:5px">' +
+              '<span class="badge badge-' + sc + '">' + sl + '</span>' +
+              '<span style="margin-left:8px">' + t.city + '</span>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+    }
+
+    // 国家分布
+    var countryDist = {};
+    all.forEach(function(d) {
+      if (d.country) countryDist[d.country] = (countryDist[d.country] || 0) + 1;
+    });
+    var maxCount = Math.max.apply(null, Object.values(countryDist).concat([1]));
+    var countryBarsEl = document.getElementById('countryBars');
+    if (countryBarsEl) {
+      var flagMap = {'中国':'🇨🇳','新加坡':'🇸🇬','泰国':'🇹🇭','印尼':'🇮🇩','菲律宾':'🇵🇭','日本':'🇯🇵','澳大利亚':'🇦🇺','马来西亚':'🇲🇾','越南':'🇻🇳','印度':'🇮🇳','韩国':'🇰🇷'};
+      countryBarsEl.innerHTML = Object.keys(countryDist).sort(function(a,b){ return countryDist[b] - countryDist[a]; }).map(function(c) {
+        var pct = Math.round(countryDist[c] / maxCount * 100);
+        return '<div class="country-bar-item">' +
+          '<span class="country-flag">' + (flagMap[c]||'') + '</span>' +
+          '<span class="country-name">' + c + '</span>' +
+          '<div class="country-bar-wrap"><div class="country-bar-fill" style="width:' + pct + '%"></div></div>' +
+          '<span class="country-count">' + countryDist[c] + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    // 最近3条
+    var list = all.slice(0, 3);
+    var listEl = document.getElementById('recentList');
+    if (!list.length) {
+      listEl.innerHTML = '<div style="text-align:center;color:var(--c-text-muted);padding:20px">暂无数据</div>';
+      return;
+    }
+    listEl.innerHTML = list.map(function(d) {
+      var statusLabel = AIDC_API.getStatusLabel(d.status);
+      var statusCls = AIDC_API.getStatusCls(d.status);
+      return '<div class="recent-item" onclick="goDetail(\'' + d.id + '\')">' +
+        '<div class="recent-name">' + (d.name||'') + '</div>' +
+        '<div class="recent-meta">' +
+          '<span class="badge badge-' + statusCls + '">' + statusLabel + '</span>' +
+          '<span style="color:var(--c-text-muted);font-size:12px">' + (d.city||'') + '</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) {
+    console.error('[loadStats ERROR]', e);
+  }
+}
+
+function goDetail(id) { window.location.href = 'datacenter-detail.html?id=' + id; }
+
+function goList(status) {
+  var url = 'datacenter-list.html';
+  if (status) url += '?status=' + encodeURIComponent(status);
+  window.location.href = url;
+}
+
+function doLogout() {
+  AIDC_API.logout();
+  window.location.href = 'login.html';
+}
+</script>
+</body>
+</html>

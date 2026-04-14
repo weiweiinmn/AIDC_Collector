@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>重置数据 — AIDC Collector</title>
+<style>
+body{font-family:system-ui;max-width:400px;margin:80px auto;padding:20px;text-align:center;background:#f5f7fa}
+.card{background:#fff;border-radius:12px;padding:32px;box-shadow:0 2px 12px rgba(0,0,0,.1)}
+h1{color:#0D3A5C;margin-bottom:8px}
+p{color:#6B7280;margin-bottom:24px}
+#result{margin-top:20px;padding:16px;border-radius:8px;font-size:15px;display:none}
+.success{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
+.error{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.btn{background:#0D3A5C;color:#fff;border:none;padding:14px 32px;border-radius:8px;font-size:16px;cursor:pointer}
+.btn:hover{background:#1B6B8A}
+a{color:#0D3A5C}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🔄 数据重置</h1>
+  <p>点击下方按钮清空 localStorage 并重新初始化种子数据</p>
+  <button class="btn" onclick="doReset()">一键重置</button>
+  <div id="result"></div>
+</div>
+<script src="js/api.js?v=20260413-7"></script>
+<script>
+function doReset() {
+  var r = document.getElementById('result');
+  try {
+    // 清空所有 AIDC 相关存储
+    localStorage.clear();
+    
+    // 重新加载 api.js 让种子数据初始化
+    if (typeof AIDC_RESET_SEED === 'function') {
+      AIDC_RESET_SEED();
+    }
+    
+    // 验证用户是否写入
+    var users = JSON.parse(localStorage.getItem('aidc_users') || '[]');
+    if (users.length > 0) {
+      r.className = 'success';
+      r.style.display = 'block';
+      r.innerHTML = '✅ 重置成功！共 ' + users.length + ' 个用户已就绪<br><br>' +
+        '<strong>账号：</strong>admin / Admin@2026<br>' +
+        '<a href="pages/login.html">→ 点击进入登录页</a>';
+    } else {
+      // 手动写入
+      localStorage.setItem('aidc_users', JSON.stringify([
+        { id:'u001', name:'管理员', username:'admin', phone:'13800000001', password:'Admin@2026', role:'admin', status:'active', createdAt:new Date().toISOString() },
+        { id:'u002', name:'张三', username:'zhangsan', phone:'13800000002', password:'Abc@12345', role:'collector', status:'active', createdAt:new Date().toISOString() },
+        { id:'u003', name:'李四', username:'lisi', phone:'13800000003', password:'Abc@12345', role:'collector', status:'disabled', createdAt:new Date().toISOString() }
+      ]));
+      r.className = 'success';
+      r.style.display = 'block';
+      r.innerHTML = '✅ 手动重置成功！<br><br>' +
+        '<strong>账号：</strong>admin / Admin@2026<br>' +
+        '<a href="pages/login.html">→ 点击进入登录页</a>';
+    }
+  } catch(e) {
+    r.className = 'error';
+    r.style.display = 'block';
+    r.innerHTML = '❌ 重置失败: ' + e.message;
+  }
+}
+</script>
+</body>
+</html>

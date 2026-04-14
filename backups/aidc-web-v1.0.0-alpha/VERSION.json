@@ -1,0 +1,31 @@
+{
+  "version": "v1.0.0-alpha",
+  "date": "2026-04-13 09:38:02",
+  "note": "AIDC Collector 电脑端网站首版\n\n功能模块：\n- 仪表盘（KPI 指标卡、状态分布、最近活动）\n- 机房列表（搜索、筛选、排序、分页、详情弹窗）\n- 添加机房（V4 调研表完整字段、五级联动、周历选择）\n- 导入导出（拖拽上传、批量导入、Excel/CSV/JSON 导出、模板下载）\n- 项目进度甘特图（三个预置项目、六阶段任务、周历时间轴）\n\n技术特性：\n- 纯前端 HTML/CSS/JS，无框架依赖\n- localStorage 数据持久化 + AIDC_API 封装\n- 深色/浅色主题切换\n- 统一顶部导航\n- 响应式布局\n\n数据连通：\n- api.js 封装所有 CRUD 操作\n- 预置 demo 数据\n- 支持导入导出",
+  "files": [
+    "admin/pages/dashboard-v2.html",
+    "admin/pages/datacenter-list.html",
+    "admin/pages/datacenter-form.html",
+    "admin/pages/datacenter-import.html",
+    "admin/pages/datacenter-view.html",
+    "admin/pages/datacenter-detail-v2.html",
+    "admin/pages/gantt.html",
+    "admin/pages/login.html",
+    "admin/pages/shared.css",
+    "admin/pages/shared-light.css",
+    "admin/pages/api.js"
+  ],
+  "checksum": {
+    "admin/pages/dashboard-v2.html": "4760945d41df520e0982ac0357cb711f",
+    "admin/pages/datacenter-list.html": "ccfd21a3ba8e7173ffc44d59862212de",
+    "admin/pages/datacenter-form.html": "1483512752514bc04a0068ee3f7b65ec",
+    "admin/pages/datacenter-import.html": "69205bd1e878da2671578e49a4713fa2",
+    "admin/pages/datacenter-view.html": "01576b64d6e5ffe9f02f0a417963ad20",
+    "admin/pages/datacenter-detail-v2.html": "e7c2fc7e52971bd8c7b6c749debe0812",
+    "admin/pages/gantt.html": "b329472cc0a2762a61da3a9b4b99d147",
+    "admin/pages/login.html": "22670c5a535670b23cd776c0a906d44d",
+    "admin/pages/shared.css": "2076f7fe642a5d33bc2e80aadc15282c",
+    "admin/pages/shared-light.css": "c412508f53c3787070f64e9155264c1f",
+    "admin/pages/api.js": "b275d6d65dc3437b36c694cd2dde9a91"
+  }
+}

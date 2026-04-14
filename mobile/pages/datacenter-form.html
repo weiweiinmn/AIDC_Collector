@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>添加机房 — AIDC Collector</title>
+<link rel="stylesheet" href="../css/mobile.css?v=20260413-7">
+<style>
+  .form-page-scroll { padding: 0; }
+  .form-page-hero {
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-light) 100%);
+    color: #fff;
+    padding: calc(var(--nav-h) + 16px) 16px 20px;
+    position: relative;
+  }
+  .form-page-hero .hero-sub { font-size: 13px; opacity: 0.75; margin-top: 4px; }
+  .form-section-wrap {
+    background: var(--c-bg);
+    padding-bottom: 16px;
+  }
+  .form-field-row {
+    background: #fff;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .form-field-row:last-child { border-bottom: none; }
+  .field-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--c-text-secondary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .field-label .req { color: var(--c-danger); }
+  .field-input, .field-select, .field-textarea {
+    width: 100%;
+    border: 1px solid var(--c-border); border-radius: var(--radius-md);
+    background: #fff;
+    padding: 0 12px;
+    font-size: 15px;
+    color: var(--c-text-primary);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    height: 46px;
+    font-family: inherit;
+  }
+  .field-textarea { height: auto; min-height: 90px; padding: 10px 12px; resize: vertical; line-height: 1.5; }
+  .field-input:focus, .field-select:focus, .field-textarea:focus {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px rgba(30,58,95,0.1);
+  }
+  .field-input.error, .field-select.error, .field-textarea.error {
+    border-color: var(--c-danger);
+  }
+  .field-error {
+    font-size: 11px;
+    color: var(--c-danger);
+    margin-top: 4px;
+    display: none;
+  }
+  .field-error.show { display: block; }
+  /* 服务商自动补全 */
+  .suggest-overlay {
+    display: none;
+    position: absolute;
+    left: 0; right: 0;
+    top: calc(100% + 2px);
+    background: #fff;
+    border: 1px solid var(--c-border); border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+    overflow: hidden;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .suggest-overlay.show { display: block; }
+  .suggest-item {
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--c-text-primary);
+    cursor: pointer;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .suggest-item:last-child { border-bottom: none; }
+  .suggest-item:active { background: var(--c-gray-bg); }
+  .suggest-item .sgi-count {
+    float: right;
+    font-size: 11px;
+    color: var(--c-text-muted);
+    margin-top: 2px;
+  }
+  .field-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+  .fixed-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 16px rgba(30,58,95,0.10);
+    border-top: 1px solid var(--c-border);
+    z-index: 100;
+    display: flex;
+    gap: 12px;
+  }
+  .input-note { font-size: 10px; color: var(--c-text-muted); margin-top: 3px; }
+  /* 滚动占位 */
+  .bottom-spacer { height: 80px; }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+  <!-- 顶部导航 -->
+  <header class="navbar">
+    <div class="nav-btn nav-back" onclick="history.back()" aria-label="返回">‹</div>
+    <div class="nav-title" id="pageTitle">添加机房</div>
+    <div class="nav-action" id="saveBtn" onclick="doSubmit()">保存</div>
+  </header>
+
+  <main style="padding-top:56px;padding-bottom:80px" class="page-content form-page-scroll">
+    <!-- Hero -->
+    <div class="form-page-hero">
+      <div class="hero-name" id="heroTitle">添加新机房</div>
+      
+    </div>
+
+    <form id="dcForm" novalidate>
+      <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 基础信息 -->
+      <div class="form-section-wrap">
+        <div class="form-section-title">
+          <span class="form-section-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>基础信息
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">机房名称 <span class="req">*</span></div>
+          <input type="text" class="field-input" id="f_name" placeholder="如：Supernova BKK-1" autocomplete="off">
+          <div class="field-error" id="e_name">请输入机房名称</div>
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">服务商名称</div>
+          <div style="position:relative">
+            <input type="text" class="field-input" id="f_serviceProvider" placeholder="输入或选择已有服务商…" autocomplete="off">
+            <div class="field-error" id="e_serviceProvider"></div>
+            <div class="suggest-overlay" id="providerSuggest"></div>
+          </div>
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">可用电路容量</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="number" class="field-input" id="f_powerCapacity" placeholder="如：50" min="0" step="0.1" inputmode="decimal" style="flex:1">
+            <span style="color:var(--c-text-muted);font-size:14px;">MW</span>
+          </div>
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">国家 <span class="req">*</span></div>
+          <select class="field-select" id="f_country">
+            <option value="">请选择国家</option>
+            <option>中国</option><option>泰国</option><option>马来西亚</option>
+            <option>印尼</option><option>菲律宾</option><option>日本</option>
+            <option>新加坡</option><option>澳大利亚</option>
+          </select>
+          <div class="field-error" id="e_country">请选择国家</div>
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">省/州 <span class="req">*</span></div>
+          <input type="text" class="field-input" id="f_province" placeholder="如：曼谷" autocomplete="off">
+          <div class="field-error" id="e_province">请输入省/州</div>
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">城市 <span class="req">*</span></div>
+          <input type="text" class="field-input" id="f_city" placeholder="如：北榄府" autocomplete="off">
+          <div class="field-error" id="e_city">请输入城市</div>
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">园区/街道</div>
+          <input type="text" class="field-input" id="f_address" placeholder="如：1 Genting Lane, Singapore 349544" autocomplete="off">
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">产权归属</div>
+          <select class="field-select" id="f_propertyType">
+            <option value="">请选择</option>
+            <option>自有</option><option>租赁</option><option>合资</option>
+          </select>
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">预计交付运营时间</div>
+          <input type="month" class="field-input" id="f_expectedDate">
+          <div class="input-note">只能选择当前月份及以后</div>
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">状态 <span class="req">*</span></div>
+          <select class="field-select" id="f_status">
+            <option value="">请选择状态</option>
+            <option value="new">新增</option>
+            <option value="collected">已收录</option>
+            <option value="negotiating">洽谈中</option>
+            <option value="signed">已签约</option>
+            <option value="rejected">已淘汰</option>
+          </select>
+          <div class="field-error" id="e_status">请选择状态</div>
+        </div>
+      </div>
+
+      <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6H1V18H5M15 6H20V18H14M23 14V10" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" />
+        <path d="M11 5.5L7 12H13L9 18.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg> 电力系统 -->
+      <div class="form-section-wrap">
+        <div class="form-section-title">
+          <span class="form-section-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6H1V18H5M15 6H20V18H14M23 14V10" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" />
+        <path d="M11 5.5L7 12H13L9 18.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></span>电力系统
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">主电路容量</div>
+          <input type="text" class="field-input" id="f_mainsCapacity" placeholder="如：20MW" autocomplete="off">
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">功率密度</div>
+          <input type="text" class="field-input" id="f_powerPerRack" placeholder="如：10" autocomplete="off">
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">PUE设计值</div>
+          <input type="number" class="field-input" id="f_pue" placeholder="如：1.38" step="0.01" min="1" max="3" inputmode="decimal">
+        </div>
+      </div>
+
+      <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path
+        d="M4 10C4 6.13401 7.13401 3 11 3C14.1873 3 16.8756 5.12935 17.7225 8.04306C20.6955 8.39988 23 10.9308 23 14C23 17.3137 20.3137 20 17 20H6C3.23858 20 1 17.7614 1 15C1 12.9443 2.23985 11.18 4.01191 10.4112C4.004 10.275 4 10.1379 4 10Z"
+        fill="none" /></svg>️ 制冷系统 -->
+      <div class="form-section-wrap">
+        <div class="form-section-title">
+          <span class="form-section-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path
+        d="M4 10C4 6.13401 7.13401 3 11 3C14.1873 3 16.8756 5.12935 17.7225 8.04306C20.6955 8.39988 23 10.9308 23 14C23 17.3137 20.3137 20 17 20H6C3.23858 20 1 17.7614 1 15C1 12.9443 2.23985 11.18 4.01191 10.4112C4.004 10.275 4 10.1379 4 10Z"
+        fill="none" /></svg>️</span>制冷系统
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">主制冷方式 <span class="req">*</span></div>
+          <select class="field-select" id="f_mainCoolingType">
+            <option value="">请选择制冷方式</option>
+            <option>风冷</option><option>冷水</option><option>液冷</option><option>自然冷却</option>
+          </select>
+          <div class="field-error" id="e_mainCoolingType">请选择制冷方式</div>
+        </div>
+      </div>
+
+      <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.9503 7.05029L12.0005 12M12.0005 12L7.05078 16.9498M12.0005 12L16.9503 16.9498M12.0005 12L7.05078 7.05029" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 交付与扩容 -->
+      <div class="form-section-wrap">
+        <div class="form-section-title">
+          <span class="form-section-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.9503 7.05029L12.0005 12M12.0005 12L7.05078 16.9498M12.0005 12L16.9503 16.9498M12.0005 12L7.05078 7.05029" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>交付与扩容
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">是否可扩容 <span class="req">*</span></div>
+          <select class="field-select" id="f_expandable">
+            <option value="">请选择</option>
+            <option value="true">是</option>
+            <option value="false">否</option>
+          </select>
+          <div class="field-error" id="e_expandable">请选择是否可扩容</div>
+        </div>
+      </div>
+
+      <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14C6 14 6 14 6 14C7.10457 14 8 14.8954 8 16V18C8 19.1046 7.10457 20 6 20H3V14Z" fill="none"/>
+<path d="M16 16C16 14.8954 16.8954 14 18 14H21V20H18C16.8954 20 16 19.1046 16 18V16Z" fill="none"/>
+
+<path d="M3 20V12.0667C3 7.05929 7.02944 3 12 3C16.9706 3 21 7.05929 21 12.0667V20M3 20H6C7.10457 20 8 19.1046 8 18V16C8 14.8954 7.10457 14 6 14C6 14 6 14 3 14V20ZM21 20V14H18C16.8954 14 16 14.8954 16 16V18C16 19.1046 16.8954 20 18 20H21Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 其他信息 -->
+      <div class="form-section-wrap">
+        <div class="form-section-title">
+          <span class="form-section-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14C6 14 6 14 6 14C7.10457 14 8 14.8954 8 16V18C8 19.1046 7.10457 20 6 20H3V14Z" fill="none"/>
+<path d="M16 16C16 14.8954 16.8954 14 18 14H21V20H18C16.8954 20 16 19.1046 16 18V16Z" fill="none"/>
+
+<path d="M3 20V12.0667C3 7.05929 7.02944 3 12 3C16.9706 3 21 7.05929 21 12.0667V20M3 20H6C7.10457 20 8 19.1046 8 18V16C8 14.8954 7.10457 14 6 14C6 14 6 14 3 14V20ZM21 20V14H18C16.8954 14 16 14.8954 16 16V18C16 19.1046 16.8954 20 18 20H21Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>其他信息
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">信息来源</div>
+          <input type="text" class="field-input" id="f_source" placeholder="如：展会、客户介绍、网络搜索" autocomplete="off">
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">对接同事</div>
+          <input type="text" class="field-input" id="f_liaison" placeholder="如：李明" autocomplete="off">
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">KYC状态</div>
+          <select class="field-select" id="f_kycStatus">
+            <option value="">请选择</option>
+            <option value="approved">已通过</option>
+            <option value="in_progress">进行中</option>
+            <option value="pending_doc">待补充文件</option>
+            <option value="not_started">未开始</option>
+          </select>
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">KYC备注</div>
+          <input type="text" class="field-input" id="f_kycRemark" placeholder="如：待补充土地证" autocomplete="off">
+        </div>
+
+        <div class="form-field-row">
+          <div class="field-label">备注</div>
+          <textarea class="field-textarea" id="f_remark" placeholder="现场情况、特殊说明、联系方式等…" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="bottom-spacer"></div>
+    </form>
+  </main>
+
+  <!-- 固定底部按钮 -->
+  <div class="fixed-bottom-bar">
+    <button type="button" class="btn btn-ghost" onclick="history.back()" style="flex:1;border:1.5px solid var(--c-border)">取消</button>
+    <button type="button" class="btn btn-primary" id="submitBtn" onclick="doSubmit()" style="flex:2">保 存</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/api.js?v=20260413-7"></script>
+  <script src="../js/drawer.js?v=20260413-7"></script>
+<script>
+var isEditMode = false;
+var editId = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (!AIDC_API.isLoggedIn()) { window.location.href = 'login.html'; return; }
+
+  editId = new URLSearchParams(window.location.search).get('id');
+  if (editId) {
+    isEditMode = true;
+    document.getElementById('pageTitle').textContent = '编辑机房';
+    loadExisting(editId);
+  }
+});
+
+// 服务商自动补全
+(function() {
+  var suggestEl = document.getElementById('providerSuggest');
+  var inputEl  = document.getElementById('f_serviceProvider');
+  if (!inputEl || !suggestEl) return;
+
+  inputEl.addEventListener('input', function() {
+    var q = inputEl.value.trim();
+    if (!q) { suggestEl.classList.remove('show'); return; }
+    AIDC_API.getDatacenters().then(function(res) {
+      var all = res.data.list;
+      var map = {};
+      all.forEach(function(d) {
+        var v = (d.customer || '').trim();
+        if (v) map[v] = (map[v] || 0) + 1;
+      });
+      var matches = Object.keys(map)
+        .filter(function(k){ return k.toLowerCase().includes(q.toLowerCase()); })
+        .sort(function(a,b){ return map[b] - map[a]; })
+        .slice(0, 6);
+      if (!matches.length) { suggestEl.classList.remove('show'); return; }
+      suggestEl.innerHTML = matches.map(function(name) {
+        return '<div class="suggest-item" onclick="pickProvider(\'' + name.replace(/'/g,"\\'") + '\')">' + name + ' <span style="color:var(--c-text-muted);font-size:11px">(' + map[name] + ')</span></div>';
+      }).join('');
+      suggestEl.classList.add('show');
+    });
+  });
+
+  inputEl.addEventListener('blur', function() {
+    setTimeout(function(){ suggestEl.classList.remove('show'); }, 200);
+  });
+})();
+
+function pickProvider(name) {
+  document.getElementById('f_serviceProvider').value = name;
+  document.getElementById('providerSuggest').classList.remove('show');
+}
+
+async function loadExisting(id) {
+  var res = await AIDC_API.getDatacenter(id);
+  if (res.code !== 0) { showToast(res.message||'加载失败'); setTimeout(function(){ history.back(); }, 1500); return; }
+  var d = res.data;
+  // 表单字段映射（表单HTML字段名 → 数据字段名）
+  var fields = {
+    'f_name':             d.name,
+    'f_serviceProvider':  d.customer,
+    'f_powerCapacity':    d.powerCapacity,
+    'f_country':          d.country,
+    'f_province':         d.province,
+    'f_city':             d.city,
+    'f_address':          d.address,
+    'f_propertyType':     d.propertyType,
+    'f_expectedDate':     d.expectedDate,
+    'f_status':           d.status,
+    'f_mainsCapacity':    d.mainsCapacity,
+    'f_powerPerRack':     d.powerPerRack,
+    'f_pue':              d.pue,
+    'f_mainCoolingType':  d.mainCoolingType,
+    'f_expandable':       d.expandable,
+    'f_source':           d.source,
+    'f_liaison':          d.liaison,
+    'f_kycStatus':        d.kycStatus,
+    'f_kycRemark':        d.kycRemark,
+    'f_remark':           d.remark,
+  };
+  Object.keys(fields).forEach(function(fid) {
+    var el = document.getElementById(fid);
+    if (!el) return;
+    var v = fields[fid];
+    if (el.tagName === 'SELECT') {
+      // 处理布尔值：data 中可能是 true/false 或 "true"/"false"
+      if (fid === 'f_expandable') {
+        el.value = (v === true || v === 'true') ? 'true' : (v === false || v === 'false') ? 'false' : '';
+      } else {
+        el.value = v !== undefined && v !== null ? v : '';
+      }
+    } else {
+      el.value = v || '';
+    }
+  });
+}
+
+function validate() {
+  var rules = [
+    ['f_name',            'e_name',            '请输入机房名称'],
+    ['f_country',         'e_country',         '请选择国家'],
+    ['f_province',        'e_province',        '请输入省/州'],
+    ['f_city',            'e_city',            '请输入城市'],
+    ['f_status',          'e_status',          '请选择状态'],
+    ['f_mainCoolingType', 'e_mainCoolingType', '请选择制冷方式'],
+    ['f_expandable',      'e_expandable',      '请选择是否可扩容'],
+  ];
+  var valid = true;
+  rules.forEach(function(r) {
+    var el = document.getElementById(r[0]);
+    var errEl = document.getElementById(r[1]);
+    if (!el) return;
+    if (!el.value || !el.value.trim()) {
+      el.classList.add('error');
+      if (errEl) errEl.classList.add('show');
+      valid = false;
+    } else {
+      el.classList.remove('error');
+      if (errEl) errEl.classList.remove('show');
+    }
+  });
+  return valid;
+}
+
+async function doSubmit() {
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '保存中…';
+
+  if (!validate()) {
+    btn.disabled = false;
+    btn.textContent = '保 存';
+    return;
+  }
+
+  var expandableVal = document.getElementById('f_expandable').value;
+  var data = {
+    name:             document.getElementById('f_name').value.trim(),
+    customer:         document.getElementById('f_serviceProvider').value.trim(),
+    powerCapacity:    document.getElementById('f_powerCapacity').value ? parseFloat(document.getElementById('f_powerCapacity').value) : null,
+    country:          document.getElementById('f_country').value,
+    province:         document.getElementById('f_province').value.trim(),
+    city:             document.getElementById('f_city').value.trim(),
+    address:          document.getElementById('f_address').value.trim(),
+    propertyType:     document.getElementById('f_propertyType').value || null,
+    expectedDate:     document.getElementById('f_expectedDate').value || null,
+    status:           document.getElementById('f_status').value || 'new',
+    mainsCapacity:    document.getElementById('f_mainsCapacity').value.trim() || null,
+    powerPerRack:     document.getElementById('f_powerPerRack').value ? parseFloat(document.getElementById('f_powerPerRack').value) : null,
+    pue:              document.getElementById('f_pue').value ? parseFloat(document.getElementById('f_pue').value) : null,
+    mainCoolingType:  document.getElementById('f_mainCoolingType').value || null,
+    expandable:       expandableVal === 'true' ? true : (expandableVal === 'false' ? false : null),
+    source:           document.getElementById('f_source').value.trim() || null,
+    liaison:          document.getElementById('f_liaison').value.trim() || null,
+    kycStatus:        document.getElementById('f_kycStatus').value || 'not_started',
+    kycRemark:        document.getElementById('f_kycRemark').value.trim() || null,
+    remark:           document.getElementById('f_remark').value.trim(),
+  };
+
+  var res;
+  if (isEditMode && editId) {
+    res = await AIDC_API.updateDatacenter(editId, data);
+  } else {
+    res = await AIDC_API.createDatacenter(data);
+  }
+
+  btn.disabled = false;
+  btn.textContent = '保 存';
+
+  if (res.code === 0) {
+    showToast(isEditMode ? '修改成功' : '添加成功', 'success');
+    setTimeout(function() { window.location.href = 'datacenter-list.html'; }, 1000);
+  } else {
+    showToast(res.message || '操作失败');
+  }
+}
+
+function showToast(msg, type) {
+  type = type || 'error';
+  var tc = document.getElementById('toastContainer');
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.innerHTML = msg;
+  tc.appendChild(t);
+  setTimeout(function(){ t.classList.add('toast-fadeout'); setTimeout(function(){ t.remove(); }, 300); }, 2000);
+}
+</script>
+</body>
+</html>

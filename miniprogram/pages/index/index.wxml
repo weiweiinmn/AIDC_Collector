@@ -44,7 +44,7 @@
       <view class="section-title">快捷操作</view>
     </view>
     <t-grid column="{{4}}" t-class="action-grid">
-      <t-grid-item text="新建采集" icon="add" bind:tap="goForm" />
+      <t-grid-item text="添加机房" icon="add" bind:tap="goForm" />
       <t-grid-item text="采集列表" icon="view-list" bind:tap="goList" />
       <t-grid-item text="导出/导入" icon="download" bind:tap="goExport" wx:if="{{isAdmin}}" />
       <t-grid-item text="导入数据" icon="upload" bind:tap="goImport" wx:if="{{!isAdmin}}" />
@@ -64,7 +64,7 @@
     <view wx:if="{{recentList.length === 0}}" class="empty-state">
       <t-icon name="inbox" size="80rpx" color="#CBD5E1" />
       <text>暂无采集记录</text>
-      <text class="empty-hint">点击「新建采集」开始录入</text>
+      <text class="empty-hint">点击「添加机房」开始录入</text>
     </view>
 
     <view wx:for="{{recentList}}" wx:key="_id" class="card dc-card" bindtap="goDetail" data-id="{{item._id}}">

@@ -1465,3 +1465,585 @@ input, select, textarea { font-family: inherit; }
 .kyc-td.kyc-success { background:var(--success-bg); color:var(--success); }
 .kyc-td.kyc-danger  { background:var(--danger-bg);  color:var(--danger);  }
 .kyc-td.kyc-accent  { background:var(--accent-dim); color:var(--accent);  }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — 移动端响应式适配
+   断点：768px（平板竖屏）/ 480px（手机）
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── 断点：768px 及以下（平板竖屏 / 手机）────────────────────────── */
+@media (max-width: 768px) {
+
+  /* ── 基础重置 ──────────────────────────────────────────────────── */
+  :root {
+    --sidebar-width: 0px;
+    --header-height: 56px;
+    --page-padding: 16px;
+    --card-padding: 16px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--bg-page);
+    padding-bottom: 80px !important; /* 给底部导航留空间 */
+  }
+
+  /* ── 桌面 Sidebar 隐藏，替换为移动 Header ─────────────────────── */
+  .sidebar {
+    display: none !important;
+  }
+
+  .app-layout {
+    margin-left: 0 !important;
+  }
+
+  .page-header,
+  .page-toolbar,
+  .content-header {
+    margin-left: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .page-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: var(--header-height);
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    box-shadow: none;
+    border-radius: 0 !important;
+  }
+
+  .page-header h1 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  /* 移动端页面标题 */
+  .app-layout {
+    padding-top: var(--header-height);
+    margin-left: 0 !important;
+    min-height: 100dvh;
+  }
+
+  /* 页面主体内容 */
+  .page-content {
+    padding: var(--page-padding);
+    margin: 0;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent;
+  }
+
+  /* ── 移动端顶部导航栏 ─────────────────────────────────────────── */
+  .mobile-navbar {
+    display: flex !important;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--header-height);
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 200;
+  }
+
+  .mobile-navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+
+  .mobile-navbar-brand svg {
+    width: 22px;
+    height: 22px;
+    color: var(--brand);
+    flex-shrink: 0;
+  }
+
+  .mobile-navbar-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+    text-align: center;
+  }
+
+  .mobile-navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-navbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .mobile-navbar-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  .mobile-navbar-btn svg { width: 18px; height: 18px; }
+
+  /* 汉堡菜单 */
+  .mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 300;
+    backdrop-filter: blur(2px);
+  }
+
+  .mobile-menu-overlay.open { display: block; }
+
+  .mobile-menu-drawer {
+    position: fixed;
+    top: 0; left: -260px;
+    width: 260px;
+    height: 100%;
+    background: var(--bg-card);
+    z-index: 301;
+    padding: 24px 0;
+    transition: left 0.25s ease;
+    overflow-y: auto;
+  }
+
+  .mobile-menu-overlay.open .mobile-menu-drawer {
+    left: 0;
+  }
+
+  .mobile-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mobile-menu-close {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .mobile-menu-close svg { width: 16px; height: 16px; }
+
+  .mobile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 15px;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+
+  .mobile-menu-item:hover,
+  .mobile-menu-item.active {
+    background: var(--bg-hover);
+    color: var(--brand);
+    border-left-color: var(--brand);
+  }
+
+  .mobile-menu-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+  /* ── 移动端底部导航栏 ─────────────────────────────────────────── */
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 64px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+    padding: 0 0 env(safe-area-inset-bottom, 0);
+  }
+
+  .mobile-bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 500;
+    transition: color 0.15s;
+    padding: 8px 0;
+    min-height: 56px;
+  }
+
+  .mobile-bottom-nav-item svg { width: 22px; height: 22px; }
+
+  .mobile-bottom-nav-item:hover,
+  .mobile-bottom-nav-item.active {
+    color: var(--brand);
+  }
+
+  .mobile-bottom-nav-item .nav-badge {
+    position: absolute;
+    top: 4px;
+    right: calc(50% - 16px);
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: var(--danger);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  /* ── 卡片移动端适配 ───────────────────────────────────────────── */
+  .card {
+    padding: var(--card-padding);
+    margin-bottom: 12px;
+    border-radius: var(--radius-lg);
+  }
+
+  .page-card {
+    padding: var(--card-padding);
+    margin-bottom: 12px;
+    border-radius: var(--radius-lg);
+  }
+
+  /* ── 表单移动端 ───────────────────────────────────────────────── */
+  .form-grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .form-grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .form-grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .form-group {
+    margin-bottom: 12px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    height: 44px;
+    font-size: 15px;
+    border-radius: var(--radius-md);
+  }
+
+  .form-textarea {
+    height: auto;
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  /* 三级联动地区选择：每项独占一行 */
+  .region-cascade {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .region-cascade .form-group { width: 100% !important; }
+  .region-cascade select,
+  .region-cascade input {
+    height: 42px !important;
+    font-size: 14px !important;
+  }
+
+  /* 数字输入组 */
+  .input-unit { display: block; }
+  .input-unit input { padding-right: 0; }
+  .input-unit .unit-label {
+    position: static;
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    background: none;
+    width: auto;
+    height: auto;
+    line-height: 1;
+  }
+
+  /* 表单行 */
+  .form-row {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  /* ── 表格移动端 ───────────────────────────────────────────────── */
+  .data-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    font-size: 13px;
+    min-width: 800px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 10px 8px;
+    white-space: nowrap;
+  }
+
+  /* ── 筛选区移动端 ────────────────────────────────────────────── */
+  .filter-row-primary {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-row-primary .filter-group,
+  .filter-row-primary .filter-search {
+    min-width: unset !important;
+    width: 100%;
+    flex: unset !important;
+  }
+
+  .filter-advanced-row {
+    flex-direction: column;
+  }
+
+  .filter-advanced-row .filter-group {
+    width: 100%;
+    flex: unset !important;
+  }
+
+  /* ── 按钮移动端 ──────────────────────────────────────────────── */
+  .btn {
+    min-height: 44px;
+    font-size: 15px;
+    padding: 0 20px;
+    border-radius: var(--radius-md);
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-row .btn { width: 100%; }
+
+  .btn-sm,
+  .btn-xs {
+    min-height: 36px;
+    font-size: 13px;
+    padding: 0 14px;
+  }
+
+  /* ── 模态框移动端 ────────────────────────────────────────────── */
+  .modal-overlay {
+    align-items: flex-end;
+    justify-content: stretch;
+  }
+
+  .modal-card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 90dvh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  /* ── 状态标签移动端 ──────────────────────────────────────────── */
+  .status-badge,
+  .badge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  /* ── 详情页移动端 ────────────────────────────────────────────── */
+  .detail-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .detail-card {
+    padding: var(--card-padding);
+  }
+
+  /* ── 统计数字卡移动端 ────────────────────────────────────────── */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-value {
+    font-size: 26px !important;
+  }
+
+  .stat-label {
+    font-size: 12px;
+  }
+
+  /* ── 搜索框移动端 ────────────────────────────────────────────── */
+  .search-box {
+    width: 100%;
+  }
+
+  .search-input {
+    height: 42px;
+    font-size: 15px;
+  }
+
+  /* ── Tab 切换移动端 ─────────────────────────────────────────── */
+  .tab-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 0;
+  }
+
+  .tab-item {
+    padding: 12px 16px;
+    font-size: 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── 列表项移动端 ────────────────────────────────────────────── */
+  .list-card {
+    padding: 14px;
+    margin-bottom: 10px;
+    border-radius: var(--radius-lg);
+  }
+
+  /* ── 分页移动端 ──────────────────────────────────────────────── */
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* ── 主题切换按钮移动端 ─────────────────────────────────────── */
+  .theme-toggle {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ── 断点：480px 及以下（小屏手机）──────────────────────────────── */
+@media (max-width: 480px) {
+  :root {
+    --page-padding: 12px;
+    --card-padding: 14px;
+  }
+
+  .page-header h1 { font-size: 15px; }
+
+  .form-grid-4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .data-table {
+    font-size: 12px;
+  }
+
+  .mobile-bottom-nav-item {
+    font-size: 9px;
+  }
+
+  .mobile-bottom-nav-item svg { width: 20px; height: 20px; }
+
+  /* 模态框内按钮两列 */
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-actions .btn { width: 100%; }
+}
+
+/* ── 断点：320px 及以下 ────────────────────────────────────────── */
+@media (max-width: 320px) {
+  :root {
+    --page-padding: 8px;
+  }
+}
+
+/* ── 打印样式（隐藏移动端元素）─────────────────────────────────── */
+@media print {
+  .mobile-navbar,
+  .mobile-bottom-nav,
+  .mobile-menu-overlay { display: none !important; }
+}

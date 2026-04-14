@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>系统设置 — AIDC Collector</title>
+<link rel="stylesheet" href="../css/mobile.css?v=20260413-7">
+<style>
+  .settings-list { background: #fff; margin-top: 16px; }
+  .settings-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px; border-bottom: 1px solid var(--c-border);
+    cursor: pointer; text-decoration: none; color: inherit;
+  }
+  .settings-item:last-child { border-bottom: none; }
+  .settings-item:active { background: var(--c-gray-bg); }
+  .settings-item-left { display: flex; align-items: center; gap: 12px; }
+  .settings-item-icon { font-size: 20px; }
+  .settings-item-label { font-size: 15px; color: var(--c-text-primary); }
+  .settings-item-right { color: var(--c-text-muted); font-size: 14px; }
+  .settings-item.danger .settings-item-label { color: var(--c-danger); }
+  .settings-card {
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-light) 100%);
+    border: 1px solid var(--c-border);
+    padding: 20px 16px; margin: 0 0 16px;
+    color: #fff;
+  }
+  .settings-version { font-size: 12px; color: rgba(255,255,255,0.6); text-align: center; margin-top: 24px; }
+  .settings-hint { font-size: 12px; color: var(--c-text-muted); text-align: center; margin: 8px 0 16px; }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+  <header class="navbar">
+    <div class="nav-btn nav-back" onclick="history.back()" aria-label="返回">‹</div>
+    <div class="nav-title">系统设置</div>
+    <div class="nav-btn" style="visibility:hidden">‹</div>
+  </header>
+
+  <main style="padding-top:56px;padding-bottom:80px" class="page-content">
+    <!-- 账户卡片 -->
+    <div style="border-radius: var(--radius-md)" class="settings-card">
+      <div style="font-size:28px;margin-bottom:8px" id="userIcon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" fill="none"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" fill="none"/>
+
+
+<path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div style="font-size:18px;font-weight:600" id="userName">加载中…</div>
+      <div style="font-size:13px;opacity:0.75;margin-top:4px" id="userRole">–</div>
+    </div>
+
+    <!-- 设置列表 -->
+    <div class="settings-list">
+      <div class="settings-item" onclick="doLogout()">
+        <div class="settings-item-left">
+          <span class="settings-item-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 6.5L5.5 12L11 17.5M6.75 12H19.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          <span class="settings-item-label">退出登录</span>
+        </div>
+        <span class="settings-item-right">›</span>
+      </div>
+    </div>
+
+    <div class="settings-hint">本地数据存储于浏览器 localStorage</div>
+    <div class="settings-version">AIDC Collector v1.0 · 移动端</div>
+  </main>
+
+  <!-- 底部 Tab -->
+  <nav class="tab-bar">
+    <div class="tab-item" onclick="Drawer.goTab('index.html')">
+      <div class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10L12 2.5L21 10V21H3V10Z" fill="none"/>
+<path d="M9 14H15V21H9V14Z" fill="none"/>
+<path d="M9 14H15V21H9V14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M3 10L12 2.5L21 10V21H3V10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tab-label">首页</div>
+    </div>
+    <div class="tab-item" onclick="Drawer.goTab('datacenter-list.html')">
+      <div class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tab-label">机房</div>
+    </div>
+    <div class="tab-add-btn" onclick="Drawer.goTab('datacenter-form.html')">
+      <div class="tab-add-circle">+</div>
+    </div>
+    <div class="tab-item" onclick="Drawer.goTab('datacenter-records.html')">
+      <div class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tab-label">记录</div>
+    </div>
+    <div class="tab-item active" onclick="Drawer.toggle()">
+      <div class="tab-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" fill="none"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" fill="none"/>
+
+
+<path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="tab-label">我的</div>
+    </div>
+  </nav>
+</div>
+
+<!-- 抽屉 -->
+<div class="drawer-overlay hidden" id="drawerOverlay" onclick="Drawer.toggle()">
+  <div class="drawer" onclick="event.stopPropagation()">
+    <div class="drawer-header">
+      <div class="drawer-close" onclick="Drawer.toggle()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.9503 7.05029L12.0005 12M12.0005 12L7.05078 16.9498M12.0005 12L16.9503 16.9498M12.0005 12L7.05078 7.05029" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="drawer-avatar" id="drawerAvatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" fill="none"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" fill="none"/>
+
+
+<path d="M16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21H20Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="drawer-name" id="drawerName">加载中</div>
+      <div class="drawer-role" id="drawerRole"></div>
+    </div>
+    <div class="drawer-nav">
+      <div class="drawer-menu-item" onclick="Drawer.nav('index.html')"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10L12 2.5L21 10V21H3V10Z" fill="none"/>
+<path d="M9 14H15V21H9V14Z" fill="none"/>
+<path d="M9 14H15V21H9V14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M3 10L12 2.5L21 10V21H3V10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>仪表盘</div>
+      <div class="drawer-menu-item" onclick="Drawer.nav('datacenter-list.html')"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" fill="none"/>
+<path d="M3.5 2.5L20.5 2.5L20.5 21.5L3.5 21.5L3.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 8H16M8 12H16M8 16H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>机房列表</div>
+      <div class="drawer-menu-item" onclick="Drawer.nav('datacenter-form.html')"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5L12 19M19 12L5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>添加机房</div>
+      <div class="drawer-menu-item active" onclick="Drawer.nav('settings.html')"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.6604 7L12.0001 2L3.33984 7V17L12.0001 22L20.6604 17V7ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="none"/>
+<path d="M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" fill="none"/>
+<path d="M12.0001 2L20.6604 7V17L12.0001 22L3.33984 17V7L12.0001 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>系统设置</div>
+      <div class="drawer-menu-item danger" onclick="doLogout()"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 6.5L5.5 12L11 17.5M6.75 12H19.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>退出登录</div>
+    </div>
+    <div class="drawer-footer">
+      <div style="font-size:11px;color:var(--c-text-muted);text-align:center;">AIDC Collector v1.0</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/api.js?v=20260413-7"></script>
+<script src="../js/drawer.js?v=20260413-7"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  Drawer.init();
+  if (!AIDC_API.isLoggedIn()) { window.location.href = 'login.html'; return; }
+  var u = AIDC_API.getUser();
+  document.getElementById('userName').textContent = u.name || '用户';
+  var roleMap = { admin:'管理员', manager:'BD经理', user:'商务拓展' };
+  document.getElementById('userRole').textContent = roleMap[u.role] || '商务拓展';
+  document.getElementById('drawerName').textContent = u.name || '用户';
+  document.getElementById('drawerRole').textContent = roleMap[u.role] || '商务拓展';
+});
+
+function doLogout() {
+  AIDC_API.logout();
+  window.location.href = 'login.html';
+}
+
+function showToast(msg, type) {
+  type = type || 'error';
+  var tc = document.getElementById('toastContainer');
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.innerHTML = msg;
+  tc.appendChild(t);
+  setTimeout(function(){ t.classList.add('toast-fadeout'); setTimeout(function(){ t.remove(); }, 300); }, 2000);
+}
+</script>
+</body>
+</html>

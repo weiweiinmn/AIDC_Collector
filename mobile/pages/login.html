@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>登录 — AIDC Collector</title>
+<link rel="stylesheet" href="../css/mobile.css?v=20260413-7">
+<style>
+.login-page { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#0D3A5C 0%,#1B6B8A 100%); padding:20px; }
+.login-card { width:100%; max-width:360px; background:#fff; border-radius:12px; padding:32px 24px; box-shadow:0 8px 32px rgba(0,0,0,.2); }
+.login-logo { text-align:center; margin-bottom:28px; }
+.login-logo h1 { font-size:28px; color:#0D3A5C; margin:0 0 8px; font-weight:700; }
+.login-logo p { font-size:14px; color:#6B7280; margin:0; }
+.form-group { margin-bottom:20px; }
+.form-label { display:block; font-size:14px; color:#374151; margin-bottom:8px; font-weight:500; }
+.form-input { width:100%; height:50px; border:2px solid #E5E7EB; border-radius:8px; padding:0 16px; font-size:16px; background:#fff; color:#1A1A2E; box-sizing:border-box; }
+.form-input:focus { outline:none; border-color:#0D3A5C; }
+.btn { width:100%; height:50px; background:#0D3A5C; color:#fff; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; }
+.btn:hover { background:#1B6B8A; }
+.btn:disabled { opacity:.6; cursor:not-allowed; }
+.btn-secondary { background:#6B7280; margin-top:12px; }
+.login-footer { margin-top:24px; text-align:center; }
+.login-footer p { font-size:13px; color:#6B7280; margin:0 0 12px; }
+.login-footer button { background:none; border:1px solid #E5E7EB; color:#6B7280; padding:8px 16px; border-radius:6px; font-size:13px; cursor:pointer; }
+.login-footer button:hover { background:#f5f5f5; }
+#alreadyLoggedIn { display:none; text-align:center; padding:20px 0; }
+#alreadyLoggedIn h2 { color:#0D3A5C; margin:0 0 12px; font-size:20px; }
+#alreadyLoggedIn p { color:#6B7280; margin:0 0 20px; }
+</style>
+</head>
+<body>
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>AIDC Collector</h1>
+      <p>东南亚机房数据采集系统</p>
+    </div>
+    
+    <!-- 已登录提示 -->
+    <div id="alreadyLoggedIn">
+      <h2>已登录</h2>
+      <p id="loggedUserName">当前用户：-</p>
+      <button class="btn btn-secondary" onclick="goHome()">进入首页</button>
+      <button class="btn" style="margin-top:12px;background:#EF4444;" onclick="logout()">退出重新登录</button>
+    </div>
+    
+    <!-- 登录表单 -->
+    <form id="loginForm" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">用户名</label>
+        <input type="text" class="form-input" id="username" value="admin" autocomplete="username">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">密码</label>
+        <input type="password" class="form-input" id="password" value="Admin@2026" autocomplete="current-password">
+      </div>
+      
+      <div class="form-group" style="margin-top:28px;">
+        <button type="submit" class="btn" id="loginBtn">登 录</button>
+      </div>
+    </form>
+    
+    <div class="login-footer">
+      <p>测试账号: <strong>admin</strong> / <strong>Admin@2026</strong></p>
+      <button type="button" id="resetBtn">重置测试数据</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js?v=20260413-7"></script>
+<script>
+(function() {
+  // 检查 API
+  if (typeof AIDC_API === 'undefined') {
+    alert('❌ api.js 加载失败！');
+    return;
+  }
+  
+  // 检查登录状态
+  var user = AIDC_API.getUser();
+  if (user) {
+    // 已登录：显示提示
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('alreadyLoggedIn').style.display = 'block';
+    document.getElementById('loggedUserName').textContent = '当前用户：' + (user.name || user.username);
+  } else {
+    // 未登录：显示表单
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('alreadyLoggedIn').style.display = 'none';
+  }
+  
+  // 重置数据
+  document.getElementById('resetBtn').addEventListener('click', function() {
+    if (confirm('确定要重置所有数据吗？')) {
+      localStorage.clear();
+      if (typeof AIDC_RESET_SEED === 'function') {
+        AIDC_RESET_SEED();
+      }
+      alert('✅ 数据已重置');
+      location.reload();
+    }
+  });
+  
+  // 登录表单
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var username = document.getElementById('username').value.trim();
+    var password = document.getElementById('password').value;
+    
+    if (!username || !password) {
+      alert('请输入用户名和密码');
+      return;
+    }
+    
+    var btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    btn.textContent = '登录中...';
+    
+    AIDC_API.login(username, password).then(function(res) {
+      if (res.code === 0) {
+        btn.textContent = '成功！';
+        btn.style.background = '#10B981';
+        setTimeout(function() {
+          window.location.href = 'index.html';
+        }, 500);
+      } else {
+        btn.disabled = false;
+        btn.textContent = '登 录';
+        alert('❌ ' + (res.message || '登录失败'));
+      }
+    }).catch(function(err) {
+      btn.disabled = false;
+      btn.textContent = '登 录';
+      alert('❌ 登录出错: ' + err);
+    });
+  });
+  
+  // 已登录用户的操作
+  window.goHome = function() {
+    window.location.href = 'index.html';
+  };
+  
+  window.logout = function() {
+    localStorage.removeItem('aidc_user');
+    location.reload();
+  };
+})();
+</script>
+</body>
+</html>

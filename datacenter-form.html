@@ -156,9 +156,19 @@
 body.theme-light .theme-toggle .icon-sun { display: block; }
 body.theme-light .theme-toggle .icon-moon { display: none; }
 </style>
+<!-- 桌面/移动端显示切换 -->
+<style>
+.desktop-only { display: flex !important; }
+.mobile-only  { display: none  !important; }
+
+@media (max-width: 480px) {
+    .form-grid-4 { grid-template-columns: 1fr !important; }
+}
+</style>
 </head>
 <body>
-    <nav class="top-nav">
+顶部导航（移动端隐藏） -->
+    <nav class="top-nav desktop-only">
         <div class="nav-brand">
             <div class="nav-brand-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
@@ -215,56 +225,40 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
                         <input type="text" id="name" class="form-input" placeholder="如: etix Thailand Bangkok #1" maxlength="100">
                     </div>
                     <div class="form-group full-width">
-                        <label class="form-label">所在地区 <span class="form-hint-row">（五级联动，请逐级选择）</span></label>
+                        <label class="form-label">所在地区</label>
                         <div class="region-cascade">
                             <div class="form-group">
-                                <select id="r1-country" class="form-select" onchange="cascadeChange(2)">
-                                    <option value="">一级：国家</option>
+                                <select id="r1-country" name="country" class="form-select" onchange="onCountryChange()">
+                                    <option value="">国家</option>
                                     <option value="中国">中国</option>
                                     <option value="泰国">泰国</option>
                                     <option value="马来西亚">马来西亚</option>
                                     <option value="印尼">印尼</option>
                                     <option value="菲律宾">菲律宾</option>
                                     <option value="日本">日本</option>
-                                    <option value="欧洲">欧洲</option>
+                                    <option value="新加坡">新加坡</option>
                                     <option value="澳大利亚">澳大利亚</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <select id="r2-prov" class="form-select" onchange="cascadeChange(3)" disabled>
-                                    <option value="">二级：省/州</option>
+                                <select id="r2-prov" name="province" class="form-select" onchange="onProvinceChange()" disabled>
+                                    <option value="">省 / 州</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <select id="r3-city" class="form-select" onchange="cascadeChange(4)" disabled>
-                                    <option value="">三级：城市</option>
+                                <select id="r3-city" name="city" class="form-select" disabled>
+                                    <option value="">城市 / 区</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <select id="r4-park" class="form-select" onchange="cascadeChange(5)" disabled>
-                                    <option value="">四级：园区</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" id="r5-detail" class="form-input" placeholder="五级：具体位置" maxlength="100">
+                                <input type="text" id="r4-park" name="zone" class="form-input" placeholder="园区 / 街道（选填）" maxlength="50">
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">详细地址</label>
-                        <input type="text" id="address" class="form-input" placeholder="省/市/区 + 详细街道" maxlength="200">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">机房编码</label>
-                        <input type="text" id="code" class="form-input" placeholder="如: IDC-2024-001" maxlength="50">
-                    </div>
+                    <!-- 机房编码字段已移除 -->
                     <div class="form-group">
                         <label class="form-label">产权归属</label>
-                        <select id="propertyType" class="form-select">
-                            <option value="">请选择</option>
-                            <option value="自有">自有</option>
-                            <option value="租赁">租赁</option>
-                        </select>
+                        <input type="text" id="propertyType" class="form-input" placeholder="如: 自有 / 租赁 / 合资">
                     </div>
                     <div class="form-group">
                         <label class="form-label">预计交付运营时间</label>
@@ -273,10 +267,9 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
                     <div class="form-group">
                         <label class="form-label">状态</label>
                         <select id="status" class="form-select">
-                            <option value="new">新增</option>
-                            <option value="collected">已收录</option>
-                            <option value="pending">待核实</option>
-                            <option value="rejected">已驳回</option>
+                            <option value="">请选择</option>
+                            <option value="空闲">空闲</option>
+                            <option value="已租">已租</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -891,11 +884,11 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
             </div>
         </div>
 
-        <!-- 操作按钮 -->
-        <div class="form-actions">
+        <!-- 操作按钮（吸底） -->
+        <div class="form-actions form-actions-sticky">
             <button type="button" class="btn btn-secondary" onclick="saveAndContinue()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                保存并继续
+                提交
             </button>
             <button type="button" class="btn btn-primary" onclick="saveAndBack()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -1112,6 +1105,58 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
                     "宜春市": ["袁州区","丰城市","樟树市","高安市","奉新县","万载县","上高县","宜丰县","靖安县","铜鼓县","其他"],
                     "吉安市": ["吉州区","青原区","井冈山市","吉安县","新干县","永丰县","峡江县","吉水县","泰和县","万安县","遂川县","安福县","永新县","其他"]
                 }
+            },
+            "泰国": {
+                "曼谷": ["素坤逸区","是隆区","暹罗区","拉玛一世区","乍都乍区","其他"],
+                "春武里府": ["芭堤雅","是拉差","邦盛","其他"],
+                "北榄府": ["邦纳","素坤逸107","其他"],
+                "清迈府": ["清迈市区","清道","其他"],
+                "其他": ["其他地区"]
+            },
+            "马来西亚": {
+                "吉隆坡": ["市中心","武吉免登","孟沙","其他"],
+                "雪兰莪": ["八打灵再也","莎阿南","梳邦","赛城","巴生","其他"],
+                "柔佛": ["新山","依斯干达公主城","其他"],
+                "槟城": ["乔治市","峇六拜","其他"],
+                "其他": ["其他地区"]
+            },
+            "印尼": {
+                "雅加达": ["中雅加达","南雅加达","西雅加达","东雅加达","北雅加达","其他"],
+                "西爪哇": ["万隆","茂物","勿加泗","其他"],
+                "东爪哇": ["泗水","其他"],
+                "廖内群岛": ["巴淡岛","其他"],
+                "巴厘省": ["登巴萨","其他"],
+                "其他": ["其他地区"]
+            },
+            "菲律宾": {
+                "马尼拉大都会": ["马卡蒂","曼达卢永","帕赛","塔吉格","奎松市","其他"],
+                "甲米地": ["伊穆斯","达斯马里尼亚斯","其他"],
+                "宿务省": ["宿务市","其他"],
+                "邦板牙": ["克拉克","其他"],
+                "其他": ["其他地区"]
+            },
+            "日本": {
+                "东京都": ["港区","新宿区","千代田区","中央区","涩谷区","品川区","其他"],
+                "大阪府": ["大阪市北区","大阪市中央区","其他"],
+                "爱知县": ["名古屋市","其他"],
+                "福冈县": ["福冈市","其他"],
+                "神奈川县": ["横滨市","川崎市","其他"],
+                "其他": ["其他地区"]
+            },
+            "新加坡": {
+                "市中心": ["莱佛士坊","滨海湾","其他"],
+                "西部": ["裕廊","文礼","其他"],
+                "北部": ["兀兰","其他"],
+                "东部": ["樟宜","榜鹅","其他"],
+                "其他": ["其他地区"]
+            },
+            "澳大利亚": {
+                "新南威尔士州": ["悉尼","其他"],
+                "维多利亚州": ["墨尔本","其他"],
+                "昆士兰州": ["布里斯班","其他"],
+                "西澳大利亚州": ["珀斯","其他"],
+                "南澳大利亚州": ["阿德莱德","其他"],
+                "其他": ["其他地区"]
             }
         };
 
@@ -1126,10 +1171,14 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
             if (isEditMode) {
                 document.querySelector('.page-title').textContent = '编辑机房';
                 document.title = '编辑机房 - AIDC Collector';
+                var mobileTitle = document.getElementById('mobileFormTitle');
+                if (mobileTitle) mobileTitle.textContent = '编辑机房';
                 loadRecord(editId);
             } else {
                 document.querySelector('.page-title').textContent = '新建机房';
                 document.title = '新建机房 - AIDC Collector';
+                var mobileTitle = document.getElementById('mobileFormTitle');
+                if (mobileTitle) mobileTitle.textContent = '新建机房';
             }
         });
 
@@ -1143,53 +1192,70 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
                 var el = document.querySelector('[name="'+key+'"]');
                 if (el) el.value = record[key] || '';
             });
-            // 联动字段
+            // 联动字段（国家→省→城市）
+            loadRegionFields(record);
+        }
+
+        /* ====== 三级联动（国家 → 省/州 → 城市）====== */
+        function onCountryChange() {
+            var country = (document.getElementById('r1-country')||{value:''}).value;
+            var provEl  = document.getElementById('r2-prov');
+            var cityEl  = document.getElementById('r3-city');
+            provEl.innerHTML = '<option value="">省 / 州</option>';
+            provEl.disabled  = !country;
+            cityEl.innerHTML = '<option value="">城市 / 区</option>';
+            cityEl.disabled  = true;
+            if (!country || !REGION_DATA[country]) return;
+            Object.keys(REGION_DATA[country]).forEach(function(prov) {
+                provEl.innerHTML += '<option value="'+prov+'">'+prov+'</option>';
+            });
+            provEl.disabled = false;
+        }
+
+        function onProvinceChange() {
+            var country  = (document.getElementById('r1-country')||{value:''}).value;
+            var province = (document.getElementById('r2-prov')||{value:''}).value;
+            var cityEl   = document.getElementById('r3-city');
+            cityEl.innerHTML = '<option value="">城市 / 区</option>';
+            cityEl.disabled  = !province;
+            if (!province || !REGION_DATA[country] || !REGION_DATA[country][province]) return;
+            var cities = REGION_DATA[country][province];
+            if (Array.isArray(cities)) {
+                cities.forEach(function(city) { cityEl.innerHTML += '<option value="'+city+'">'+city+'</option>'; });
+            } else {
+                Object.keys(cities).forEach(function(city) { cityEl.innerHTML += '<option value="'+city+'">'+city+'</option>'; });
+            }
+            cityEl.disabled = false;
+        }
+
+        function loadRegionFields(record) {
             if (record.country) {
-                var countryEl = document.querySelector('[name="country"]');
-                if (countryEl) { countryEl.value = record.country; triggerRegionLoad('country'); }
+                var countryEl = document.getElementById('r1-country');
+                if (countryEl) {
+                    countryEl.value = record.country;
+                    onCountryChange();
+                }
             }
             if (record.province) {
                 setTimeout(function() {
-                    var provEl = document.querySelector('[name="province"]');
-                    if (provEl) { provEl.value = record.province; triggerRegionLoad('province'); }
+                    var provEl = document.getElementById('r2-prov');
+                    if (provEl) {
+                        provEl.value = record.province;
+                        onProvinceChange();
+                    }
                 }, 100);
             }
             if (record.city) {
                 setTimeout(function() {
-                    var cityEl = document.querySelector('[name="city"]');
+                    var cityEl = document.getElementById('r3-city');
                     if (cityEl) cityEl.value = record.city;
                 }, 200);
             }
-        }
-
-        /* ====== 五级联动 ====== */
-        function triggerRegionLoad(level) {
-            if (level === 'country') {
-                var country = (document.querySelector('[name="country"]')||{value:''}).value;
-                var provEl = document.querySelector('[name="province"]');
-                var cityEl = document.querySelector('[name="city"]');
-                var zoneEl = document.querySelector('[name="zone"]');
-                provEl.innerHTML = '<option value="">选择省/州</option>';
-                cityEl.innerHTML = '<option value="">选择城市</option>';
-                zoneEl.innerHTML = '<option value="">选择园区（选填）</option>';
-                if (!country || !REGION_DATA[country]) return;
-                Object.keys(REGION_DATA[country]).forEach(function(prov) {
-                    provEl.innerHTML += '<option value="'+prov+'">'+prov+'</option>';
-                });
-            } else if (level === 'province') {
-                var country = (document.querySelector('[name="country"]')||{value:''}).value;
-                var province = (document.querySelector('[name="province"]')||{value:''}).value;
-                var cityEl = document.querySelector('[name="city"]');
-                var zoneEl = document.querySelector('[name="zone"]');
-                cityEl.innerHTML = '<option value="">选择城市</option>';
-                zoneEl.innerHTML = '<option value="">选择园区（选填）</option>';
-                if (!province || !REGION_DATA[country] || !REGION_DATA[country][province]) return;
-                var cities = REGION_DATA[country][province];
-                if (Array.isArray(cities)) {
-                    cities.forEach(function(city) { cityEl.innerHTML += '<option value="'+city+'">'+city+'</option>'; });
-                } else {
-                    Object.keys(cities).forEach(function(city) { cityEl.innerHTML += '<option value="'+city+'">'+city+'</option>'; });
-                }
+            if (record.zone) {
+                setTimeout(function() {
+                    var zoneEl = document.getElementById('r4-park');
+                    if (zoneEl) zoneEl.value = record.zone;
+                }, 200);
             }
         }
 
@@ -1206,12 +1272,6 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
             document.querySelectorAll('[name]').forEach(function(el) {
                 formData[el.name] = el.value;
             });
-            // 五级联动字段（覆盖 address）
-            formData.country  = (document.querySelector('[name="country"]')  || {value:''}).value;
-            formData.province = (document.querySelector('[name="province"]') || {value:''}).value;
-            formData.city     = (document.querySelector('[name="city"]')     || {value:''}).value;
-            formData.zone     = (document.querySelector('[name="zone"]')     || {value:''}).value;
-            formData.address  = (document.querySelector('[name="address"]')  || {value:''}).value;
             return formData;
         }
 
@@ -1273,5 +1333,4 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
   }
 })();
 </script>
-</body>
-</html>
+

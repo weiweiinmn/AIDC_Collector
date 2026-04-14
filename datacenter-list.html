@@ -234,11 +234,17 @@
         padding: 6px 0;
     }
     .filter-summary strong { color: var(--text-secondary); }
+
+    /* 桌面/移动端显示切换 */
+    .desktop-only { display: flex !important; }
+    .mobile-only  { display: none  !important; }
+
+    
     </style>
 </head>
 <body>
-    <!-- 顶部导航 -->
-    <nav class="top-nav">
+<!-- 顶部导航（桌面端，移动端隐藏） -->
+    <nav class="top-nav desktop-only">
         <div class="nav-brand">
             <div class="nav-logo">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 28" fill="none">
@@ -1082,6 +1088,5 @@
     }
 
     loadData();
-    </script>
-</body>
-</html>
+
+    

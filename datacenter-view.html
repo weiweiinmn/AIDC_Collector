@@ -44,8 +44,15 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
 </style>
 </head>
 <body>
-    <!-- 顶部导航 -->
-    <nav class="top-nav">
+<!-- 移动端显示/隐藏控制 -->
+    <style>
+    .desktop-only { display: flex !important; }
+    .mobile-only  { display: none  !important; }
+    
+    </style>
+
+    <!-- 顶部导航（桌面端） -->
+    <nav class="top-nav desktop-only">
         <div class="nav-brand">
             <div class="nav-brand-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
@@ -468,5 +475,15 @@ body.theme-light .theme-toggle .icon-moon { display: none; }
   }
 })();
 </script>
-</body>
+
+    /* 移动端导航 */
+    (function(){
+        var menuBtn=document.getElementById('mobileMenuBtn');
+        var overlay=document.getElementById('mobileMenuOverlay');
+        var closeBtn=document.getElementById('mobileMenuClose');
+        if(menuBtn)menuBtn.addEventListener('click',function(){overlay.classList.add('open');});
+        if(closeBtn)closeBtn.addEventListener('click',function(){overlay.classList.remove('open');});
+        if(overlay)overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.classList.remove('open');});
+    })();
+    function logout(){localStorage.removeItem('aidc_user');window.location.href='index.html';}</body>
 </html>

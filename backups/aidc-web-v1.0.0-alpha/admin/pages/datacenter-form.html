@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加机房 - AIDC Collector</title>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="shared-light.css">
+    <style>
+    /* ============================================
+       datacenter-form.html — V4 字段版
+       ============================================ */
+
+    /* ── 输入框统一 ── */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none !important;
+        margin: 0 !important;
+    }
+    input[type="number"] { -moz-appearance: textfield; }
+
+    /* ── 主题切换按钮 ── */
+    .theme-toggle {
+        display: flex; align-items: center; justify-content: center;
+        width: 36px; height: 36px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,.12);
+        background: transparent; color: #94A3B8; cursor: pointer;
+        transition: all .15s; flex-shrink: 0;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,.06); color: #F1F5F9; }
+    .theme-toggle .icon-sun { display: none; }
+    body.theme-light .theme-toggle .icon-sun { display: block; }
+    body.theme-light .theme-toggle .icon-moon { display: none; }
+
+    /* ── 表单布局 ── */
+    body {
+        margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        background: #020617; color: #F1F5F9; min-height: 100vh;
+    }
+    .main-content { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    /* ── 卡片 ── */
+    .card {
+        background: #0F172A; border: 1px solid rgba(255,255,255,.08);
+        border-radius: 12px; padding: 24px 28px; margin-bottom: 20px;
+    }
+
+    /* ── 模块标题 ── */
+    .section-header {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 20px; padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .section-icon {
+        display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+        width: 20px; height: 20px;
+    }
+    .section-icon svg { width: 16px; height: 16px; }
+    .section-title { font-size: 14px; font-weight: 600; color: #F1F5F9; line-height: 1; }
+
+    /* ── 表单网格：核心字段（窄行，4列）── */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+    .form-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 12px; font-weight: 500; color: #94A3B8; line-height: 1; }
+    .form-label .unit { font-size: 11px; color: #475569; font-weight: 400; }
+    .form-input, .form-select {
+        height: 36px; padding: 0 12px; border-radius: 6px;
+        border: 1px solid rgba(255,255,255,.08);
+        background: rgba(255,255,255,.03); color: #F1F5F9;
+        font-size: 13px; font-family: inherit;
+        transition: border-color .15s; box-sizing: border-box;
+        width: 100%;
+    }
+    .form-input:focus, .form-select:focus {
+        outline: none; border-color: #0EA5E9;
+    }
+    .form-input::placeholder { color: #334155; }
+    .form-select option { background: #1E293B; }
+
+    /* 输入+单位 */
+    .input-unit { position: relative; }
+    .input-unit input { padding-right: 44px; }
+    .input-unit .unit-label {
+        position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+        font-size: 12px; color: #475569; pointer-events: none;
+    }
+
+    /* ── 核心字段高亮行 ── */
+    .core-fields {
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1.5fr;
+        gap: 14px; align-items: end;
+    }
+    .core-fields .form-group { flex: 1; }
+
+    /* ── 五级联动 ── */
+    .region-cascade {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+    }
+    .region-cascade select { height: 36px; font-size: 13px; border-radius: 6px; }
+
+    /* ── 提交按钮 ── */
+    .form-actions {
+        display: flex; justify-content: center; gap: 16px;
+        margin-top: 28px; padding-top: 20px;
+        border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 24px; border-radius: 8px;
+        font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer;
+        transition: all .15s; border: none; text-decoration: none;
+    }
+    .btn-secondary { background: rgba(255,255,255,.06); color: #94A3B8; border: 1px solid rgba(255,255,255,.08); }
+    .btn-secondary:hover { background: rgba(255,255,255,.1); color: #F1F5F9; }
+    .btn-primary { background: #0EA5E9; color: #fff; }
+    .btn-primary:hover { background: #38BDF8; }
+
+    /* ── 周历弹窗 ── */
+    .modal-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,.6); z-index: 9999;
+        align-items: center; justify-content: center;
+    }
+    .modal-box {
+        background: #0F172A; border: 1px solid rgba(255,255,255,.12);
+        border-radius: 14px; padding: 24px; min-width: 560px;
+        box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    }
+    .modal-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 18px;
+    }
+    .modal-title { font-size: 15px; font-weight: 600; color: #F1F5F9; }
+    .modal-close {
+        width: 28px; height: 28px; border-radius: 6px; border: none;
+        background: rgba(255,255,255,.06); color: #94A3B8; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .wp-controls {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 12px;
+    }
+    .wp-nav-btn {
+        padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,.08);
+        background: transparent; color: #94A3B8; cursor: pointer; font-size: 13px;
+    }
+    .wp-year { font-size: 15px; font-weight: 600; color: #F1F5F9; }
+    .wp-grid {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+    }
+    .wp-month { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; padding: 10px; }
+    .wp-month-label { font-size: 12px; color: #64748B; margin-bottom: 8px; }
+    .wp-weeks { display: flex; flex-direction: column; gap: 3px; }
+    .wp-week {
+        display: flex; align-items: center; gap: 6px;
+        padding: 4px 8px; border-radius: 5px; cursor: pointer;
+        font-size: 12px; color: #94A3B8;
+        transition: all .1s;
+    }
+    .wp-week:hover { background: rgba(14,165,233,.15); color: #0EA5E9; }
+    .wp-week.selected { background: rgba(14,165,233,.2); color: #0EA5E9; }
+    .wp-week-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .wp-tip { font-size: 12px; color: #475569; margin-top: 12px; text-align: center; }
+    .wp-btns { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
+
+    /* ── 标签说明 ── */
+    .tag-info { font-size: 11px; color: #475569; margin-top: 2px; }
+    .tag-required { color: #EF4444; margin-left: 2px; }
+
+    /* ── 分类标签 ── */
+    .field-section-label {
+        font-size: 11px; color: #475569; font-weight: 500;
+        margin-bottom: 10px; letter-spacing: .05em; text-transform: uppercase;
+    }
+
+    /* ============================================
+       浅色主题
+       ============================================ */
+    body.theme-light { background: #F8FAFC; color: #0F172A; }
+    body.theme-light .card { background: #fff; border-color: #E2E8F0; }
+    body.theme-light .section-title { color: #0F172A; }
+    body.theme-light .form-label { color: #64748B; }
+    body.theme-light .form-input, body.theme-light .form-select { background: #fff; border-color: #CBD5E1; color: #0F172A; }
+    body.theme-light .form-input:focus { border-color: #0EA5E9; }
+    body.theme-light .form-input::placeholder { color: #CBD5E1; }
+    body.theme-light .form-select option { background: #fff; color: #0F172A; }
+    body.theme-light .btn-secondary { background: #F1F5F9; color: #64748B; border-color: #CBD5E1; }
+    body.theme-light .wp-week { color: #64748B; }
+    body.theme-light .modal-box { background: #fff; border-color: #E2E8F0; }
+    body.theme-light .modal-title { color: #0F172A; }
+    body.theme-light .wp-year { color: #0F172A; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <div class="nav-brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+            </div>
+            <span class="nav-brand-text">AIDC Collector</span>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard-v2.html" class="nav-item" data-page="dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>仪表盘</a>
+            <a href="datacenter-list.html" class="nav-item" data-page="datacenter-list">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="2" y1="15" x2="22" y2="15"/><line x1="9" y1="3" x2="9" y2="9"/></svg>机房列表</a>
+            <a href="datacenter-form.html" class="nav-item active" data-page="datacenter-form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>添加机房</a>
+            <a href="datacenter-import.html" class="nav-item" data-page="import">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>导入导出</a>
+            <a href="gantt.html" class="nav-item" data-page="gantt">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>项目进度</a>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="themeToggle" title="切换主题">
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            </button>
+            <div class="nav-user" id="navUser"></div>
+            <a href="login.html" class="nav-logout" id="navLogout" title="退出登录">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+
+        <!-- 页面标题 -->
+        <div style="margin-bottom: 24px;">
+            <h1 style="font-size: 20px; font-weight: 700; color: #F1F5F9; margin: 0 0 4px;">添加机房</h1>
+            <p style="font-size: 13px; color: #475569; margin: 0;">按 AIDC 选址调研表（V4）录入机房数据</p>
+        </div>
+
+        <!-- =====================
+             ★ 核心信息（最优先）
+             ===================== -->
+        <div class="card" style="border-color: rgba(14,165,233,.25); background: rgba(14,165,233,.04);">
+            <div class="section-header">
+                <span class="section-icon" style="color:#0EA5E9">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </span>
+                <span class="section-title">核心信息</span>
+            </div>
+
+            <!-- 第一行：机房名称 + 服务商 + 交付时间 -->
+            <div class="form-grid" style="margin-bottom: 16px;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">机房名称<span class="tag-required">*</span></label>
+                    <input type="text" class="form-input" name="name" placeholder="如: Telehouse Bangkok TY3" maxlength="100">
+                </div>
+                <div class="form-group" style="grid-column: span 1;">
+                    <label class="form-label">机房服务商</label>
+                    <input type="text" class="form-input" name="provider" placeholder="如: Telehouse / Equinix">
+                </div>
+                <div class="form-group" style="grid-column: span 1;">
+                    <label class="form-label">预计交付运营时间</label>
+                    <div class="input-unit">
+                        <input type="text" class="form-input" name="delivery_date" id="delivery-date-input" placeholder="点击选择交付时间" readonly onclick="openDeliveryWeekPicker()">
+                        <span class="unit-label">📅</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二行：所在地（五级联动） -->
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">机房所在地<span class="tag-required">*</span></label>
+                <div class="region-cascade">
+                    <div>
+                        <select class="form-select" id="r1" onchange="onCountryChange()">
+                            <option value="">国家</option><option>中国</option><option>泰国</option><option>马来西亚</option><option>印尼</option><option>菲律宾</option><option>新加坡</option><option>日本</option><option>欧洲</option><option>澳大利亚</option><option>美国</option><option>其他</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select class="form-select" id="r2" onchange="onProvChange()"><option value="">省/州</option></select>
+                    </div>
+                    <div>
+                        <select class="form-select" id="r3" onchange="onCityChange()"><option value="">城市</option></select>
+                    </div>
+                    <div>
+                        <select class="form-select" id="r4"><option value="">区/县</option></select>
+                    </div>
+                    <div>
+                        <input type="text" class="form-input" id="r5" placeholder="街道/详细地址" maxlength="200">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第三行：电力 + 扩容 + 制冷 -->
+            <div class="form-grid" style="margin-top: 16px;">
+                <div class="form-group">
+                    <label class="form-label">市电总容量 <span class="unit">kVA</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="total_power_kva" placeholder="0">
+                        <span class="unit-label">kVA</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">当前可用电力 <span class="unit">MW</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="available_power_mw" placeholder="0" step="0.1">
+                        <span class="unit-label">MW</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">可扩容电力上限 <span class="unit">MW</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="max_power_mw" placeholder="0" step="0.1">
+                        <span class="unit-label">MW</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">是否可扩容</label>
+                    <select class="form-select" name="expandable">
+                        <option value="">请选择</option>
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                        <option value="可改造">可改造</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">机房制冷方式</label>
+                    <select class="form-select" name="cooling_type">
+                        <option value="">请选择</option>
+                        <option>风冷</option><option>水冷</option><option>液冷（冷板）</option><option>液冷（浸没）</option><option>自然冷却</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">是否支持冷板式液冷</label>
+                    <select class="form-select" name="cold_plate_support">
+                        <option value="">请选择</option>
+                        <option value="是">是</option><option value="否">否</option><option value="可改造">可改造</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================
+             二、基本信息
+             ===================== -->
+        <div class="card">
+            <div class="section-header">
+                <span class="section-icon" style="color:#22C55E">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </span>
+                <span class="section-title">基本信息</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">机房产权归属</label>
+                    <select class="form-select" name="property_type">
+                        <option value="">请选择</option>
+                        <option>自有</option><option>租赁</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">详细地址</label>
+                    <input type="text" class="form-input" name="address" placeholder="街道/园区/楼栋/楼层" maxlength="200">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">联系人</label>
+                    <input type="text" class="form-input" name="contact_person" placeholder="姓名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">联系方式</label>
+                    <input type="text" class="form-input" name="contact_phone" placeholder="电话/邮箱">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">信息来源</label>
+                    <input type="text" class="form-input" name="source" placeholder="如: 客户推荐 / 展会 / 网络搜索">
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================
+             三、机柜资源
+             ===================== -->
+        <div class="card">
+            <div class="section-header">
+                <span class="section-icon" style="color:#F59E0B">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </span>
+                <span class="section-title">机柜资源</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">总机柜数量 <span class="unit">个</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="cabinet_count" placeholder="0">
+                        <span class="unit-label">个</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">当前可提供机柜 <span class="unit">个</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="cabinet_available" placeholder="0">
+                        <span class="unit-label">个</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">机柜最高支撑功率 <span class="unit">kW/柜</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="cabinet_max_power" placeholder="0" step="0.1">
+                        <span class="unit-label">kW/柜</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">现有液冷机柜功率 <span class="unit">kW/柜</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="liquid_cabinet_power" placeholder="0" step="0.1">
+                        <span class="unit-label">kW/柜</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">现有液冷机柜数量 <span class="unit">个</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="liquid_cabinet_count" placeholder="0">
+                        <span class="unit-label">个</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================
+             四、电力系统
+             ===================== -->
+        <div class="card">
+            <div class="section-header">
+                <span class="section-icon" style="color:#EAB308">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </span>
+                <span class="section-title">电力系统</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">市电总容量 <span class="unit">kVA</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="transformer_capacity" placeholder="0">
+                        <span class="unit-label">kVA</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">单台变压器容量 <span class="unit">kVA</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="transformer_unit_kva" placeholder="0">
+                        <span class="unit-label">kVA</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">变压器配置</label>
+                    <select class="form-select" name="transformer_config">
+                        <option value="">请选择</option><option>2N</option><option>N+1</option><option>N</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">柴发冗余等级</label>
+                    <input type="text" class="form-input" name="generator_config" placeholder="如: N+X (X=2)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">柴发储油时长 <span class="unit">小时</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="generator_oil_hours" placeholder="0">
+                        <span class="unit-label">h</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">UPS配置</label>
+                    <select class="form-select" name="ups_config">
+                        <option value="">请选择</option><option>2N</option><option>分布式</option><option>后备</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">UPS电池后备时间 <span class="unit">分钟</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="ups_battery_minutes" placeholder="0">
+                        <span class="unit-label">min</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">是否配备高密度母线</label>
+                    <select class="form-select" name="busbar">
+                        <option value="">请选择</option><option value="是">是</option><option value="否">否</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">是否配备BBU/超级电容</label>
+                    <select class="form-select" name="bbu_capacitor">
+                        <option value="">请选择</option><option value="是">是</option><option value="否">否</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">电力可用性SLA</label>
+                    <select class="form-select" name="power_sla">
+                        <option value="">请选择</option><option>99.99%</option><option>99.999%</option><option>99.9%</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">PUE设计值</label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="pue" placeholder="1.0" step="0.01" min="1" max="2">
+                        <span class="unit-label"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================
+             五、制冷系统
+             ===================== -->
+        <div class="card">
+            <div class="section-header">
+                <span class="section-icon" style="color:#06B6D4">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                </span>
+                <span class="section-title">制冷系统</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">主制冷方式</label>
+                    <select class="form-select" name="cooling_main">
+                        <option value="">请选择</option>
+                        <option>风冷</option><option>水冷</option><option>冷冻水</option><option>自然冷却</option><option>液冷</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">如无液冷能否改造</label>
+                    <select class="form-select" name="cooling_retrofit">
+                        <option value="">请选择</option><option value="是">是</option><option value="否">否</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">液冷改造周期 <span class="unit">月</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="cooling_retrofit_months" placeholder="0">
+                        <span class="unit-label">月</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">是否配备CDU</label>
+                    <select class="form-select" name="cdu">
+                        <option value="">请选择</option><option value="是">是</option><option value="否">否</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">冷冻水供水温度 <span class="unit">℃</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="chilled_water_supply" placeholder="0" step="0.1">
+                        <span class="unit-label">℃</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">冷冻水回水温度 <span class="unit">℃</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="chilled_water_return" placeholder="0" step="0.1">
+                        <span class="unit-label">℃</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">末端空调冗余</label>
+                    <input type="text" class="form-input" name="cooling_redundancy" placeholder="如: N+X (X=?)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">冷水机组数量 <span class="unit">台</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="chiller_count" placeholder="0">
+                        <span class="unit-label">台</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================
+             六、承重与空间（选填）
+             ===================== -->
+        <div class="card">
+            <div class="section-header">
+                <span class="section-icon" style="color:#A78BFA">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                </span>
+                <span class="section-title">承重与空间 <span style="font-size:11px;color:#475569;font-weight:400">（选填）</span></span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">地板承重 <span class="unit">kg/m²</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="floor_load" placeholder="0">
+                        <span class="unit-label">kg/m²</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">架空地板高度 <span class="unit">米</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="floor_height" placeholder="0" step="0.1">
+                        <span class="unit-label">m</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">货梯宽度 <span class="unit">米</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="elevator_width" placeholder="0" step="0.1">
+                        <span class="unit-label">m</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">货梯高度 <span class="unit">米</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="elevator_height" placeholder="0" step="0.1">
+                        <span class="unit-label">m</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">货梯承重 <span class="unit">吨</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="elevator_load" placeholder="0" step="0.1">
+                        <span class="unit-label">T</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">主运输通道宽度 <span class="unit">米</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="corridor_width" placeholder="0" step="0.1">
+                        <span class="unit-label">m</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">卸货平台</label>
+                    <select class="form-select" name="unloading_platform">
+                        <option value="">请选择</option><option>18米货车直达</option><option>需二次搬运</option><option>无</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================
+             七、网络接入（选填）
+             ===================== -->
+        <div class="card">
+            <div class="section-header">
+                <span class="section-icon" style="color:#34D399">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+                </span>
+                <span class="section-title">网络接入 <span style="font-size:11px;color:#475569;font-weight:400">（选填）</span></span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">网络进线路由 <span class="unit">路</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="network_routes" placeholder="0">
+                        <span class="unit-label">路</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">运营商数量 <span class="unit">家</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="carrier_count" placeholder="0">
+                        <span class="unit-label">家</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">裸光纤资源</label>
+                    <select class="form-select" name="dark_fiber">
+                        <option value="">请选择</option><option value="充足">充足</option><option value="有限">有限</option><option value="无">无</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">800G网络支持</label>
+                    <select class="form-select" name="support_800g">
+                        <option value="">请选择</option><option value="是">是</option><option value="否">否</option><option value="规划中">规划中</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">RoCE/IB支持</label>
+                    <select class="form-select" name="roce_ib">
+                        <option value="">请选择</option><option value="是">是</option><option value="否">否</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">带宽资源</label>
+                    <input type="text" class="form-input" name="bandwidth" placeholder="如: 100G × 多路">
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================
+             八、配套服务（选填）
+             ===================== -->
+        <div class="card">
+            <div class="section-header">
+                <span class="section-icon" style="color:#FB923C">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                </span>
+                <span class="section-title">配套服务 <span style="font-size:11px;color:#475569;font-weight:400">（选填）</span></span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">办公区工位数 <span class="unit">工位</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="office_space" placeholder="0">
+                        <span class="unit-label">工位</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">库房面积 <span class="unit">㎡</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="warehouse_area" placeholder="0">
+                        <span class="unit-label">㎡</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">7×24运维值守</label>
+                    <select class="form-select" name="ops_247">
+                        <option value="">请选择</option><option value="是">是</option><option value="否">否</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">故障响应时间 <span class="unit">小时</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="response_time" placeholder="0">
+                        <span class="unit-label">h</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">液冷维护能力</label>
+                    <select class="form-select" name="liquid_maintenance">
+                        <option value="">请选择</option><option value="具备">具备</option><option value="不具备">不具备</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================
+             九、成本报价（选填）
+             ===================== -->
+        <div class="card">
+            <div class="section-header">
+                <span class="section-icon" style="color:#F87171">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                </span>
+                <span class="section-title">成本报价 <span style="font-size:11px;color:#475569;font-weight:400">（选填）</span></span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">电费计费模式</label>
+                    <select class="form-select" name="billing_mode">
+                        <option value="">请选择</option><option>包干</option><option>按量</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">一次性接入费 <span class="unit">元</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="setup_fee" placeholder="0">
+                        <span class="unit-label">元</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">液冷服务费 <span class="unit">元/柜/月</span></label>
+                    <div class="input-unit">
+                        <input type="number" class="form-input" name="liquid_service_fee" placeholder="0">
+                        <span class="unit-label">元/柜/月</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================
+             提交按钮
+             ===================== -->
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="saveAndBack()">保存并返回列表</button>
+            <button type="button" class="btn btn-primary" onclick="handleSubmit(event)" id="btn-submit">提 交</button>
+        </div>
+    </main>
+
+    <!-- 周历选择弹窗 -->
+    <div id="weekPickerModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title" id="wpModalTitle">选择交付时间</div>
+                <button class="modal-close" onclick="closeDeliveryWeekPicker()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="wp-controls">
+                <button class="wp-nav-btn" onclick="wpStepYear(-1)">◀ 年</button>
+                <button class="wp-nav-btn" onclick="wpStepMonth(-1)">◀ 月</button>
+                <span class="wp-year" id="wpYearLabel">2026</span>
+                <button class="wp-nav-btn" onclick="wpStepMonth(1)">月 ▶</button>
+                <button class="wp-nav-btn" onclick="wpStepYear(1)">年 ▶</button>
+            </div>
+            <div class="wp-grid" id="wpGrid"></div>
+            <div class="wp-btns">
+                <button class="btn btn-secondary" onclick="wpSetThisWeek()" style="font-size:13px;padding:7px 16px">本周</button>
+                <button class="btn btn-secondary" onclick="wpSetNextMonth()" style="font-size:13px;padding:7px 16px">下月</button>
+            </div>
+            <div class="wp-tip" id="wpTip">点击格子里的一周来选择交付时间范围</div>
+        </div>
+    </div>
+
+<script src="api.js"></script>
+<script>
+(function(){
+    var u = null;
+    try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
+    if (u) {
+        var nu = document.getElementById('navUser');
+        if (nu) nu.innerHTML = '<div class="nav-avatar">'+(u.name||'管').charAt(0)+'</div><span>'+(u.name||'管理员')+'</span>';
+    }
+    var tt = document.getElementById('themeToggle');
+    if (tt) tt.addEventListener('click', function(){ document.body.classList.toggle('theme-light'); });
+    document.getElementById('navLogout') && document.getElementById('navLogout').addEventListener('click', function(){ localStorage.removeItem('aidc_user'); window.location.href='login.html'; });
+    AIDC_API.seedDatacenters();
+    AIDC_API.seedUsers();
+})();
+
+// ── 五级联动 ──────────────────────────────────────────────
+var REGION_DATA = {
+    "中国": {"北京":["东城区","西城区","朝阳区","海淀区","其他"],"上海":["浦东新区","闵行区","徐汇区","其他"],"广东":["广州","深圳","东莞","佛山","惠州","中山","珠海","江门","肇庆","其他"],"江苏":["南京","苏州","无锡","常州","南通","徐州","扬州","盐城","其他"],"浙江":["杭州","宁波","温州","嘉兴","湖州","绍兴","金华","衢州","台州","丽水","其他"],"四川":["成都","绵阳","德阳","其他"],"湖北":["武汉","宜昌","襄阳","其他"],"其他省/州":[]},
+    "泰国": {"曼谷":["邦纳区","拉差达区","湄南河区","是隆区","其他"],"春武里府":["芭提雅","其他"],"其他省/州":[]},
+    "马来西亚": {"吉隆坡":["蕉赖区","武吉加辛区","赛城","其他"],"雪兰莪":["梳邦再也","莎阿南","巴生","其他"],"其他省/州":[]},
+    "印尼": {"雅加达":["中区","东区","西区","南区","其他"],"其他省/州":[]},
+    "菲律宾": {"马尼拉":["马卡蒂","BGC","奎松","其他"],"其他省/州":[]},
+    "新加坡": {"新加坡":["裕廊","淡滨尼","大士","榜鹅","其他"],"其他":[]},
+    "日本": {"东京":["品川","千代田","江东","其他"],"大阪":["梅田","其他"],"其他省/州":[]},
+    "欧洲": {"法兰克福":["Nordpark","Equinix","其他"],"阿姆斯特丹":["AMS1","AMS2","其他"],"伦敦":["LD4","SL5","其他"],"其他省/州":[]},
+    "澳大利亚": {"悉尼":["Sydney 1-4","其他"],"墨尔本":["ME1","其他"],"其他省/州":[]},
+    "美国": {"弗吉尼亚州":["阿什本","赫恩登","利斯堡","其他"],"加州":["圣克拉拉","洛杉矶","其他"],"其他省/州":[]},
+    "其他": {}
+};
+function onCountryChange() {
+    var country = document.getElementById('r1').value;
+    var provEl = document.getElementById('r2');
+    var cityEl = document.getElementById('r3');
+    var areaEl = document.getElementById('r4');
+    provEl.innerHTML = '<option value="">省/州</option>';
+    cityEl.innerHTML = '<option value="">城市</option>';
+    areaEl.innerHTML = '<option value="">区/县</option>';
+    if (!country || !REGION_DATA[country]) return;
+    var provs = Object.keys(REGION_DATA[country]);
+    provs.forEach(function(p){
+        var opt = document.createElement('option');
+        opt.value = p; opt.textContent = p; provEl.appendChild(opt);
+    });
+}
+function onProvChange() {
+    var country = document.getElementById('r1').value;
+    var prov = document.getElementById('r2').value;
+    var cityEl = document.getElementById('r3');
+    var areaEl = document.getElementById('r4');
+    cityEl.innerHTML = '<option value="">城市</option>';
+    areaEl.innerHTML = '<option value="">区/县</option>';
+    if (!country || !prov || !REGION_DATA[country] || !REGION_DATA[country][prov]) return;
+    var cities = Object.keys(REGION_DATA[country][prov]);
+    cities.forEach(function(c){
+        var opt = document.createElement('option');
+        opt.value = c; opt.textContent = c; cityEl.appendChild(opt);
+    });
+}
+function onCityChange() {
+    var country = document.getElementById('r1').value;
+    var prov = document.getElementById('r2').value;
+    var city = document.getElementById('r3').value;
+    var areaEl = document.getElementById('r4');
+    areaEl.innerHTML = '<option value="">区/县</option>';
+    if (!country || !prov || !city) return;
+    var cityData = REGION_DATA[country][prov];
+    if (!cityData || !Array.isArray(cityData) || cityData.length === 0) return;
+    var areas = cityData.filter(function(a){ return a !== '其他' && a !== city; });
+    areas.forEach(function(a){
+        var opt = document.createElement('option');
+        opt.value = a; opt.textContent = a; areaEl.appendChild(opt);
+    });
+    var opt = document.createElement('option');
+    opt.value = '其他'; opt.textContent = '其他'; areaEl.appendChild(opt);
+}
+
+// ── 收集表单数据 ─────────────────────────────────────────
+function collectFormData() {
+    var data = {};
+    document.querySelectorAll('input[name], select[name], textarea[name]').forEach(function(el){
+        if (el.type === 'radio' && !el.checked) return;
+        data[el.name] = el.value;
+    });
+    // 五级联动地区
+    data.country  = document.getElementById('r1').value;
+    data.province = document.getElementById('r2').value;
+    data.city     = document.getElementById('r3').value;
+    data.area     = document.getElementById('r4').value;
+    data.street   = document.getElementById('r5').value;
+    return data;
+}
+
+// ── 提交 ────────────────────────────────────────────────
+function handleSubmit(e) {
+    e && e.preventDefault();
+    var data = collectFormData();
+    if (!data.name) { alert('请填写机房名称'); return; }
+    try {
+        var result = AIDC_API.createDatacenter(data);
+        if (result.error) { alert('保存失败：' + result.error); return; }
+        alert('机房信息已提交保存！');
+        window.location.href = 'datacenter-list.html';
+    } catch(err) { alert('保存失败：' + err.message); }
+}
+function saveAndBack() {
+    var data = collectFormData();
+    if (!data.name) { alert('请填写机房名称'); return; }
+    try {
+        var result = AIDC_API.createDatacenter(data);
+        if (result.error) { alert('保存失败：' + result.error); return; }
+        window.location.href = 'datacenter-list.html';
+    } catch(err) { alert('保存失败：' + err.message); }
+}
+
+// ── 周历选择 ─────────────────────────────────────────────
+var wpYear = new Date().getFullYear();
+var wpMode = 'delivery';
+
+function openDeliveryWeekPicker() {
+    wpMode = 'delivery';
+    document.getElementById('wpModalTitle').textContent = '选择预计交付时间';
+    document.getElementById('weekPickerModal').style.display = 'flex';
+    renderWeekPicker();
+}
+function closeDeliveryWeekPicker() {
+    document.getElementById('weekPickerModal').style.display = 'none';
+}
+function wpStepYear(dir) {
+    wpYear += dir;
+    renderWeekPicker();
+}
+function wpStepMonth(dir) {
+    var now = new Date();
+    var start = new Date(wpYear, 0, 1);
+    start.setDate(start.getDate() + dir * 30);
+    wpYear = start.getFullYear();
+    renderWeekPicker();
+}
+function renderWeekPicker() {
+    document.getElementById('wpYearLabel').textContent = wpYear + ' 年';
+    var grid = document.getElementById('wpGrid');
+    var html = '';
+    for (var m = 1; m <= 12; m++) {
+        var firstDay = new Date(wpYear, m-1, 1);
+        var lastDay = new Date(wpYear, m, 0);
+        html += '<div class="wp-month">';
+        html += '<div class="wp-month-label">' + m + '月</div><div class="wp-weeks">';
+        // 找每月第一周
+        var weekStart = new Date(firstDay);
+        weekStart.setDate(weekStart.getDate() - (weekStart.getDay() === 0 ? 6 : weekStart.getDay() - 1));
+        var weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        var weekCount = 0;
+        while (weekStart <= lastDay) {
+            var wn = getWeekNumber(weekEnd);
+            var label = m + '月第' + (weekCount+1) + '周';
+            html += '<div class="wp-week" onclick="wpSelect('' + fmtDate(weekStart) + '', '' + fmtDate(weekEnd) + '')">';
+            html += '<div class="wp-week-dot"></div>' + label + '</div>';
+            weekStart.setDate(weekStart.getDate() + 7);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            weekCount++;
+            if (weekCount > 6) break;
+        }
+        html += '</div></div>';
+    }
+    grid.innerHTML = html;
+}
+function getWeekNumber(date) {
+    var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+}
+function fmtDate(d) {
+    var dd = new Date(d);
+    return dd.getFullYear() + '-' + String(dd.getMonth()+1).padStart(2,'0') + '-' + String(dd.getDate()).padStart(2,'0');
+}
+function wpSelect(start, end) {
+    document.getElementById('delivery-date-input').value = start + ' ~ ' + end;
+    closeDeliveryWeekPicker();
+}
+function wpSetThisWeek() {
+    var now = new Date();
+    var day = now.getDay(), diff = day===0 ? -6 : 1-day;
+    var monday = new Date(now); monday.setDate(now.getDate()+diff);
+    var sunday = new Date(monday); sunday.setDate(monday.getDate()+6);
+    wpSelect(fmtDate(monday), fmtDate(sunday));
+}
+function wpSetNextMonth() {
+    var next = new Date(new Date().getFullYear(), new Date().getMonth()+1, 1);
+    var last = new Date(new Date().getFullYear(), new Date().getMonth()+2, 0);
+    wpSelect(fmtDate(next), fmtDate(last));
+}
+
+// 点击遮罩关闭
+document.getElementById('weekPickerModal') && document.getElementById('weekPickerModal').addEventListener('click', function(e){ if(e.target===this) closeDeliveryWeekPicker(); });
+</script>
+</body>
+</html>

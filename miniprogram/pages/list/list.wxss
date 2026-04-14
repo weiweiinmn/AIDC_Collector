@@ -140,3 +140,54 @@
   justify-content: center;
   box-shadow: 0 4px 16px rgba(232, 132, 60, 0.4);
 }
+
+/* ===== 模式切换 Tab（我的录入 / 全部记录）====== */
+.mode-tabs {
+  display: flex;
+  background: #FFFFFF;
+  padding: 0 24rpx;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.mode-tab {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+  padding: 20rpx 0;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.mode-tab-active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.mode-tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80rpx;
+  height: 4rpx;
+  background: var(--color-primary);
+  border-radius: 2rpx;
+}
+
+/* ===== 空状态提示 ===== */
+.empty-tip {
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--color-text-placeholder);
+  margin-top: 16rpx;
+  padding: 0 40rpx;
+}
+
+/* ===== 状态标签颜色 ===== */
+.tag-new { background: #EFF6FF; color: #3B82F6; }
+.tag-visited { background: #F0FDF4; color: #22C55E; }
+.tag-negotiating { background: #FFFBEB; color: #F59E0B; }
+.tag-contracted { background: #F0FDF4; color: #16A34A; }
+.tag-rejected { background: #FEF2F2; color: #EF4444; }
