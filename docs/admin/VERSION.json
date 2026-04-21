@@ -1,0 +1,19 @@
+{
+  "version": "v1.1.0-customer-tag",
+  "date": "2026-04-14",
+  "description": "添加机房页面：预留客户模块（微信标签式交互）",
+  "features": [
+    "预留客户：输入框+添加按钮+标签展示+删除功能",
+    "表单布局：3字段/行、4字段/行均匀分布",
+    "所在地区+详细地址：同行8:4比例",
+    "预计交付时间：点击弹出周历选择",
+    "数据提交：通过AIDC_API.createDatacenter保存",
+    "数字输入框：去掉上下箭头"
+  ],
+  "files": [
+    "datacenter-form.html",
+    "api.js",
+    "shared.css",
+    "shared-light.css"
+  ]
+}

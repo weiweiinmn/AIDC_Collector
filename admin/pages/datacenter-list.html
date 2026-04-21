@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5">
     <title>机房列表 - AIDC Collector</title>
-    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="shared.css?v=1776180444">
     <link rel="stylesheet" href="shared-light.css">
     <!-- 登录态校验 -->
     <script>
@@ -16,182 +16,126 @@
     </script>
     <script src="api.js"></script>
     <style>
-    /* ── 筛选区基础 ───────────────────────────────────────────── */
-    .filter-wrap { margin-bottom: 16px; }
+    
+/* ===== 筛选区（对齐添加机房页面风格） ===== */
+.filter-wrap { margin-bottom: 16px; }
 
-    /* 第一行：基础筛选 */
-    .filter-row-primary {
-        display: flex;
-        gap: 10px;
-        flex-wrap: nowrap;
-        align-items: flex-end;
-        padding: 12px 16px;
-        overflow-x: hidden;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-    }
-    .filter-row-primary .filter-group { flex: 1; min-width: 80px; }
+/* 筛选卡片 */
+.filter-card {
+  background: #0F172A;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: 18px 24px;
+  margin-bottom: 6px;
+}
+.filter-card-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.filter-card-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; flex-shrink: 0;
+}
+.filter-card-icon svg { width: 16px; height: 16px; }
+.filter-card-title {
+  font-size: 13px; font-weight: 600; color: #F1F5F9;
+}
 
-    /* 进阶筛选展开/折叠 */
-    .filter-advanced-toggle {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        border-radius: var(--radius-full);
-        border: 1px solid var(--border-strong);
-        background: var(--bg-page);
-        color: var(--text-secondary);
-        font-size: 13px;
-        cursor: pointer;
-        transition: all 0.15s;
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
-    .filter-advanced-toggle:hover {
-        background: var(--bg-hover);
-        color: var(--text-primary);
-        border-color: var(--accent);
-    }
-    .filter-advanced-toggle.active {
-        background: var(--accent-dim);
-        border-color: var(--accent);
-        color: var(--accent);
-    }
-    .filter-advanced-toggle svg { width: 14px; height: 14px; transition: transform 0.2s; }
-    .filter-advanced-toggle.active svg { transform: rotate(180deg); }
+/* 筛选分类标题 */
+.filter-section-title {
+  font-size: 12px; font-weight: 500; color: #94A3B8;
+  margin: 16px 0 10px 0; padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(255,255,255,.08);
+}
 
-    /* ── 进阶筛选面板 ───────────────────────────────── */
-    .filter-advanced-panel {
-        display: none;
-        margin-top: 6px;
-        padding: 16px 20px 12px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid var(--border);
-        border-top: none;
-        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    }
-    .theme-light .filter-advanced-panel { background: rgba(0,0,0,0.02); }
-    .filter-advanced-panel.open { display: block; }
+/* 筛选行：12列等宽网格 */
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px 16px;
+  margin-bottom: 8px;
+}
+.filter-row:last-child { margin-bottom: 0; }
 
-    /* 分类区块 */
-    .adv-section { margin-bottom: 10px; }
-    .adv-section:last-child { margin-bottom: 0; }
-    .adv-section-title {
-        font-size: 10px; font-weight: 700;
-        text-transform: uppercase; letter-spacing: .07em;
-        color: var(--gray-500);
-        margin-bottom: 6px; padding-bottom: 4px;
-        border-bottom: 1px solid var(--border-light);
-        display: flex; align-items: center; gap: 5px;
-    }
-    .adv-section-title svg { width: 11px; height: 11px; flex-shrink: 0; }
+/* 筛选字段 */
+.filter-field { display: flex; flex-direction: column; }
+.filter-field.col-3 { grid-column: span 3; }   /* 4个/行 */
+.filter-field.col-4 { grid-column: span 4; }   /* 3个/行 */
+.filter-field.col-6 { grid-column: span 6; }   /* 2个/行 */
+.filter-field.col-12 { grid-column: span 12; }  /* 全宽 */
+.filter-label {
+  font-size: 11px; font-weight: 500; color: #94A3B8;
+  margin-bottom: 6px; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.filter-field .form-input,
+.filter-field .form-select {
+  height: 34px; padding: 0 10px; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04); color: #F1F5F9;
+  font-size: 12px; width: 100%; box-sizing: border-box;
+  appearance: none; -webkit-appearance: none;
+  transition: border-color .15s;
+}
+.filter-field .form-input:focus,
+.filter-field .form-select:focus {
+  outline: none; border-color: #0EA5E9; background: rgba(14,165,233,.06);
+}
+.filter-field .form-input::placeholder { color: #475569; }
 
-    /* 两列紧凑网格 → 三列宽网格 */
-    .adv-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px 16px; }
-    .adv-field { display: flex; flex-direction: column; gap: 3px; }
-    .adv-label { font-size: 10px; font-weight: 500; color: var(--gray-500); padding-left: 2px; }
-    .adv-field .form-input, .adv-field .form-select {
-        padding: 6px 10px 6px 9px; font-size: 12px; min-height: 32px; height: 32px;
-        appearance: none; -webkit-appearance: none;
-        background-image: var(--select-arrow);
-        background-repeat: no-repeat;
-        background-position: right 8px center;
-        background-size: 10px;
-    }
+/* 筛选操作栏 */
+.filter-actions {
+  display: flex; justify-content: flex-end; gap: 8px;
+  margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
 
-    /* 底部栏 */
-    .filter-footer {
-        display: flex; align-items: center; gap: 8px;
-        padding-top: 8px; border-top: 1px solid var(--border-light); margin-top: 10px;
-    }
+/* 进阶筛选展开/折叠 */
+.filter-advanced-toggle {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: transparent; color: #94A3B8;
+  font-size: 12px; cursor: pointer; transition: all .15s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.filter-advanced-toggle:hover {
+  background: rgba(255,255,255,.06); color: #F1F5F9; border-color: #0EA5E9;
+}
+.filter-advanced-toggle.active {
+  background: rgba(14,165,233,.12); border-color: #0EA5E9; color: #38BDF8;
+}
+.filter-advanced-toggle svg { width: 12px; height: 12px; transition: transform .2s; }
+.filter-advanced-toggle.active svg { transform: rotate(180deg); }
 
-    /* 同事行 */
-    .adv-colleague-row { display: flex; gap: 8px; align-items: flex-end; }
-    .adv-colleague-row .adv-field { flex: 1; }
-    .adv-colleague-row .form-select { flex: 1; }
-    .add-colleague-btn {
-        display: flex; align-items: center; gap: 4px;
-        padding: 5px 12px; border-radius: var(--radius-md);
-        border: 1px dashed var(--border-strong); background: transparent;
-        color: var(--text-muted); font-size: 12px; cursor: pointer; transition: all .15s;
-        white-space: nowrap; height: 30px; flex-shrink: 0;
-    }
-    .add-colleague-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-    .add-colleague-btn svg { width: 12px; height: 12px; }
+/* 进阶筛选面板 */
+.filter-advanced-panel {
+  display: none; margin-top: 6px;
+  padding: 20px 24px;
+}
+.filter-advanced-panel.open { display: block; }
 
-
-    /* 新增同事弹窗 */
-    .colleague-modal {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.5);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        backdrop-filter: blur(4px);
-    }
-    .colleague-modal.open { display: flex; }
-    .colleague-modal-card {
-        background: var(--bg-card);
-        border-radius: var(--radius-xl);
-        padding: 28px;
-        width: 360px;
-        max-width: 90vw;
-        border: 1px solid var(--border-strong);
-        box-shadow: var(--shadow-xl);
-        animation: fadeInUp 0.2s ease;
-    }
-    @keyframes fadeInUp {
-        from { opacity:0; transform:translateY(10px); }
-        to   { opacity:1; transform:translateY(0); }
-    }
-    .colleague-modal-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 16px;
-    }
-    .colleague-modal-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 16px;
-        justify-content: flex-end;
-    }
-    .colleague-modal-actions .btn { min-width: 80px; }
-
-    /* 已选筛选项标签 */
-    .active-filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 10px;
-    }
-    .active-filter-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 3px 8px;
-        border-radius: var(--radius-full);
-        font-size: 12px;
-        font-weight: 500;
-        background: var(--accent-dim);
-        color: var(--accent);
-        border: 1px solid rgba(34,197,94,0.2);
-    }
-    .active-filter-tag button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--accent);
-        padding: 0;
-        line-height: 1;
-        font-size: 14px;
-        opacity: 0.7;
-    }
-    .active-filter-tag button:hover { opacity: 1; }
+/* 筛选结果标签 */
+.active-filters {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
+}
+.active-filter-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px;
+  background: rgba(14,165,233,.12); color: #38BDF8;
+  font-size: 11px; font-weight: 500;
+}
+.active-filter-tag button {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: rgba(14,165,233,.3); color: #38BDF8;
+  border: none; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 9px; opacity: 0.7; transition: all .15s;
+}
+.active-filter-tag button:hover { opacity: 1; background: #EF4444; color: #fff; }
+.filter-summary { font-size: 11px; color: #475569; margin-left: auto; }
+.filter-summary strong { color: #94A3B8; }
 
     /* 统计摘要 */
     .filter-summary {
@@ -294,6 +238,15 @@
         transition: all .15s; font-size: 16px; flex-shrink: 0;
     }
     .popup-close-btn:hover { background: var(--danger-bg); color: var(--danger); }
+
+    /* 行级编辑按钮 */
+    .op-edit-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 28px; height: 28px; border-radius: 6px;
+        background: rgba(14,165,233,.1); color: var(--accent);
+        transition: background .15s; text-decoration: none;
+    }
+    .op-edit-btn:hover { background: var(--accent); color: #fff; }
 
     /* 编辑提示条 */
     .popup-edit-bar {
@@ -430,23 +383,7 @@
 
     </style>
 
-    <style>
-    .theme-toggle {
-      display: flex; align-items: center; justify-content: center;
-      width: 36px; height: 36px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-strong);
-      background: transparent; color: var(--text-secondary);
-      cursor: pointer; transition: all var(--transition-base); flex-shrink: 0;
-    }
-    .theme-toggle:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--brand); }
-    .theme-toggle .icon-sun, .theme-toggle .icon-moon { width: 18px; height: 18px; }
-    .theme-toggle .icon-sun { display: none; }
-    .theme-toggle .icon-moon { display: block; }
-    body.theme-light .theme-toggle .icon-sun { display: block; }
-    body.theme-light .theme-toggle .icon-moon { display: none; }
     
-    </style>
 
 </head>
 <body>
@@ -516,389 +453,435 @@
         <!-- 筛选区 -->
         <div class="filter-wrap">
 
-            <!-- 第一行：基础筛选（重要字段直接露出） -->
-            <div class="filter-row-primary">
-                <!-- 关键词搜索 — 次要，缩小 -->
-                <div class="filter-group">
-                    <label class="filter-label">搜索</label>
-                    <input type="text" id="search-keyword" class="form-input" placeholder="关键词..." onkeyup="handleSearch(event)">
+            <!-- 筛选卡片一：基础筛选 -->
+            <div class="filter-card">
+                <div class="filter-card-header">
+                    <span class="filter-card-icon" style="color:#0EA5E9;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                    <span class="filter-card-title">快速筛选</span>
                 </div>
-                <!-- 签约方 -->
-                <div class="filter-group">
-                    <label class="filter-label">签约方</label>
-                    <select id="filter-source" class="form-input form-select">
-                        <option value=""></option>
-                        <option value="客户主动联系">客户主动联系</option>
-                        <option value="展会">展会</option>
-                        <option value="网络">网络</option>
-                        <option value="同行推荐">同行推荐</option>
-                        <option value="合作伙伴">合作伙伴</option>
-                        <option value="自主开发">自主开发</option>
-                    </select>
+                <div class="filter-row">
+                    <div class="filter-field col-3">
+                        <label class="filter-label">关键词</label>
+                        <input type="text" id="search-keyword" class="form-input" placeholder="机房名称/地址..." onkeyup="handleSearch(event)">
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">地区</label>
+                        <select id="filter-country" class="form-select" onchange="applyFilters()">
+                            <option value="">全部地区</option>
+                            <option value="中国">中国</option>
+                            <option value="泰国">泰国</option>
+                            <option value="马来西亚">马来西亚</option>
+                            <option value="印尼">印尼</option>
+                            <option value="菲律宾">菲律宾</option>
+                            <option value="日本">日本</option>
+                            <option value="新加坡">新加坡</option>
+                            <option value="欧洲">欧洲</option>
+                            <option value="澳大利亚">澳大利亚</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">MW规模</label>
+                        <select id="filter-mw" class="form-select" onchange="applyFilters()">
+                            <option value="">全部规模</option>
+                            <option value="micro">&lt;1 MW</option>
+                            <option value="small">1-5 MW</option>
+                            <option value="medium">5-20 MW</option>
+                            <option value="large">20-100 MW</option>
+                            <option value="hyperscale">&gt;100 MW</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">状态</label>
+                        <select id="filter-status" class="form-select" onchange="applyFilters()">
+                            <option value="">全部状态</option>
+                            <option value="new">新增</option>
+                            <option value="collected">已收录</option>
+                            <option value="negotiating">洽谈中</option>
+                            <option value="signed">已签约</option>
+                            <option value="rejected">已淘汰</option>
+                        </select>
+                    </div>
                 </div>
-                <!-- 国家/地区 -->
-                <div class="filter-group">
-                    <label class="filter-label">地区</label>
-                    <select id="filter-country" class="form-input form-select">
-                        <option value=""></option>
-                        <option value="中国">中国</option>
-                        <option value="泰国">泰国</option>
-                        <option value="马来西亚">马来西亚</option>
-                        <option value="印尼">印尼</option>
-                        <option value="菲律宾">菲律宾</option>
-                        <option value="日本">日本</option>
-                        <option value="欧洲">欧洲</option>
-                        <option value="澳大利亚">澳大利亚</option>
-                        <option value="其他">其他</option>
-                    </select>
+                <div class="filter-row">
+                    <div class="filter-field col-3">
+                        <label class="filter-label">交付时间</label>
+                        <select id="filter-delivery" class="form-select" onchange="applyFilters()">
+                            <option value="">全部时间</option>
+                            <option value="immediate">已可交付</option>
+                            <option value="3m">3个月内</option>
+                            <option value="6m">半年内</option>
+                            <option value="1y">一年内</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">PUE值</label>
+                        <select id="filter-pue" class="form-select" onchange="applyFilters()">
+                            <option value="">全部PUE</option>
+                            <option value="excellent">&lt;1.3 优秀</option>
+                            <option value="good">1.3-1.4 良好</option>
+                            <option value="average">1.4-1.5 一般</option>
+                            <option value="poor">&gt;1.5 较差</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">KYC状态</label>
+                        <select id="filter-kyc" class="form-select" onchange="applyFilters()">
+                            <option value="">全部KYC</option>
+                            <option value="not_started">未开始</option>
+                            <option value="in_progress">进行中</option>
+                            <option value="approved">已完成</option>
+                            <option value="rejected">已驳回</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">对接同事</label>
+                        <select id="filter-liaison" class="form-select" onchange="applyFilters()">
+                            <option value="">全部同事</option>
+                        </select>
+                    </div>
                 </div>
-                <!-- MW数 -->
-                <div class="filter-group">
-                    <label class="filter-label">MW数</label>
-                    <select id="filter-mw" class="form-input form-select">
-                        <option value=""></option>
-                        <option value="micro">&lt;1 MW</option>
-                        <option value="small">1-5 MW</option>
-                        <option value="medium">5-20 MW</option>
-                        <option value="large">20-100 MW</option>
-                        <option value="hyperscale">&gt;100 MW</option>
-                    </select>
-                </div>
-                <!-- 交付日期 -->
-                <div class="filter-group">
-                    <label class="filter-label">交付</label>
-                    <select id="filter-delivery" class="form-input form-select">
-                        <option value=""></option>
-                        <option value="immediate">已可交付</option>
-                        <option value="3m">3个月内</option>
-                        <option value="6m">半年内</option>
-                        <option value="1y">一年内</option>
-                        <option value="future">一年后</option>
-                    </select>
-                </div>
-                <!-- PUE值 -->
-                <div class="filter-group">
-                    <label class="filter-label">PUE</label>
-                    <select id="filter-pue" class="form-input form-select">
-                        <option value=""></option>
-                        <option value="excellent">&lt;1.3</option>
-                        <option value="good">1.3-1.4</option>
-                        <option value="average">1.4-1.5</option>
-                        <option value="poor">&gt;1.5</option>
-                    </select>
-                </div>
-                <!-- 状态 -->
-                <div class="filter-group">
-                    <label class="filter-label">状态</label>
-                    <select id="filter-status" class="form-input form-select">
-                        <option value=""></option>
-                        <option value="new">新增</option>
-                        <option value="collected">已收录</option>
-                        <option value="negotiating">洽谈中</option>
-                        <option value="signed">已签约</option>
-                        <option value="rejected">已淘汰</option>
-                    </select>
-                </div>
-                <!-- KYC -->
-                <div class="filter-group">
-                    <label class="filter-label">KYC</label>
-                    <select id="filter-kyc" class="form-input form-select">
-                        <option value=""></option>
-                        <option value="not_started">未开始</option>
-                        <option value="in_progress">进行中</option>
-                        <option value="pending_doc">待补充</option>
-                        <option value="approved">已完成</option>
-                        <option value="rejected">已驳回</option>
-                        <option value="not_required">不适用</option>
-                    </select>
-                </div>
-                <!-- 预留客户 -->
-                <div class="filter-group">
-                    <label class="filter-label">客户</label>
-                    <select id="filter-customer" class="form-input form-select"><option value="">全部客户</option></select>
-                </div>
-                <!-- 操作按钮行（靠右） -->
                 <div class="filter-actions">
+                    <span class="filter-summary">共 <strong id="filter-count">0</strong> 条符合</span>
                     <button class="filter-advanced-toggle" id="advancedToggle" onclick="toggleAdvanced()">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                        更多
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        高级筛选
                     </button>
-                    <button class="btn btn-secondary btn-sm" onclick="resetFilters()">重置</button>
-                    <button class="btn btn-primary btn-sm" onclick="applyFilters()">筛选</button>
+                    <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="resetFilters()">重置</button>
                 </div>
             </div>
 
-            <!-- 进阶筛选面板 -->
-            <div class="filter-advanced-panel" id="advancedPanel">
-
-            <!-- 分类一：基础业务 -->
-            <div class="adv-section">
-                <div class="adv-section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                    基础业务
+            <!-- 高级筛选面板（展开后显示） -->
+            <div class="filter-card filter-advanced-panel" id="advancedPanel" style="display:none;">
+                <div class="filter-card-header">
+                    <span class="filter-card-icon" style="color:#F59E0B;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    </span>
+                    <span class="filter-card-title">高级筛选</span>
                 </div>
-                <div class="adv-grid">
-                    <div class="adv-field">
-                        <label class="adv-label">对接同事</label>
-                        <select id="filter-liaison" class="form-input form-select">
-                            <option value=""></option>
-                        </select>
-                    </div>
-                    <div class="adv-field">
-                        <label class="adv-label">签约方</label>
-                        <select id="filter-source" class="form-input form-select">
-                            <option value=""></option>
+
+                <div class="filter-section-title">基础业务</div>
+                <div class="filter-row">
+                    <div class="filter-field col-3">
+                        <label class="filter-label">签约方</label>
+                        <select id="filter-source" class="form-select" onchange="applyFilters()">
+                            <option value="">全部来源</option>
                             <option value="客户主动联系">客户主动联系</option>
                             <option value="展会">展会</option>
                             <option value="网络">网络</option>
                             <option value="同行推荐">同行推荐</option>
                             <option value="合作伙伴">合作伙伴</option>
-                            <option value="自主开发">自主开发</option>
                         </select>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">产权归属</label>
-                        <select id="filter-property" class="form-input form-select">
-                            <option value=""></option>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">产权归属</label>
+                        <select id="filter-property" class="form-select" onchange="applyFilters()">
+                            <option value="">全部产权</option>
                             <option value="自有">自有</option>
                             <option value="租用">租用</option>
                             <option value="合作共建">合作共建</option>
                             <option value="运营商">运营商</option>
-                            <option value="政企">政企</option>
                         </select>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">客户</label>
-                        <select id="filter-customer" class="form-input form-select">
-                            <option value=""></option>
-                        </select>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">交付时间范围</label>
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            <input type="month" id="filter-delivery-from" class="form-input" style="flex:1;height:34px;" onchange="applyFilters()">
+                            <span style="color:#475569;font-size:11px;">至</span>
+                            <input type="month" id="filter-delivery-to" class="form-input" style="flex:1;height:34px;" onchange="applyFilters()">
+                        </div>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">机柜规模</label>
-                        <select id="filter-rack-scale" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="micro">&lt;50</option>
-                            <option value="small">50-200</option>
-                            <option value="medium">200-500</option>
-                            <option value="large">500-1000</option>
-                            <option value="hyperscale">&gt;1000</option>
-                        </select>
-                    </div>
-                    <div class="adv-field">
-                        <label class="adv-label">交付时间</label>
-                        <select id="filter-delivery" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="immediate">&lt;1个月</option>
-                            <option value="3m">1-3个月</option>
-                            <option value="6m">3-6个月</option>
-                            <option value="1y">6-12个月</option>
-                            <option value="future">&gt;1年</option>
-                        </select>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">对接同事</label>
+                        <input type="text" id="filter-liaison-adv" class="form-input" placeholder="输入同事姓名..." onkeyup="applyFilters()">
                     </div>
                 </div>
-            </div>
 
-            <!-- 分类二：电力系统 -->
-            <div class="adv-section">
-                <div class="adv-section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    电力系统
+                <div class="filter-section-title">电力系统</div>
+                <div class="filter-row">
+                    <div class="filter-field col-3">
+                        <label class="filter-label">市电总容量</label>
+                        <select id="filter-power-capacity" class="form-select" onchange="applyFilters()">
+                            <option value="">全部容量</option>
+                            <option value="small">&lt;10000 kVA</option>
+                            <option value="medium">10000-50000 kVA</option>
+                            <option value="large">50000-100000 kVA</option>
+                            <option value="xl">&gt;100000 kVA</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">可用电力</label>
+                        <select id="filter-mw-avail" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="micro">&lt;1 MW</option>
+                            <option value="small">1-5 MW</option>
+                            <option value="medium">5-20 MW</option>
+                            <option value="large">20-100 MW</option>
+                            <option value="hyperscale">&gt;100 MW</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">UPS配置</label>
+                        <select id="filter-ups" class="form-select" onchange="applyFilters()">
+                            <option value="">全部配置</option>
+                            <option value="1N">1N</option>
+                            <option value="2N">2N</option>
+                            <option value="N+1">N+1</option>
+                            <option value="分布式">分布式</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">柴发冗余等级</label>
+                        <select id="filter-generator" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="N+1">N+1</option>
+                            <option value="2N">2N</option>
+                            <option value="N+X">N+X</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="adv-grid">
-                    <div class="adv-field">
-                        <label class="adv-label">单机柜功率</label>
-                        <select id="filter-power" class="form-input form-select">
-                            <option value=""></option>
+                <div class="filter-row">
+                    <div class="filter-field col-3">
+                        <label class="filter-label">UPS电池时长</label>
+                        <select id="filter-ups-time" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="short">&lt;15分钟</option>
+                            <option value="standard">15-30分钟</option>
+                            <option value="long">&gt;30分钟</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">高压直流（HVDC）</label>
+                        <select id="filter-hvdc" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="支持">支持</option>
+                            <option value="不支持">不支持</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">BBU/超级电容</label>
+                        <select id="filter-bbu" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="支持">支持</option>
+                            <option value="不支持">不支持</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">电力可用性SLA</label>
+                        <select id="filter-power-sla" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="99.99%">99.99%</option>
+                            <option value="99.999%">99.999%</option>
+                            <option value="99.9999%">99.9999%</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-section-title">制冷与空间</div>
+                <div class="filter-row">
+                    <div class="filter-field col-3">
+                        <label class="filter-label">机柜规模</label>
+                        <select id="filter-rack-scale" class="form-select" onchange="applyFilters()">
+                            <option value="">全部规模</option>
+                            <option value="micro">&lt;50柜</option>
+                            <option value="small">50-200柜</option>
+                            <option value="medium">200-500柜</option>
+                            <option value="large">500-1000柜</option>
+                            <option value="hyperscale">&gt;1000柜</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">单机柜最大功率</label>
+                        <select id="filter-power-per-rack" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
                             <option value="low">&lt;6kW</option>
                             <option value="standard">6-10kW</option>
                             <option value="high">10-15kW</option>
                             <option value="ultra">&gt;15kW</option>
+                            <option value="extreme">&gt;30kW</option>
                         </select>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">UPS 配置</label>
-                        <select id="filter-ups" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="1N">1N</option>
-                            <option value="2N">2N</option>
-                            <option value="3N">3N</option>
-                            <option value="无">无</option>
-                        </select>
-                    </div>
-                    <div class="adv-field">
-                        <label class="adv-label">柴发冗余</label>
-                        <select id="filter-generator" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="N+1">N+1</option>
-                            <option value="2N">2N</option>
-                            <option value="无">无</option>
-                        </select>
-                    </div>
-                    <div class="adv-field">
-                        <label class="adv-label">电费模式</label>
-                        <select id="filter-billing" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="包干">包干（元/柜/月）</option>
-                            <option value="按量">按量（元/kWh）</option>
-                            <option value="混合">混合</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 分类三：制冷与空间 -->
-            <div class="adv-section">
-                <div class="adv-section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
-                    制冷与空间
-                </div>
-                <div class="adv-grid">
-                    <div class="adv-field">
-                        <label class="adv-label">冷却方式</label>
-                        <select id="filter-cooling" class="form-input form-select">
-                            <option value=""></option>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">主制冷方式</label>
+                        <select id="filter-cooling" class="form-select" onchange="applyFilters()">
+                            <option value="">全部方式</option>
                             <option value="风冷">风冷</option>
                             <option value="水冷">水冷</option>
                             <option value="液冷">液冷</option>
                             <option value="风冷+液冷">风冷+液冷</option>
                         </select>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">承重能力</label>
-                        <select id="filter-load" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="standard">标准（&lt;800kg）</option>
-                            <option value="heavy">重型（800-1200kg）</option>
-                            <option value="ultra-heavy">&gt;1200kg</option>
-                        </select>
-                    </div>
-                    <div class="adv-field">
-                        <label class="adv-label">液冷支持</label>
-                        <select id="filter-liquid" class="form-input form-select">
-                            <option value=""></option>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">液冷支持</label>
+                        <select id="filter-liquid" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
                             <option value="支持">支持</option>
                             <option value="不支持">不支持</option>
                             <option value="改造后可支持">改造后可支持</option>
                         </select>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">架空地板</label>
-                        <select id="filter-floor" class="form-input form-select">
-                            <option value=""></option>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-field col-3">
+                        <label class="filter-label">CDU配置</label>
+                        <select id="filter-cdu" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
                             <option value="有">有</option>
                             <option value="无">无</option>
                         </select>
                     </div>
-                </div>
-            </div>
-
-            <!-- 分类四：网络与互联 -->
-            <div class="adv-section">
-                <div class="adv-section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    网络与互联
-                </div>
-                <div class="adv-grid">
-                    <div class="adv-field">
-                        <label class="adv-label">网络运营商</label>
-                        <select id="filter-isp" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="中国电信">中国电信</option>
-                            <option value="中国联通">中国联通</option>
-                            <option value="中国移动">中国移动</option>
-                            <option value="BGP多线">BGP多线</option>
-                            <option value="其他">其他</option>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">地板承重</label>
+                        <select id="filter-floor-load" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="standard">≥800 kg/m²</option>
+                            <option value="high">≥1000 kg/m²</option>
+                            <option value="ultra">≥1500 kg/m²</option>
                         </select>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">800G 支持</label>
-                        <select id="filter-800g" class="form-input form-select">
-                            <option value=""></option>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">PUE设计值</label>
+                        <select id="filter-pue" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="excellent">&lt;1.3 优秀</option>
+                            <option value="good">1.3-1.4 良好</option>
+                            <option value="average">1.4-1.5 一般</option>
+                            <option value="poor">&gt;1.5 较差</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">运营商自有机房</label>
+                        <select id="filter-operator" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="是">是</option>
+                            <option value="否">否</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-section-title">网络与互联</div>
+                <div class="filter-row">
+                    <div class="filter-field col-3">
+                        <label class="filter-label">网络进线路由</label>
+                        <select id="filter-network-route" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="单路由">单路由</option>
+                            <option value="双路由">双路由</option>
+                            <option value="多路由">多路由</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">运营商数量</label>
+                        <select id="filter-isp-count" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="1">1家</option>
+                            <option value="2">2家</option>
+                            <option value="3+">3家及以上</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">800G网络支持</label>
+                        <select id="filter-800g" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
                             <option value="支持">支持</option>
                             <option value="不支持">不支持</option>
                             <option value="规划中">规划中</option>
                         </select>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">RoCE/IB</label>
-                        <select id="filter-roce" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="支持">支持</option>
-                            <option value="不支持">不支持</option>
-                        </select>
-                    </div>
-                    <div class="adv-field">
-                        <label class="adv-label">网络冗余</label>
-                        <select id="filter-redundancy" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="单线">单线</option>
-                            <option value="双线">双线</option>
-                            <option value="多线BGP">多线BGP</option>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">裸光纤资源</label>
+                        <select id="filter-fiber" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="有">有</option>
+                            <option value="无">无</option>
+                            <option value="可申请">可申请</option>
                         </select>
                     </div>
                 </div>
-            </div>
-
-            <!-- 分类五：认证与配套 -->
-            <div class="adv-section">
-                <div class="adv-section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    认证与配套
-                </div>
-                <div class="adv-grid">
-                    <div class="adv-field">
-                        <label class="adv-label">ISO 认证</label>
-                        <select id="filter-iso" class="form-input form-select">
-                            <option value=""></option>
+                <div class="filter-row">
+                    <div class="filter-field col-3">
+                        <label class="filter-label">BGP多线</label>
+                        <select id="filter-bgp" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
                             <option value="是">是</option>
                             <option value="否">否</option>
-                            <option value="办理中">办理中</option>
                         </select>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">等级认证</label>
-                        <select id="filter-level" class="form-input form-select">
-                            <option value=""></option>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">网络可用性</label>
+                        <select id="filter-network-sla" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="99.9%">99.9%</option>
+                            <option value="99.99%">99.99%</option>
+                            <option value="99.999%">99.999%</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">是否有专线连接</label>
+                        <select id="filter-dedicated" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="有">有</option>
+                            <option value="无">无</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-section-title">认证与配套</div>
+                <div class="filter-row">
+                    <div class="filter-field col-3">
+                        <label class="filter-label">等级认证</label>
+                        <select id="filter-level" class="form-select" onchange="applyFilters()">
+                            <option value="">全部等级</option>
                             <option value="A级">A级</option>
                             <option value="B级">B级</option>
                             <option value="C级">C级</option>
+                            <option value="T3">T3</option>
+                            <option value="T4">T4</option>
+                        </select>
+                    </div>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">ISO认证</label>
+                        <select id="filter-iso" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="ISO 27001">ISO 27001</option>
+                            <option value="ISO 9001">ISO 9001</option>
+                            <option value="SOC 1">SOC 1</option>
+                            <option value="SOC 2">SOC 2</option>
+                            <option value="PCI-DSS">PCI-DSS</option>
+                            <option value="办理中">办理中</option>
                             <option value="无">无</option>
                         </select>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">7×24 运维</label>
-                        <select id="filter-ops247" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="有（独立）">有（独立）</option>
-                            <option value="有（共享）">有（共享）</option>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">BOI资质</label>
+                        <select id="filter-boi" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="已获得">已获得</option>
+                            <option value="办理中">办理中</option>
                             <option value="无">无</option>
+                            <option value="不适用">不适用</option>
                         </select>
                     </div>
-                    <div class="adv-field">
-                        <label class="adv-label">液冷维护</label>
-                        <select id="filter-liquid-maint" class="form-input form-select">
-                            <option value=""></option>
-                            <option value="具备">具备</option>
-                            <option value="无">无</option>
+                    <div class="filter-field col-3">
+                        <label class="filter-label">安保等级</label>
+                        <select id="filter-security" class="form-select" onchange="applyFilters()">
+                            <option value="">全部</option>
+                            <option value="普通">普通</option>
+                            <option value="严格">严格</option>
+                            <option value="军事级">军事级</option>
                         </select>
                     </div>
                 </div>
+
             </div>
 
-            <!-- 底部操作条 -->
-            <div class="filter-footer">
-                <button class="btn btn-ghost btn-sm" onclick="openColleagueModal()" style="font-size:12px;padding:5px 10px;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    同事管理
-                </button>
-                <button class="btn btn-ghost btn-sm" onclick="openCustomerModal()" style="font-size:12px;padding:5px 10px;">客户管理</button>
-                <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
-                    <span style="font-size:11px;color:var(--gray-500);">
-                        <strong id="filter-count" style="color:var(--text-secondary);font-size:12px;">0</strong> 条符合
-                    </span>
-                    <button class="btn btn-secondary btn-sm" onclick="resetFilters()" style="font-size:12px;padding:5px 12px;">重置</button>
-                </div>
-            </div>
+            <!-- 已选筛选项标签 -->
+            <div class="active-filters" id="activeFilters" style="display:none;"></div>
+        </div>
+
+<!-- 已选筛选项标签 -->
+            <div class="active-filters" id="activeFilters" style="display:none;"></div>
         </div>
 
         <!-- 数据表格 -->
@@ -921,7 +904,7 @@
                             <th data-sort="kyc" class="sortable" onclick="toggleSort('kyc')" style="width:68px;">KYC <span class="sort-icon">↕</span></th>
                             <th data-sort="createdAt" class="sortable" onclick="toggleSort('createdAt')" style="width:82px;">录入 <span class="sort-icon">↓</span></th>
                             <th>对接同事</th>
-                            <th>预留客户</th>
+                            <th style="width:48px;">操作</th>
                         </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
@@ -932,7 +915,7 @@
                     </div>
                     <div class="empty-title">暂无机房数据</div>
                     <div class="empty-desc">点击"新增机房"按钮添加第一条记录，或导入现有数据</div>
-                    <a href="datacenter-form.html" class="btn btn-primary">新增机房</a>
+                    <button onclick="location.href='datacenter-form.html'" class="btn btn-primary">新增机房</button>
                 </div>
             </div>
             <div class="pagination-wrapper">
@@ -954,40 +937,7 @@
                 
             </div>
         </div>
-    </div>
-
-    <!-- 客户管理对话框 -->
-    <div id="customer-modal" class="modal-overlay" style="display:none;">
-        <div class="modal" style="max-width:480px;">
-            <div class="modal-title">客户管理</div>
-            <div class="modal-body" style="margin:16px 0;">
-                <div style="display:flex;gap:8px;margin-bottom:12px;">
-                    <input type="text" id="new-customer-name" class="form-input" placeholder="输入新客户名称" style="flex:1;">
-                    <button class="btn btn-primary btn-sm" onclick="addCustomer()">添加</button>
-                </div>
-                <div id="customer-list" style="max-height:280px;overflow-y:auto;"></div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeCustomerModal()">关闭</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 新增同事对话框 -->
-    <div id="colleague-modal" class="colleague-modal">
-        <div class="colleague-modal-card">
-            <div class="colleague-modal-title">新增同事</div>
-            <div class="form-group">
-                <label class="form-label">同事姓名</label>
-                <input type="text" id="new-colleague-name" class="form-input" placeholder="输入同事姓名，如：张三">
-            </div>
-            <div class="colleague-modal-actions">
-                <button class="btn btn-secondary" onclick="closeColleagueModal()">取消</button>
-                <button class="btn btn-primary" onclick="confirmAddColleague()">添加</button>
-            </div>
-        </div>
-    </div>
-
+    
     <!-- Toast 提示 -->
     <div id="toast" class="toast" style="display:none;"></div>
 
@@ -1014,7 +964,7 @@
     var currentPage   = 1;
     var PAGE_SIZE     = 20;
     var selectedIds    = new Set();
-    var customersCache = [];
+    
 
     var KYC_MAP = {
         'not_started':  { label:'未开始',  cls:'kyc-info'    },
@@ -1027,60 +977,24 @@
     function getKycLabel(s){ var m=KYC_MAP[s]; return m?m.label:(s?'—':'-'); }
     function getKycCls(s)  { var m=KYC_MAP[s]; return m?m.cls:'kyc-info'; }
 
-    // ── 同事管理 ────────────────────────────────────────────────
-    var COLLEAGUE_KEY = 'aidc_colleagues';
-    function getColleagues() {
-        try { return JSON.parse(localStorage.getItem(COLLEAGUE_KEY)||'[]'); } catch(e){ return []; }
-    }
-    function saveColleagues(list) {
-        localStorage.setItem(COLLEAGUE_KEY, JSON.stringify(list));
-    }
-    function addColleague(name) {
-        var list = getColleagues();
-        name = name.trim();
-        if (!name || list.indexOf(name) >= 0) return false;
-        list.push(name);
-        saveColleagues(list);
-        return true;
-    }
+    
+    
+    
+    
     function refreshLiaisonDropdown() {
         var sel = document.getElementById('filter-liaison');
         if (!sel) return;
-        var colleagues = getColleagues();
-        // 也从已有机房数据里收集
-        var fromData = {};
-        currentList.forEach(function(d){ if(d.liaison) fromData[d.liaison]=true; });
-        var allNames = {};
-        colleagues.forEach(function(n){ allNames[n]=true; });
-        Object.keys(fromData).forEach(function(n){ allNames[n]=true; });
-        var names = Object.keys(allNames).sort();
+        var names = {};
+        currentList.forEach(function(d){ if(d.liaison) names[d.liaison]=true; });
+        var sorted = Object.keys(names).sort();
         sel.innerHTML = '<option value="">全部同事</option>' +
-            names.map(function(n){ return '<option value="'+escAttr(n)+'">'+esc(n)+'</option>'; }).join('');
+            sorted.map(function(n){ return '<option value="'+escAttr(n)+'">'+esc(n)+'</option>'; }).join('');
     }
 
-    function openColleagueModal() {
-        document.getElementById('new-colleague-name').value = '';
-        document.getElementById('colleague-modal').classList.add('open');
-        setTimeout(function(){ document.getElementById('new-colleague-name').focus(); }, 50);
-    }
-    function closeColleagueModal() {
-        document.getElementById('colleague-modal').classList.remove('open');
-    }
-    function confirmAddColleague() {
-        var name = document.getElementById('new-colleague-name').value.trim();
-        if (!name) { showToast('请输入同事姓名', 'error'); return; }
-        if (addColleague(name)) {
-            refreshLiaisonDropdown();
-            document.getElementById('filter-liaison').value = name;
-            closeColleagueModal();
-            showToast('同事 "'+name+'" 已添加', 'success');
-        } else {
-            showToast('该同事已存在', 'info');
-        }
-    }
-    document.addEventListener('keydown', function(e){
-        if (e.key==='Escape') closeColleagueModal();
-    });
+    
+    
+    
+    
 
     // ── 进阶筛选折叠 ────────────────────────────────────────────
     function toggleAdvanced() {
@@ -1088,6 +1002,8 @@
         var btn   = document.getElementById('advancedToggle');
         var isOpen = panel.classList.toggle('open');
         btn.classList.toggle('active', isOpen);
+        // 重要：去掉/加上 inline display，否则 style 属性优先级高于 class
+        panel.style.display = isOpen ? '' : 'none';
     }
 
     // ── 加载数据 ────────────────────────────────────────────────
@@ -1111,8 +1027,9 @@
         var country   = (document.getElementById('filter-country')   || {value:''}).value;
         var status    = (document.getElementById('filter-status')    || {value:''}).value;
         var kyc       = (document.getElementById('filter-kyc')         || {value:''}).value;
-        var liaison   = (document.getElementById('filter-liaison')   || {value:''}).value.toLowerCase().trim();
-        var customer  = (document.getElementById('filter-customer')  || {value:''}).value;
+        var liaison = (document.getElementById('filter-liaison') || {value:''}).value.toLowerCase().trim();
+        if (!liaison) liaison = (document.getElementById('filter-liaison-adv') || {value:''}).value.toLowerCase().trim();
+        
         var source    = (document.getElementById('filter-source')    || {value:''}).value;
         var property_ = (document.getElementById('filter-property')  || {value:''}).value;
         var rackScale = (document.getElementById('filter-rack-scale')|| {value:''}).value;
@@ -1142,11 +1059,10 @@
                 var kwFields = [
                     (d.name||'').toLowerCase(), (d.dc_name||'').toLowerCase(),
                     (d.address||'').toLowerCase(), (d.park||'').toLowerCase(),
-                    (d.customer||'').toLowerCase(), (d.reserved_customers||'').toLowerCase(),
+                    
                     (d.liaison||'').toLowerCase(), (d.source||'').toLowerCase(),
                     (d.province||'').toLowerCase(), (d.city||'').toLowerCase(),
-                    (d.contact||'').toLowerCase(), (d.remark||'').toLowerCase(),
-                ];
+                    (d.contact||'').toLowerCase(), (d.remark||'').toLowerCase()];
                 var matched = kwFields.some(function(f){ return f.includes(keyword); });
                 if (!matched) return false;
             }
@@ -1155,7 +1071,7 @@
             if (status    && d.status    !== status)      return false;
             if (kyc       && d.kycStatus !== kyc)        return false;
             if (liaison   && (d.liaison||'').toLowerCase() !== liaison) return false;
-            if (customer  && d.customer  !== customer)    return false;
+            
             if (source    && d.source    !== source)       return false;
             if (property_ && (d.property||'') !== property_) return false;
             if (pue) {
@@ -1255,7 +1171,7 @@
 
     function resetFilters() {
         var ids = ['search-keyword','filter-country','filter-status','filter-kyc',
-                   'filter-liaison','filter-customer','filter-source','filter-property',
+                   'filter-liaison','filter-liaison-adv','filter-source','filter-property',
                    'filter-rack-scale','filter-power','filter-ups','filter-generator','filter-billing',
                    'filter-cooling','filter-load','filter-liquid','filter-floor',
                    'filter-isp','filter-800g','filter-roce','filter-redundancy',
@@ -1326,7 +1242,7 @@
                 '<td><span class="kyc-td '+getKycCls(item.kyc_status||'')+'">'+getKycLabel(item.kyc_status||'')+'</span></td>' +
                 '<td>'+(item.createdAt?new Date(item.createdAt).toLocaleDateString('zh-CN'):'-')+'</td>' +
                 '<td>'+(item.liaison?'<span class="dc-tag" style="background:var(--gray-800)">'+esc(item.liaison)+'</span>':'-')+'</td>' +
-                '<td>'+(item.reserved_customers?'<span class="dc-tag" style="background:var(--gray-800)">'+esc(item.reserved_customers)+'</span>':'-')+'</td>' +
+                '<td style="white-space:nowrap"><a href="datacenter-form.html?id='+item.id+'" class="op-edit-btn" title="编辑" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></a></td>' +
                 '</tr>';
         }).join('');
     }
@@ -1371,439 +1287,7 @@
 
     function getFilteredList() { applyFilters(); return currentList.filter(function(){ return true; }); }
 
-    // ── 客户管理 ────────────────────────────────────────────────
-    function loadCustomerFilter() {
-        var res = AIDC_API.getCustomers();
-        customersCache = res.data || [];
-        var sel = document.getElementById('filter-customer');
-        if (!sel) return;
-        sel.innerHTML = '<option value="">全部客户</option>' +
-            customersCache.map(function(c){ return '<option value="'+escAttr(c.name||'')+'">'+esc(c.name||'')+'</option>'; }).join('');
-    }
-
-    function openCustomerModal() {
-        document.getElementById('customer-modal').style.display='flex';
-        renderCustomerList();
-    }
-    function closeCustomerModal() {
-        document.getElementById('customer-modal').style.display='none';
-    }
-    function renderCustomerList() {
-        var el = document.getElementById('customer-list');
-        var res = AIDC_API.getCustomers();
-        var list = res.data || [];
-        if (list.length===0) { el.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:20px;">暂无客户</div>'; return; }
-        el.innerHTML = list.map(function(c){
-            return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-light);">' +
-                '<span style="font-size:14px;">'+esc(c.name||'')+'</span>' +
-                '<button class="btn btn-danger btn-sm" onclick="deleteCustomer(\''+c.id+'\')" style="padding:3px 10px;font-size:12px;">删除</button>'+
-                '</div>';
-        }).join('');
-    }
-    function addCustomer() {
-        var name = document.getElementById('new-customer-name').value.trim();
-        if (!name) { showToast('请输入客户名称','error'); return; }
-        var res = AIDC_API.createCustomer({ name: name });
-        if (res.code===0) {
-            document.getElementById('new-customer-name').value='';
-            loadCustomerFilter();
-            renderCustomerList();
-            showToast('客户 "'+name+'" 已添加','success');
-        }
-    }
-    function deleteCustomer(id) {
-        if (!confirm('确定删除该客户？')) return;
-        AIDC_API.deleteCustomer(id);
-        loadCustomerFilter();
-        renderCustomerList();
-        showToast('客户已删除','info');
-    }
-
-    // ── 批量操作 ────────────────────────────────────────────────
-    function toggleSelect(id) {
-        if (selectedIds.has(id)) selectedIds.delete(id);
-        else selectedIds.add(id);
-        var cb = document.getElementById('select-all');
-        if (cb) cb.checked = selectedIds.size > 0;
-    }
-    document.getElementById('select-all')&&document.getElementById('select-all').addEventListener('change',function(){
-        var checked = this.checked;
-        document.querySelectorAll('#table-body input[type=checkbox]').forEach(function(cb){
-            cb.checked = checked;
-            var id = cb.closest('tr').dataset.id;
-            if (checked) selectedIds.add(id); else selectedIds.delete(id);
-        });
-    });
-
-    function viewDetail(id) { window.location.href='datacenter-view.html?id='+id; }
-    function editRecord(id) { window.location.href='datacenter-form.html?id='+id; }
-
-    function deleteRecord(id) {
-        document.getElementById('delete-modal').style.display='flex';
-        document.getElementById('delete-modal').dataset.target=id;
-    }
-    function confirmDelete() {
-        var id = document.getElementById('delete-modal').dataset.target;
-        AIDC_API.deleteDatacenter(id);
-        closeDeleteModal();
-        showToast('记录已删除','info');
-        loadData();
-    }
-    function closeDeleteModal() {
-        document.getElementById('delete-modal').style.display='none';
-    }
-
-    // ── 导出当前视图 ─────────────────────────────────────────────
-    function exportCurrentView() {
-        applyFilters();
-        var filtered = currentList.filter(function(d){
-            var kw = (document.getElementById('search-keyword')||{value:''}).value.toLowerCase().trim();
-            if (kw && !(d.name||'').toLowerCase().includes(kw)) return false;
-            var country  = (document.getElementById('filter-country')||{value:''}).value;
-            var status   = (document.getElementById('filter-status')||{value:''}).value;
-            var kyc      = (document.getElementById('filter-kyc')||{value:''}).value;
-            var liaison  = (document.getElementById('filter-liaison')||{value:''}).value.toLowerCase();
-            var customer = (document.getElementById('filter-customer')||{value:''}).value;
-            if (country  && d.country   !== country)  return false;
-            if (status   && d.status    !== status)   return false;
-            if (kyc      && d.kycStatus !== kyc)     return false;
-            if (liaison  && (d.liaison||'').toLowerCase() !== liaison) return false;
-            if (customer && d.customer   !== customer) return false;
-            return true;
-        });
-        var header = ['机房名称','国家','省份','城市','地址','客户','状态','对接同事','信息来源','KYC状态','机柜数量','单机柜功率','PUE值','创建时间'];
-        var rows = filtered.map(function(d){
-            return [
-                d.name||'', d.country||'', d.province||'', d.city||'', d.address||'',
-                d.customer||'', AIDC_API.getStatusLabel(d.status)||'',
-                d.liaison||'', d.source||'', getKycLabel(d.kycStatus)||'',
-                d.rackCount||'', d.powerPerRack||'', d.pue||'',
-                d.createdAt?new Date(d.createdAt).toLocaleString('zh-CN'):'',
-            ];
-        });
-        var csv = [header,...rows].map(function(r){ return r.map(function(c){ return '"'+(c||'').replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
-        var blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8'});
-        var url  = URL.createObjectURL(blob);
-        var a    = document.createElement('a');
-        a.href   = url;
-        a.download = '机房筛选结果_'+new Date().toLocaleDateString('zh-CN').replace(/\//g,'-')+'.csv';
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('已导出 '+filtered.length+' 条记录','success');
-    }
-
-    loadData();
     
-    // ── 机房详情弹窗 ────────────────────────────────────────────
-    var _popupId = null;
-    var _popupData = null;
-    var _popupEditMode = false;
-    var _popupModified = false;
-
-    function openPopup(id) {
-        _popupId = id;
-        _popupEditMode = false;
-        _popupModified = false;
-        var res = AIDC_API.getDatacenterById(id);
-        if (!res || res.code !== 0) { showToast('获取数据失败', 'error'); return; }
-        _popupData = res.data;
-
-        var panel = document.getElementById('popup-panel');
-        var overlay = document.getElementById('popup-overlay');
-        panel.style.opacity = '0';
-        panel.style.transform = 'translateY(16px) scale(0.98)';
-        overlay.classList.add('open');
-        document.body.style.overflow = 'hidden';
-
-        renderPopupContent();
-        requestAnimationFrame(function(){
-            panel.style.transition = 'opacity .22s ease, transform .22s ease';
-            panel.style.opacity = '1';
-            panel.style.transform = 'translateY(0) scale(1)';
-        });
-    }
-
-    function closePopup(ask) {
-        if (ask && _popupModified) {
-            var confirmed = confirm('有未保存的修改，确定要关闭吗？\n\n点击"确定"放弃修改并关闭\n点击"取消"继续编辑');
-            if (!confirmed) return;
-        }
-        var overlay = document.getElementById('popup-overlay');
-        overlay.classList.remove('open');
-        document.body.style.overflow = '';
-        _popupId = null; _popupData = null; _popupEditMode = false; _popupModified = false;
-    }
-
-    function togglePopupEdit() {
-        _popupEditMode = !_popupEditMode;
-        _popupModified = true;
-        renderPopupContent();
-    }
-
-    function onPopupFieldChange() { _popupModified = true; }
-
-    function savePopup() {
-        if (!_popupId) return;
-        var formData = {};
-        document.querySelectorAll('#popup-panel .popup-edit-input,#popup-panel .popup-edit-select').forEach(function(el){
-            if (el.name) formData[el.name] = el.value;
-        });
-        // 五级联动字段
-        ['country','province','city','zone'].forEach(function(f){
-            var inp = document.querySelector('[name="'+f+'"]');
-            if (inp) formData[f] = inp.value;
-        });
-        var res = AIDC_API.updateDatacenter(_popupId, formData);
-        if (res && res.code === 0) {
-            showToast('保存成功', 'success');
-            _popupModified = false;
-            _popupEditMode = false;
-            // 刷新当前列表
-            loadData();
-            renderPopupContent();
-        } else {
-            showToast('保存失败: ' + (res&&res.message||'未知错误'), 'error');
-        }
-    }
-
-    function renderPopupContent() {
-        var d = _popupData;
-        if (!d) return;
-        var editMode = _popupEditMode;
-
-        // 标题
-        var titleEl = document.getElementById('popup-title');
-        var titleDot = document.getElementById('popup-title-dot');
-        titleEl.textContent = d.dc_name || d.name || '机房详情';
-        titleDot.style.background = _popupEditMode ? 'var(--warning)' : 'var(--accent)';
-
-        // 编辑按钮状态
-        var editBtn = document.getElementById('popup-edit-btn');
-        editBtn.textContent = editMode ? '退出编辑' : '编辑';
-        editBtn.style.background = editMode ? 'var(--bg-hover)' : 'transparent';
-        editBtn.style.color = editMode ? 'var(--text-secondary)' : 'var(--accent)';
-
-        // 底部按钮条
-        document.getElementById('popup-footer').className = 'popup-footer' + (editMode ? ' show' : '');
-
-        // 编辑提示条
-        document.getElementById('popup-edit-bar').className = 'popup-edit-bar' + (editMode ? ' show' : '');
-
-        // 渲染各 section
-        document.getElementById('popup-sec-basic').innerHTML = buildBasicSec(d, editMode);
-        document.getElementById('popup-sec-power').innerHTML = buildPowerSec(d, editMode);
-        document.getElementById('popup-sec-network').innerHTML = buildNetworkSec(d, editMode);
-        document.getElementById('popup-sec-cooling').innerHTML = buildCoolingSec(d, editMode);
-        document.getElementById('popup-sec-certs').innerHTML = buildCertsSec(d, editMode);
-        document.getElementById('popup-sec-cost').innerHTML = buildCostSec(d, editMode);
-        document.getElementById('popup-sec-contact').innerHTML = buildContactSec(d, editMode);
-        document.getElementById('popup-sec-changelog').innerHTML = buildChangelogSec(d.id, editMode);
-    }
-
-    function ev(name, label, value, type, options, editMode) {
-        // type: text|select|textarea
-        var displayVal = value || value === 0 ? esc(String(value)) : '<span class="empty">-</span>';
-        var inp = '';
-        if (type === 'select' && options) {
-            var opts = options.map(function(o){ return '<option value="'+o.v+'"'+(value===o.v?' selected':'')+'>'+o.l+'</option>'; }).join('');
-            inp = '<select class="popup-edit-select" name="'+name+'" onchange="onPopupFieldChange()"><option value="">请选择</option>'+opts+'</select>';
-        } else if (type === 'textarea') {
-            inp = '<textarea class="popup-edit-input" name="'+name+'" rows="2" oninput="onPopupFieldChange()">'+(value||'')+'</textarea>';
-        } else {
-            inp = '<input class="popup-edit-input" type="'+(type||'text')+'" name="'+name+'" value="'+esc(String(value||''))+'" oninput="onPopupFieldChange()">';
-        }
-        return '<div class="popup-field'+(editMode?' edit-mode':'')+'">' +
-            '<span class="popup-field-label">'+label+'</span>' +
-            '<span class="popup-field-value'+(value||value===0?'':' empty')+'">'+displayVal+'</span>' +
-            inp +
-            '</div>';
-    }
-
-    function buildBasicSec(d, editMode) {
-        var statusOpts = [
-            {v:'new',l:'新增'},{v:'collected',l:'已收录'},{v:'negotiating',l:'洽谈中'},{v:'signed',l:'已签约'},{v:'rejected',l:'已淘汰'}
-        ];
-        var kycOpts = [
-            {v:'',l:'请选择'},{v:'not_started',l:'未开始'},{v:'in_progress',l:'进行中'},
-            {v:'pending_doc',l:'待补充材料'},{v:'approved',l:'已完成'},{v:'rejected',l:'已驳回'},{v:'not_required',l:'不适用'}
-        ];
-        var srcOpts = [
-            {v:'',l:'请选择'},{v:'客户主动联系',l:'客户主动联系'},{v:'展会',l:'展会'},{v:'网络',l:'网络'},
-            {v:'同行推荐',l:'同行推荐'},{v:'合作伙伴',l:'合作伙伴'},{v:'自主开发',l:'自主开发'}
-        ];
-        var region = [d.country,d.province,d.city,d.zone].filter(Boolean).join(' ');
-        return '' +
-            '<div class="popup-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>基本信息</div>' +
-            '<div class="popup-grid">' +
-            ev('name', '机房名称', d.dc_name||d.name, 'text', null, editMode) +
-            ev('region', '区域', region, 'text', null, editMode) +
-            ev('park', '园区', d.park, 'text', null, editMode) +
-            ev('building', '号楼', d.building, 'text', null, editMode) +
-            ev('code', '机房编码', d.code, 'text', null, editMode) +
-            ev('source', '签约方', d.source, 'select', srcOpts, editMode) +
-            ev('status', '状态', d.status, 'select', statusOpts, editMode) +
-            ev('liaison', '对接同事', d.liaison, 'text', null, editMode) +
-            ev('kycStatus', 'KYC状态', d.kycStatus, 'select', kycOpts, editMode) +
-            ev('address', '详细地址', d.address, 'text', null, editMode) +
-            '</div>';
-    }
-
-    function buildPowerSec(d, editMode) {
-        var coolingOpts = [{v:'',l:'请选择'},{v:'风冷',l:'风冷'},{v:'水冷',l:'水冷'},{v:'液冷',l:'液冷'},{v:'风冷+液冷',l:'风冷+液冷'},{v:'自然冷源',l:'自然冷源'}];
-        return '' +
-            '<div class="popup-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>电力与空间</div>' +
-            '<div class="popup-grid">' +
-            ev('rackCount', '机柜数量', d.rackCount, 'number', null, editMode) +
-            ev('availRacks', '可用机柜', d.availRacks, 'number', null, editMode) +
-            ev('powerPerRack', '单机柜功率(kW)', d.powerPerRack, 'number', null, editMode) +
-            ev('maxPowerMw', '总功率(MW)', d.maxPowerMw, 'number', null, editMode) +
-            ev('availPowerMw', '可用功率(MW)', d.availPowerMw, 'number', null, editMode) +
-            ev('coolingSystem', '冷却方式', d.coolingSystem, 'select', coolingOpts, editMode) +
-            ev('bearing', '承重(kg/㎡)', d.bearing||d.bearingCapacity, 'number', null, editMode) +
-            ev('floorHeight', '净层高(m)', d.floorHeight, 'number', null, editMode) +
-            '</div>';
-    }
-
-    function buildNetworkSec(d, editMode) {
-        var ispOpts = [{v:'',l:'请选择'},{v:'中国电信',l:'中国电信'},{v:'中国移动',l:'中国移动'},{v:'中国联通',l:'中国联通'},{v:'BGP多线',l:'BGP多线'},{v:'第三方',l:'第三方'}];
-        var redOpts = [{v:'',l:'请选择'},{v:'N+1',l:'N+1'},{v:'2N',l:'2N'},{v:'无',l:'无'}];
-        return '' +
-            '<div class="popup-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>网络与互联</div>' +
-            '<div class="popup-grid">' +
-            ev('isp', '运营商', d.isp||d.operator, 'select', ispOpts, editMode) +
-            ev('bandwidth', '带宽资源', d.bandwidth, 'text', null, editMode) +
-            ev('fiberResources', '光纤资源', d.fiberResources, 'text', null, editMode) +
-            ev('networkRedundancy', '网络冗余', d.networkRedundancy, 'select', redOpts, editMode) +
-            ev('expandable', '是否可扩容', d.expandable?'是':'否', 'select', [{v:'true',l:'是'},{v:'false',l:'否'}], editMode) +
-            ev('expandableDesc', '扩容说明', d.expandableDesc, 'textarea', null, editMode) +
-            '</div>';
-    }
-
-    function buildCoolingSec(d, editMode) {
-        var heatDensOpts = [{v:'',l:'请选择'},{v:'低(<4kW)',l:'低(<4kW)'},{v:'中(4-8kW)',l:'中(4-8kW)'},{v:'高(8-15kW)',l:'高(8-15kW)'},{v:'超高(>15kW)',l:'超高(>15kW)'}];
-        return '' +
-            '<div class="popup-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/><path d="M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/></svg>制冷与承重</div>' +
-            '<div class="popup-grid">' +
-            ev('heatDensity', '机柜功率密度', d.heatDensity||d.heat_dens, 'select', heatDensOpts, editMode) +
-            ev('pue', 'PUE值', d.pue||d.pue_value, 'number', null, editMode) +
-            ev('chillerCapacity', '制冷机组(kW)', d.chillerCapacity||d.chiller_cap, 'number', null, editMode) +
-            ev('coolingRedundancy', '制冷冗余', d.coolingRedundancy, 'text', null, editMode) +
-            '</div>';
-    }
-
-    function buildCertsSec(d, editMode) {
-        return '' +
-            '<div class="popup-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>认证与资质</div>' +
-            '<div class="popup-grid">' +
-            ev('iso', 'ISO认证', d.iso||d.isoCert, 'text', null, editMode) +
-            ev('level', '等级认证', d.level||d.tierLevel||d.levelCert, 'text', null, editMode) +
-            ev('operatorCert', '运营商资质', d.operatorCert, 'text', null, editMode) +
-            ev('compliance', '合规证书', d.compliance, 'text', null, editMode) +
-            ev('iso9001', 'ISO 9001', d.iso9001, 'select', [{v:'true',l:'有'},{v:'false',l:'无'}], editMode) +
-            ev('iso27001', 'ISO 27001', d.iso27001, 'select', [{v:'true',l:'有'},{v:'false',l:'无'}], editMode) +
-            '</div>';
-    }
-
-    function buildCostSec(d, editMode) {
-        var timeOpts = [{v:'',l:'请选择'},{v:'immediate',l:'已可交付'},{v:'1m',l:'1个月内'},{v:'3m',l:'3个月内'},{v:'6m',l:'半年内'},{v:'1y',l:'一年内'},{v:'future',l:'一年后'}];
-        return '' +
-            '<div class="popup-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>交付与成本</div>' +
-            '<div class="popup-grid">' +
-            ev('expectedDate', '预计交付', d.expectedDate||d.delivery_date, 'text', null, editMode) +
-            ev('deliveryTime', '交付时间', d.deliveryTime||d.delivery_cycle, 'select', timeOpts, editMode) +
-            ev('unitPrice', '单价(元/kW/月)', d.unitPrice, 'number', null, editMode) +
-            ev('setupFee', '建设费(万元)', d.setupFee, 'number', null, editMode) +
-            ev('annualCost', '年费(万元)', d.annualCost, 'number', null, editMode) +
-            ev('reserved_customers', '预留客户', d.reserved_customers, 'text', null, editMode) +
-            '</div>';
-    }
-
-    function buildContactSec(d, editMode) {
-        return '' +
-            '<div class="popup-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>联系信息</div>' +
-            '<div class="popup-grid">' +
-            ev('contact', '联系人', d.contact, 'text', null, editMode) +
-            ev('phone', '联系电话', d.phone||d.tel, 'tel', null, editMode) +
-            ev('email', '联系邮箱', d.email, 'email', null, editMode) +
-            ev('website', '官方网站', d.website, 'text', null, editMode) +
-            ev('remark', '备注', d.remark, 'textarea', null, editMode) +
-            '</div>';
-    }
-
-    function buildChangelogSec(id, editMode) {
-        var res = AIDC_API.getDatacenterChangelogs(id);
-        var logs = (res && res.data) || [];
-        if (logs.length === 0) {
-            return '<div class="popup-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>操作记录</div><div style="padding:14px;color:var(--gray-500);font-size:12px;text-align:center">暂无变更记录</div>';
-        }
-        var items = logs.slice(0, 5).map(function(log) {
-            var cls = log.type === 'create' ? 'create' : log.type === 'delete' ? 'delete' : 'update';
-            var typeName = {create:'新增',update:'修改',delete:'删除',status:'状态变更'}[log.type]||'变更';
-            var t = new Date(log.createdAt);
-            var time = t.getFullYear()+'-'+('0'+(t.getMonth()+1)).slice(-2)+'-'+('0'+t.getDate()).slice(-2);
-            return '<div class="popup-changelog-item '+cls+'"><div><div class="popup-changelog-meta">'+typeName+' · '+(log.operatorName||'系统')+' · '+time+'</div><div class="popup-changelog-text">'+(log.content||'')+'</div></div></div>';
-        }).join('');
-        return '' +
-            '<div class="popup-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>操作记录 <span style="opacity:.5;font-weight:400">('+logs.length+'条)</span></div>' +
-            '<div class="popup-changelog" style="padding:10px 14px">' + items + '</div>';
-    }
-
-
-
-(function(){
-    var u = null;
-    try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
-    if (u) {
-        var nu = document.getElementById('navUser');
-        if (nu) nu.innerHTML = '<div class="nav-avatar">'+(u.name||'管').charAt(0)+'</div><span>'+(u.name||'管理员')+'</span>';
-    }
-    var tt = document.getElementById('themeToggle');
-    if (tt) tt.addEventListener('click', function(){ document.body.classList.toggle('theme-light'); });
-    document.getElementById('navLogout') && document.getElementById('navLogout').addEventListener('click', function(){
-        localStorage.removeItem('aidc_user');
-        window.location.href = 'login.html';
-    });
-})();
-
 </script>
-
-    <!-- 机房详情弹窗 -->
-    <div class="popup-overlay" id="popup-overlay" onclick="if(event.target===this)closePopup(true)">
-        <div class="popup-panel" id="popup-panel">
-            <!-- 头部 -->
-            <div class="popup-header">
-                <div class="popup-title">
-                    <span class="dot" id="popup-title-dot"></span>
-                    <span id="popup-title">加载中...</span>
-                </div>
-                <div class="popup-header-right">
-                    <button class="popup-edit-btn" id="popup-edit-btn" onclick="togglePopupEdit()">编辑</button>
-                    <button class="popup-close-btn" onclick="closePopup(true)" title="关闭">✕</button>
-                </div>
-            </div>
-            <!-- 编辑提示条 -->
-            <div class="popup-edit-bar" id="popup-edit-bar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                编辑模式 — 直接修改字段后点击下方「保存」或「取消」
-            </div>
-            <!-- 主体 -->
-            <div class="popup-body">
-                <div id="popup-sec-basic"></div>
-                <div id="popup-sec-power"></div>
-                <div id="popup-sec-network"></div>
-                <div id="popup-sec-cooling"></div>
-                <div id="popup-sec-cost"></div>
-                <div id="popup-sec-certs"></div>
-                <div id="popup-sec-contact"></div>
-                <div id="popup-sec-changelog"></div>
-            </div>
-            <!-- 底部操作条 -->
-            <div class="popup-footer" id="popup-footer">
-                <button class="btn btn-secondary" onclick="_popupEditMode=false;renderPopupContent()">取消</button>
-                <button class="btn btn-primary" id="popup-save-btn" onclick="savePopup()">保存</button>
-            </div>
-        </div>
-    </div>
-
 </body>
 </html>

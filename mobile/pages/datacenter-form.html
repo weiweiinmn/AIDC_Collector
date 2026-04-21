@@ -165,7 +165,7 @@
         <div class="form-field-row">
           <div class="field-label">可用电路容量</div>
           <div style="display:flex;align-items:center;gap:8px;">
-            <input type="number" class="field-input" id="f_powerCapacity" placeholder="如：50" min="0" step="0.1" inputmode="decimal" style="flex:1">
+            <input type="number" class="field-input" id="f_available_power" placeholder="如：50" min="0" step="0.1" inputmode="decimal" style="flex:1">
             <span style="color:var(--c-text-muted);font-size:14px;">MW</span>
           </div>
         </div>
@@ -200,7 +200,7 @@
 
         <div class="form-field-row">
           <div class="field-label">产权归属</div>
-          <select class="field-select" id="f_propertyType">
+          <select class="field-select" id="f_ownership">
             <option value="">请选择</option>
             <option>自有</option><option>租赁</option><option>合资</option>
           </select>
@@ -208,7 +208,7 @@
 
         <div class="form-field-row">
           <div class="field-label">预计交付运营时间</div>
-          <input type="month" class="field-input" id="f_expectedDate">
+          <input type="month" class="field-input" id="f_expected_date">
           <div class="input-note">只能选择当前月份及以后</div>
         </div>
 
@@ -238,7 +238,7 @@
 
         <div class="form-field-row">
           <div class="field-label">主电路容量</div>
-          <input type="text" class="field-input" id="f_mainsCapacity" placeholder="如：20MW" autocomplete="off">
+          <input type="text" class="field-input" id="f_mains_capacity" placeholder="如：20MW" autocomplete="off">
         </div>
 
         <div class="form-field-row">
@@ -264,7 +264,7 @@
 
         <div class="form-field-row">
           <div class="field-label">主制冷方式 <span class="req">*</span></div>
-          <select class="field-select" id="f_mainCoolingType">
+          <select class="field-select" id="f_main_cooling_type">
             <option value="">请选择制冷方式</option>
             <option>风冷</option><option>冷水</option><option>液冷</option><option>自然冷却</option>
           </select>
@@ -280,7 +280,7 @@
 
         <div class="form-field-row">
           <div class="field-label">是否可扩容 <span class="req">*</span></div>
-          <select class="field-select" id="f_expandable">
+          <select class="field-select" id="f_expandable_power">
             <option value="">请选择</option>
             <option value="true">是</option>
             <option value="false">否</option>
@@ -333,7 +333,147 @@
         </div>
       </div>
 
-      <div class="bottom-spacer"></div>
+      <div class="bottom-spacer">
+<!-- ========== 机柜资源 ========== -->
+<div class="form-section">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:6px;color:#22C55E;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    机柜资源
+  </div>
+  <div class="field-group">
+    <label class="field-label">总机柜数量 <span class="unit">个</span></label>
+    <input type="number" class="field-input" id="f_cabinetCount" placeholder="设计总机柜数" min="0" inputmode="numeric">
+  </div>
+  <div class="field-group">
+    <label class="field-label">可用机柜数量 <span class="unit">个</span></label>
+    <input type="number" class="field-input" id="f_cabinetAvailable" placeholder="可立即交付" min="0" inputmode="numeric">
+  </div>
+  <div class="field-group">
+    <label class="field-label">单机柜最大功率 <span class="unit">kW/柜</span></label>
+    <input type="number" class="field-input" id="f_cabinetPower" placeholder="如：10" min="0" step="0.1" inputmode="decimal">
+  </div>
+</div>
+
+<!-- ========== 网络接入 ========== -->
+<div class="form-section">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:6px;color:#3B82F6;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    网络接入
+  </div>
+  <div class="field-group">
+    <label class="field-label">网络进线路由</label>
+    <select class="field-select" id="f_networkRoutes">
+      <option value="">请选择</option>
+      <option value="单路由">单路由</option>
+      <option value="双路由">双路由</option>
+      <option value="多路由">多路由</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label">运营商数量 <span class="unit">家</span></label>
+    <input type="number" class="field-input" id="f_carrierCount" placeholder="如：3" min="0" inputmode="numeric">
+  </div>
+  <div class="field-group">
+    <label class="field-label">800G 网络支持</label>
+    <select class="field-select" id="f_network800g">
+      <option value="">请选择</option>
+      <option value="支持">支持</option>
+      <option value="不支持">不支持</option>
+      <option value="规划中">规划中</option>
+    </select>
+  </div>
+</div>
+
+<!-- ========== 电力系统详情 ========== -->
+<div class="form-section">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:6px;color:#F59E0B;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    电力系统详情
+  </div>
+  <div class="field-group">
+    <label class="field-label">变压器配置</label>
+    <select class="field-select" id="f_transformer">
+      <option value="">请选择</option>
+      <option value="2N">2N</option>
+      <option value="N+1">N+1</option>
+      <option value="N">N</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label">单台变压器容量 <span class="unit">kVA</span></label>
+    <input type="number" class="field-input" id="f_transformerKva" placeholder="如：2000" min="0" inputmode="numeric">
+  </div>
+  <div class="field-group">
+    <label class="field-label">柴发冗余等级</label>
+    <input type="text" class="field-input" id="f_gensetRedundancy" placeholder="如：N+1">
+  </div>
+  <div class="field-group">
+    <label class="field-label">柴发储油时长 <span class="unit">小时</span></label>
+    <input type="number" class="field-input" id="f_gensetRuntime" placeholder="如：24" min="0" inputmode="numeric">
+  </div>
+  <div class="field-group">
+    <label class="field-label">UPS 配置</label>
+    <select class="field-select" id="f_upsConfig">
+      <option value="">请选择</option>
+      <option value="2N">2N</option>
+      <option value="N+1">N+1</option>
+      <option value="分布式">分布式</option>
+      <option value="后备">后备</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label">UPS 电池后备时间 <span class="unit">分钟</span></label>
+    <input type="number" class="field-input" id="f_upsRuntime" placeholder="如：15" min="0" inputmode="numeric">
+  </div>
+  <div class="field-group">
+    <label class="field-label">电力可用性 SLA</label>
+    <select class="field-select" id="f_powerSla">
+      <option value="">请选择</option>
+      <option value="99.99%">99.99%</option>
+      <option value="99.999%">99.999%</option>
+      <option value="99.9999%">99.9999%</option>
+    </select>
+  </div>
+</div>
+
+<!-- ========== 制冷与空间 ========== -->
+<div class="form-section">
+  <div class="section-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:6px;color:#06B6D4;"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+    制冷与空间
+  </div>
+  <div class="field-group">
+    <label class="field-label">冷水机组数量 <span class="unit">台</span></label>
+    <input type="number" class="field-input" id="f_chillerCount" placeholder="如：4" min="0" inputmode="numeric">
+  </div>
+  <div class="field-group">
+    <label class="field-label">液冷支持</label>
+    <select class="field-select" id="f_liquidCooling">
+      <option value="">请选择</option>
+      <option value="支持">支持</option>
+      <option value="不支持">不支持</option>
+      <option value="改造后可支持">改造后可支持</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label class="field-label">地板承重 <span class="unit">kg/m²</span></label>
+    <input type="number" class="field-input" id="f_floorLoad" placeholder="要求≥1000" min="0" inputmode="numeric">
+  </div>
+  <div class="field-group">
+    <label class="field-label">架空地板高度 <span class="unit">米</span></label>
+    <input type="number" class="field-input" id="f_floorHeight" placeholder="要求≥0.6" min="0" step="0.1" inputmode="decimal">
+  </div>
+  <div class="field-group">
+    <label class="field-label">高压母线（HVDC）</label>
+    <select class="field-select" id="f_busbar">
+      <option value="">请选择</option>
+      <option value="支持">支持</option>
+      <option value="不支持">不支持</option>
+    </select>
+  </div>
+</div>
+
+</div>
     </form>
   </main>
 
@@ -406,55 +546,97 @@ async function loadExisting(id) {
   var res = await AIDC_API.getDatacenter(id);
   if (res.code !== 0) { showToast(res.message||'加载失败'); setTimeout(function(){ history.back(); }, 1500); return; }
   var d = res.data;
-  // 表单字段映射（表单HTML字段名 → 数据字段名）
+  
+  // 表单字段映射（统一字段名 → 表单ID）
+  // 注意：API 已通过 normalizeDatacenter() 确保新旧字段名都可读取
+  // 优先使用新 camelCase 字段，回退到旧 snake_case
+  // 布尔值 select 统一映射：true→'true'/文字，false→'false'/文字
   var fields = {
-    'f_name':             d.name,
-    'f_serviceProvider':  d.customer,
-    'f_powerCapacity':    d.powerCapacity,
-    'f_country':          d.country,
-    'f_province':         d.province,
-    'f_city':             d.city,
-    'f_address':          d.address,
-    'f_propertyType':     d.propertyType,
-    'f_expectedDate':     d.expectedDate,
-    'f_status':           d.status,
-    'f_mainsCapacity':    d.mainsCapacity,
-    'f_powerPerRack':     d.powerPerRack,
-    'f_pue':              d.pue,
-    'f_mainCoolingType':  d.mainCoolingType,
-    'f_expandable':       d.expandable,
-    'f_source':           d.source,
-    'f_liaison':          d.liaison,
-    'f_kycStatus':        d.kycStatus,
-    'f_kycRemark':        d.kycRemark,
-    'f_remark':           d.remark,
+    // 基础信息
+    'f_name':               d.name,
+    'f_serviceProvider':    d.customer,
+    'f_available_power':    d.powerMw !== undefined ? d.powerMw : (d.power_mw !== undefined ? d.power_mw : (d.powerCapacity || '')),
+    'f_country':            d.r1 || d.country,
+    'f_province':           d.r2 || d.province,
+    'f_city':               d.r3 || d.city,
+    'f_address':            d.address,
+    'f_ownership':          d.property || d.propertyType,
+    'f_expected_date':      d.deliveryDate || d.delivery_date || d.expectedDate,
+    'f_status':             d.status,
+    // 电力系统
+    'f_mains_capacity':     d.powerKva !== undefined ? d.powerKva : (d.power_kva !== undefined ? d.power_kva : (d.mainsCapacity || '')),
+    'f_powerPerRack':       d.cabinetPower !== undefined ? d.cabinetPower : (d.cabinet_power !== undefined ? d.cabinet_power : (d.powerPerRack || '')),
+    'f_pue':                d.pueDesign !== undefined ? d.pueDesign : (d.pue_design !== undefined ? d.pue_design : (d.pue || '')),
+    // 制冷系统
+    'f_main_cooling_type':  d.coolingType || d.cooling_type || d.mainCoolingType,
+    // 交付与扩容
+    'f_expandable_power':   d.powerExpand !== undefined ? d.powerExpand : (d.power_expand !== undefined ? d.power_expand : d.expandable),
+    // 其他信息
+    'f_source':             d.source,
+    'f_liaison':            d.contactPerson || d.contact_person || d.liaison,
+    'f_kycStatus':          d.kycStatus,
+    'f_kycRemark':          d.kycRemark,
+    'f_remark':             d.remark,
+    // 机柜资源
+    'f_cabinetCount':       d.cabinetCount !== undefined ? d.cabinetCount : (d.cabinet_count !== undefined ? d.cabinet_count : (d.rackCount || '')),
+    'f_cabinetAvailable':   d.cabinetAvailable !== undefined ? d.cabinetAvailable : (d.cabinet_available || ''),
+    'f_cabinetPower':       d.cabinetPower !== undefined ? d.cabinetPower : (d.cabinet_power !== undefined ? d.cabinet_power : (d.powerPerRack || '')),
+    // 网络接入
+    'f_networkRoutes':      d.networkRoutes || d.network_routes,
+    'f_carrierCount':       d.carrierCount !== undefined ? d.carrierCount : (d.carrier_count || ''),
+    'f_network800g':        d.network800g !== undefined ? d.network800g : d.network_800g,
+    // 电力系统详情
+    'f_transformer':        d.transformer,
+    'f_transformerKva':     d.transformerKva !== undefined ? d.transformerKva : (d.transformer_kva || ''),
+    'f_gensetRedundancy':   d.gensetRedundancy !== undefined ? d.gensetRedundancy : (d.genset_redundancy || ''),
+    'f_gensetRuntime':      d.gensetRuntime !== undefined ? d.gensetRuntime : (d.genset_runtime || ''),
+    'f_upsConfig':          d.upsConfig || d.ups_config,
+    'f_upsRuntime':         d.upsRuntime !== undefined ? d.upsRuntime : (d.ups_runtime || ''),
+    'f_powerSla':           d.powerSla !== undefined ? d.powerSla : (d.power_sla || ''),
+    'f_busbar':             d.busbar,
+    // 制冷与空间
+    'f_chillerCount':       d.chillerCount !== undefined ? d.chillerCount : (d.chiller_count || ''),
+    'f_liquidCooling':      d.liquidCooling !== undefined ? d.liquidCooling : d.liquid_cooling,
+    'f_floorLoad':          d.floorLoad !== undefined ? d.floorLoad : (d.floor_load || ''),
+    'f_floorHeight':        d.floorHeight !== undefined ? d.floorHeight : (d.floor_height || ''),
   };
+  
   Object.keys(fields).forEach(function(fid) {
     var el = document.getElementById(fid);
     if (!el) return;
     var v = fields[fid];
     if (el.tagName === 'SELECT') {
-      // 处理布尔值：data 中可能是 true/false 或 "true"/"false"
-      if (fid === 'f_expandable') {
-        el.value = (v === true || v === 'true') ? 'true' : (v === false || v === 'false') ? 'false' : '';
+      // 布尔值 select 映射：power_expand / network_800g / liquid_cooling
+      if (fid === 'f_expandable_power') {
+        el.value = (v === true || v === 'true') ? 'true' : ((v === false || v === 'false') ? 'false' : '');
+      } else if (fid === 'f_network800g') {
+        // 网络800G：布尔/字符串→select文字
+        if (v === true || v === 'true' || v === '支持')  el.value = '支持';
+        else if (v === false || v === 'false' || v === '不支持') el.value = '不支持';
+        else el.value = v !== undefined && v !== null ? v : '';
+      } else if (fid === 'f_liquidCooling') {
+        // 液冷：布尔→select文字
+        if (v === true || v === 'true' || v === '支持')  el.value = '支持';
+        else if (v === false || v === 'false' || v === '不支持') el.value = '不支持';
+        else el.value = v !== undefined && v !== null ? v : '';
       } else {
         el.value = v !== undefined && v !== null ? v : '';
       }
     } else {
-      el.value = v || '';
+      el.value = v !== undefined && v !== null ? v : '';
     }
   });
 }
 
 function validate() {
   var rules = [
-    ['f_name',            'e_name',            '请输入机房名称'],
-    ['f_country',         'e_country',         '请选择国家'],
-    ['f_province',        'e_province',        '请输入省/州'],
-    ['f_city',            'e_city',            '请输入城市'],
-    ['f_status',          'e_status',          '请选择状态'],
-    ['f_mainCoolingType', 'e_mainCoolingType', '请选择制冷方式'],
-    ['f_expandable',      'e_expandable',      '请选择是否可扩容'],
+    ['f_name',               'e_name',               '请输入机房名称'],
+    ['f_country',            'e_country',            '请选择国家'],
+    ['f_province',           'e_province',           '请输入省/州'],
+    ['f_city',               'e_city',               '请输入城市'],
+    ['f_status',             'e_status',             '请选择状态'],
+    ['f_main_cooling_type',  'e_mainCoolingType',    '请选择制冷方式'],
+    ['f_expandable_power',   'e_expandable',         '请选择是否可扩容'],
   ];
   var valid = true;
   rules.forEach(function(r) {
@@ -484,28 +666,58 @@ async function doSubmit() {
     return;
   }
 
-  var expandableVal = document.getElementById('f_expandable').value;
+  // 收集表单数据，使用统一字段名（桌面端格式）
+  var expandableVal = document.getElementById('f_expandable_power').value;
+  var network800gVal = document.getElementById('f_network800g').value;
+  var liquidCoolingVal = document.getElementById('f_liquidCooling').value;
+  
   var data = {
+    // 基础信息（统一字段名 camelCase）
     name:             document.getElementById('f_name').value.trim(),
     customer:         document.getElementById('f_serviceProvider').value.trim(),
-    powerCapacity:    document.getElementById('f_powerCapacity').value ? parseFloat(document.getElementById('f_powerCapacity').value) : null,
-    country:          document.getElementById('f_country').value,
-    province:         document.getElementById('f_province').value.trim(),
-    city:             document.getElementById('f_city').value.trim(),
+    powerMw:          document.getElementById('f_available_power').value ? parseFloat(document.getElementById('f_available_power').value) : null,
+    r1:               document.getElementById('f_country').value,
+    r2:               document.getElementById('f_province').value.trim(),
+    r3:               document.getElementById('f_city').value.trim(),
     address:          document.getElementById('f_address').value.trim(),
-    propertyType:     document.getElementById('f_propertyType').value || null,
-    expectedDate:     document.getElementById('f_expectedDate').value || null,
+    property:         document.getElementById('f_ownership').value || null,
+    deliveryDate:     document.getElementById('f_expected_date').value || null,
     status:           document.getElementById('f_status').value || 'new',
-    mainsCapacity:    document.getElementById('f_mainsCapacity').value.trim() || null,
-    powerPerRack:     document.getElementById('f_powerPerRack').value ? parseFloat(document.getElementById('f_powerPerRack').value) : null,
-    pue:              document.getElementById('f_pue').value ? parseFloat(document.getElementById('f_pue').value) : null,
-    mainCoolingType:  document.getElementById('f_mainCoolingType').value || null,
-    expandable:       expandableVal === 'true' ? true : (expandableVal === 'false' ? false : null),
+    // 电力系统
+    powerKva:         document.getElementById('f_mains_capacity').value.trim() || null,
+    cabinetPower:     document.getElementById('f_powerPerRack').value ? parseFloat(document.getElementById('f_powerPerRack').value) : null,
+    pueDesign:        document.getElementById('f_pue').value ? parseFloat(document.getElementById('f_pue').value) : null,
+    // 制冷系统
+    coolingType:      document.getElementById('f_main_cooling_type').value || null,
+    // 交付与扩容
+    powerExpand:      expandableVal === 'true' ? true : (expandableVal === 'false' ? false : null),
+    // 其他信息
     source:           document.getElementById('f_source').value.trim() || null,
-    liaison:          document.getElementById('f_liaison').value.trim() || null,
+    contactPerson:    document.getElementById('f_liaison').value.trim() || null,
     kycStatus:        document.getElementById('f_kycStatus').value || 'not_started',
     kycRemark:        document.getElementById('f_kycRemark').value.trim() || null,
     remark:           document.getElementById('f_remark').value.trim(),
+    // 机柜资源
+    cabinetCount:     document.getElementById('f_cabinetCount').value ? parseInt(document.getElementById('f_cabinetCount').value) : null,
+    cabinetAvailable: document.getElementById('f_cabinetAvailable').value ? parseInt(document.getElementById('f_cabinetAvailable').value) : null,
+    // 网络接入
+    networkRoutes:    document.getElementById('f_networkRoutes').value || null,
+    carrierCount:     document.getElementById('f_carrierCount').value ? parseInt(document.getElementById('f_carrierCount').value) : null,
+    network800g:      network800gVal === '支持' ? true : (network800gVal === '不支持' ? false : null),
+    // 电力系统详情
+    transformer:          document.getElementById('f_transformer').value || null,
+    transformerKva:       document.getElementById('f_transformerKva').value ? parseInt(document.getElementById('f_transformerKva').value) : null,
+    gensetRedundancy:     document.getElementById('f_gensetRedundancy').value || null,
+    gensetRuntime:        document.getElementById('f_gensetRuntime').value ? parseInt(document.getElementById('f_gensetRuntime').value) : null,
+    upsConfig:            document.getElementById('f_upsConfig').value || null,
+    upsRuntime:           document.getElementById('f_upsRuntime').value ? parseInt(document.getElementById('f_upsRuntime').value) : null,
+    powerSla:             document.getElementById('f_powerSla').value || null,
+    busbar:               document.getElementById('f_busbar').value || null,
+    // 制冷与空间
+    chillerCount:     document.getElementById('f_chillerCount').value ? parseInt(document.getElementById('f_chillerCount').value) : null,
+    liquidCooling:    liquidCoolingVal === '支持' ? true : (liquidCoolingVal === '不支持' ? false : null),
+    floorLoad:        document.getElementById('f_floorLoad').value ? parseInt(document.getElementById('f_floorLoad').value) : null,
+    floorHeight:      document.getElementById('f_floorHeight').value ? parseFloat(document.getElementById('f_floorHeight').value) : null,
   };
 
   var res;

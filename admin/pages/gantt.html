@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>项目进度 - AIDC Collector</title>
-    <link rel="stylesheet" href="shared.css?v=20260410t1845">
+    <link rel="stylesheet" href="shared.css?v=1776180444">
     <link rel="stylesheet" href="shared-light.css">
     <style>
     :root {
@@ -12,32 +12,75 @@
         --bg: #020617; --card: #0F172A; --card-hover: #162032;
         --border: rgba(255,255,255,.08); --border-mid: rgba(255,255,255,.12);
         --text-primary: #F1F5F9; --text-sec: #94A3B8; --text-muted: #475569;
-        --s-signing: #8B5CF6; --s-delivery: #0EA5E9; --s-boi: #F59E0B;
-        --s-purchase: #EC4899; --s-entry: #22C55E; --s-compute: #14B8A6;
-        --left-w: 240px; --week-w: 40px; --row-h: 50px; --header-h: 58px;
+        --scrollbar-track: rgba(255,255,255,.02);
+        --scrollbar-thumb: rgba(255,255,255,.12);
+        --scrollbar-thumb-hover: rgba(255,255,255,.2);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     a { text-decoration: none; color: inherit; }
     button { font-family: inherit; cursor: pointer; border: none; background: none; }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    /* ── 自定义滚动条 ── */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+    ::-webkit-scrollbar-corner { background: transparent; }
+    /* Firefox */
+    * { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); }
     .main { padding: 24px; min-height: calc(100vh - 56px); }
     .page-title { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
     .page-sub { font-size: 13px; color: var(--text-sec); margin-bottom: 20px; }
+
+    /* ── 统计卡片 ── */
+    .stats-bar { display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+    .stat-card { flex:1; min-width:100px; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:12px 16px; display:flex; flex-direction:column; gap:2px; transition:transform .15s; cursor:default; }
+    .stat-card:hover { transform: translateY(-2px); }
+
+    /* ── 阶段仪表盘 ── */
+    .stage-dash { display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+
+    /* ── 缩放控制器（时间轴缩放）── */
+    .zoom-wrap {
+        display: flex; align-items: center; gap: 0;
+        background: var(--card); border: 1px solid var(--border);
+        border-radius: 8px; padding: 4px; flex-shrink: 0;
+        user-select: none;
+    }
+    .zoom-label {
+        font-size: 11px; color: var(--text-muted);
+        padding: 0 8px; white-space: nowrap; flex-shrink: 0;
+    }
+    .zoom-label strong { color: var(--brand); font-weight: 600; }
+    .zoom-btn {
+        padding: 5px 12px; border-radius: 5px;
+        font-size: 12px; font-weight: 500;
+        color: var(--text-sec); background: transparent;
+        border: none; cursor: pointer; transition: all .12s;
+        white-space: nowrap;
+    }
+    .zoom-btn:hover { background: rgba(255,255,255,.06); color: var(--text-primary); }
+    .zoom-btn.active {
+        background: rgba(14,165,233,.15); color: var(--brand);
+        font-weight: 600;
+    }
+    .zoom-divider { width: 1px; height: 20px; background: var(--border); margin: 0 2px; flex-shrink: 0; }
+    .zoom-icon-btn {
+        width: 28px; height: 28px; border-radius: 5px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--text-sec); background: transparent;
+        border: none; cursor: pointer; transition: all .12s;
+        flex-shrink: 0;
+    }
+    .zoom-icon-btn:hover { background: rgba(255,255,255,.08); color: var(--text-primary); }
+    .zoom-icon-btn:active { transform: scale(.92); }
+    .zoom-icon-btn svg { width: 14px; height: 14px; }
+
+    /* ── 控制栏 ── */
     .ctrl-bar {
         background: var(--card); border: 1px solid var(--border); border-radius: 8px;
-        padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+        padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center;
+        gap: 16px; flex-wrap: wrap;
     }
     .ctrl-lbl { font-size: 12px; color: var(--text-muted); }
     .chips { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -48,49 +91,71 @@
     }
     .chip:hover { background: rgba(255,255,255,.08); }
     .chip.active { background: rgba(14,165,233,.15); color: var(--brand); border-color: var(--brand); }
-    .btn-primary {
-        padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
-        background: var(--brand); color: white; display: flex; align-items: center; gap: 6px;
-    }
+    .btn-primary { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; background: var(--brand); color: white; display: flex; align-items: center; gap: 6px; }
     .btn-primary:hover { background: var(--brand-light); }
-    .gt-wrap { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--card); }
-    .gt-scroll { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 280px); position: relative; }
-    .gt { display: grid; }
-    .gt-tl-header { position: sticky; top: 0; z-index: 20; display: grid; background: #0B1623; border-bottom: 1px solid var(--border-mid); }
-    .gt-lk { position: sticky; left: 0; z-index: 10; background: #020617; border-right: 1px solid var(--border-mid); }
-    .gt-corner { position: sticky; left: 0; top: 0; z-index: 25; background: #0B1623; border-right: 1px solid var(--border-mid); border-bottom: 1px solid var(--border-mid); }
-    .gt-bar { border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: all .15s; }
-    .gt-bar:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,.4); }
-    .tooltip {
-        position: fixed; background: rgba(15,23,42,.98); border: 1px solid var(--border-mid);
-        border-radius: 6px; padding: 8px 12px; font-size: 12px; color: var(--text-primary);
-        z-index: 1000; pointer-events: none; max-width: 280px; box-shadow: 0 4px 12px rgba(0,0,0,.5);
-    }
-    .modal-overlay {
-        position: fixed; inset: 0; background: rgba(0,0,0,.6);
-        display: none; align-items: center; justify-content: center; z-index: 1000;
-    }
+    .btn-secondary { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; background: rgba(255,255,255,.04); color: var(--text-sec); border: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
+    .btn-secondary:hover { background: rgba(255,255,255,.08); color: var(--text-primary); }
+    .btn-icon-only { padding: 6px; border-radius: 6px; background: transparent; color: var(--text-sec); border: 1px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .btn-icon-only:hover { background: rgba(255,255,255,.06); color: var(--text-primary); border-color: var(--border); }
+    .btn-nav { padding: 4px 8px; border-radius: 4px; font-size: 12px; background: rgba(255,255,255,.04); color: var(--text-sec); border: 1px solid var(--border); cursor: pointer; }
+    .btn-nav:hover { background: rgba(255,255,255,.08); color: var(--text-primary); }
+    .btn-today { padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 500; background: var(--brand); color: white; border: none; cursor: pointer; }
+    .btn-today:hover { background: var(--brand-light); }
+
+    /* ── 甘特图容器 ── */
+    .gt-wrap { display: flex; align-items: flex-start; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--card); }
+    .gt-left { width: 300px; min-width: 120px; max-width: 400px; flex-shrink: 0; overflow: hidden; display: flex; flex-direction: column; background: #020617; }
+    .gt-resizer { width: 6px; flex-shrink: 0; cursor: col-resize; background: transparent; transition: background .15s; z-index: 10; }
+    .gt-resizer:hover, .gt-resizer.dragging { background: var(--brand); }
+    .gt-header-left { height: 72px; flex-shrink: 0; display: flex; align-items: center; padding-left: 16px; font-size: 12px; font-weight: 600; color: var(--text-sec); background: #0B1623; border-bottom: 1px solid var(--border-mid); }
+    .gt-scroll-left { overflow-y: auto; overflow-x: hidden; }
+    .gt-left-content { display: grid; }
+    .gt-right { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .gt-header-outer { height: 72px; flex-shrink: 0; overflow: hidden; background: #0B1623; border-bottom: 1px solid var(--border-mid); position: relative; }
+    .gt-header { display: grid; background: #0B1623; }
+    .gt-scroll { overflow: auto; position: relative; }
+    .gt { display: grid; position: relative; }
+    
+    /* ── 周高亮列 ── */
+    .gt-week-highlight { position: absolute; top: 0; bottom: 0; background: rgba(14,165,233,.08); pointer-events: none; z-index: 5; border-left: 1px solid rgba(14,165,233,.3); border-right: 1px solid rgba(14,165,233,.3); display: none; }
+    .gt-week-highlight.active { display: block; }
+    .gt-header-week-highlight { position: absolute; top: 0; bottom: 0; background: rgba(14,165,233,.12); pointer-events: none; z-index: 5; border-left: 1px solid rgba(14,165,233,.4); border-right: 1px solid rgba(14,165,233,.4); display: none; }
+    .gt-header-week-highlight.active { display: block; }
+    .week-cell { cursor: pointer; transition: background .15s; }
+    .week-cell:hover { background: rgba(14,165,233,.1) !important; }
+
+    /* ── 弹窗 ── */
+    .modal-overlay { display: none; align-items: center; justify-content: center; z-index: 1000; }
     .modal-overlay.active { display: flex; }
-    .modal {
-        background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-        width: 480px; max-width: 90vw; max-height: 90vh; overflow-y: auto;
-    }
+    .modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 520px; max-width: 90vw; max-height: 90vh; overflow-y: auto; }
     .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
     .modal-title { font-size: 15px; font-weight: 600; }
-    .modal-close { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-sec); }
+    .modal-close { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-sec); cursor: pointer; }
+    .modal-close:hover { background: rgba(255,255,255,.04); color: var(--text-primary); }
     .modal-body { padding: 20px; }
     .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
     .form-group { margin-bottom: 16px; }
     .form-label { display: block; font-size: 12px; font-weight: 500; color: var(--text-sec); margin-bottom: 6px; }
-    .form-input, .form-select { width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: rgba(255,255,255,.02); color: var(--text-primary); font-size: 13px; }
-    .btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: rgba(255,255,255,.02); color: var(--text-primary); font-size: 13px; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--brand); }
+    .form-textarea { resize: vertical; min-height: 60px; }
+    .btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
     .btn-ghost { background: transparent; color: var(--text-sec); border: 1px solid var(--border); }
-    .btn-brand { background: var(--brand); color: white; }
+    .btn-ghost:hover { background: rgba(255,255,255,.04); color: var(--text-primary); }
+    .btn-brand { background: var(--brand); color: white; border: none; }
+    .btn-brand:hover { background: var(--brand-light); }
     .btn-danger { background: rgba(239,68,68,.12); color: #EF4444; border: 1px solid rgba(239,68,68,.3); }
+    .btn-danger:hover { background: rgba(239,68,68,.2); }
+    .date-quick-btns { display: flex; gap: 4px; margin-top: 6px; }
+    .date-quick-btn { padding: 2px 8px; border-radius: 4px; font-size: 11px; background: rgba(255,255,255,.04); color: var(--text-sec); border: 1px solid var(--border); cursor: pointer; }
+    .date-quick-btn:hover { background: rgba(255,255,255,.08); color: var(--text-primary); }
+    .pct-wrap { display: flex; align-items: center; gap: 12px; }
+    .pct-slider { flex: 1; -webkit-appearance: none; height: 6px; border-radius: 3px; background: rgba(255,255,255,.1); outline: none; }
+    .pct-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--brand); cursor: pointer; }
+    .pct-input { width: 60px; text-align: center; }
     </style>
 </head>
 <body>
-    
 
     <nav class="top-nav">
         <div class="nav-brand">
@@ -116,13 +181,13 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 导入导出
             </a>
-            <a href="gantt.html" class="nav-item" data-page="gantt" class="active">
+            <a href="gantt.html" class="nav-item active" data-page="gantt">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
                 项目进度
             </a>
         </div>
         <div class="nav-right">
-            <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式" aria-label="切换主题">
+            <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">
                 <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
                 <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
             </button>
@@ -133,37 +198,230 @@
         </div>
     </nav>
 
-
     <main class="main">
         <h1 class="page-title">项目进度</h1>
         <p class="page-sub">每个机房项目可展开查看子任务，点击甘特条可编辑任务起止日期与进度</p>
-        <div class="ctrl-bar">
-            <span class="ctrl-lbl">项目</span><div class="chips" id="projChips"></div>
-            <span class="ctrl-lbl" style="margin-left:16px">阶段</span><div class="chips" id="stageChips"></div>
-            <button class="btn-primary" style="margin-left:auto" onclick="openProjectModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>新建项目</button>
+
+        <!-- 统计卡片 -->
+        <div class="stats-bar">
+            <div class="stat-card" id="statTotal">
+                <span style="font-size:11px;color:var(--text-muted);">总项目数</span>
+                <span class="stat-num" style="font-size:22px;font-weight:700;color:var(--text-primary);">-</span>
+            </div>
+            <div class="stat-card" id="statActive">
+                <span style="font-size:11px;color:var(--text-muted);">进行中</span>
+                <span class="stat-num" style="font-size:22px;font-weight:700;color:#0EA5E9;">-</span>
+            </div>
+            <div class="stat-card" id="statDone">
+                <span style="font-size:11px;color:var(--text-muted);">已完成</span>
+                <span class="stat-num" style="font-size:22px;font-weight:700;color:#22C55E;">-</span>
+            </div>
+            <div class="stat-card" id="statOverdue">
+                <span style="font-size:11px;color:var(--text-muted);">延期任务</span>
+                <span class="stat-num" style="font-size:22px;font-weight:700;color:#EF4444;">-</span>
+            </div>
         </div>
-        <div class="gt-wrap"><div class="gt-scroll" id="gtScroll"><div class="gt" id="gtTable"></div></div></div>
+
+        <!-- 阶段仪表盘 -->
+        <div class="stage-dash" id="stageDash"></div>
+
+        <div class="ctrl-bar">
+            <button class="btn-primary" onclick="openProjectModal()" title="新建项目" style="margin-right:12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                新建项目
+            </button>
+            <span class="ctrl-lbl">阶段</span>
+            <div class="chips" id="stageChips"></div>
+            <div style="margin-left:auto;display:flex;gap:4px;">
+                <button class="btn-icon-only" onclick="importData()" title="导入">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </button>
+                <button class="btn-icon-only" onclick="exportExcel()" title="导出">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </button>
+                <div class="zoom-wrap" style="padding:4px 6px;margin-left:4px;">
+                    <button class="zoom-icon-btn" onclick="zoomOut()" title="缩小视图（查看更长时间范围）">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    </button>
+                    <button class="zoom-icon-btn" onclick="zoomIn()" title="放大视图（查看更短时间范围）">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="gt-wrap">
+            <div class="gt-left" id="gtLeft">
+                <div class="gt-header-left" id="gtHeaderLeft"></div>
+                <div class="gt-scroll-left" id="gtScrollLeft">
+                    <div class="gt-left-content" id="gtLeftContent"></div>
+                </div>
+            </div>
+            <div class="gt-resizer" id="gtResizer"></div>
+            <div class="gt-right">
+                <div class="gt-header-outer" id="gtHeaderOuter">
+                    <div class="gt-header" id="gtHeader"></div>
+                    <div class="gt-header-week-highlight" id="gtHeaderWeekHighlight"></div>
+                </div>
+                <div class="gt-scroll" id="gtScroll">
+                    <div class="gt" id="gtTable"></div>
+                    <div class="gt-week-highlight" id="gtWeekHighlight"></div>
+                </div>
+            </div>
+        </div>
     </main>
-    <div class="modal-overlay" id="taskModal"><div class="modal"><div class="modal-header"><span class="modal-title" id="taskModalTitle">编辑任务</span><button class="modal-close" onclick="closeTaskModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body"><input type="hidden" id="editProjId"><input type="hidden" id="editTaskId"><div class="form-group"><label class="form-label">任务阶段</label><select id="editStage" class="form-select"></select></div><div class="form-group"><label class="form-label">任务名称</label><input type="text" id="editName" class="form-input" placeholder="如：预计签约"></div><div class="form-group"><label class="form-label">开始日期</label><input type="date" id="editStart" class="form-input"></div><div class="form-group"><label class="form-label">结束日期</label><input type="date" id="editEnd" class="form-input"></div><div class="form-group"><label class="form-label">进度（%）</label><input type="number" id="editPct" class="form-input" min="0" max="100" value="0"></div><div class="form-group"><label class="form-label">备注</label><textarea id="editNote" class="form-input" rows="3" placeholder="可选备注信息"></textarea></div></div><div class="modal-footer"><button class="btn btn-ghost" onclick="deleteTask()" id="btnDelete" style="display:none;margin-right:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="3,6 5,6 5,21 19,21 19,6"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="12" y1="6" x2="12" y2="19"/></svg>删除</button><button class="btn btn-ghost" onclick="closeTaskModal()">取消</button><button class="btn btn-brand" onclick="saveTask()">保存</button></div></div></div>
-    <div class="modal-overlay" id="projModal"><div class="modal"><div class="modal-header"><span class="modal-title" id="projModalTitle">新建项目</span><button class="modal-close" onclick="closeProjModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body"><input type="hidden" id="editProjId2"><div class="form-group"><label class="form-label">项目名称</label><input type="text" id="projName" class="form-input" placeholder="如：AIMS - 吉隆坡"></div><div class="form-group"><label class="form-label">关联机房</label><select id="projDcSelect" class="form-select"></select></div><div class="form-group"><label class="form-label">设计功率（MW）</label><input type="number" id="projPower" class="form-input" step="0.1" placeholder="如：3.0"></div></div><div class="modal-footer"><button class="btn btn-ghost" onclick="closeProjModal()">取消</button><button class="btn btn-brand" onclick="saveProject()">保存</button></div></div></div>
+
+    <!-- 任务编辑弹窗 -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal" style="position:fixed;inset:0;background:rgba(0,0,0,.6);">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;">
+                <div class="modal" style="width:520px;max-width:100%;max-height:90vh;overflow-y:auto;">
+                    <div class="modal-header">
+                        <span class="modal-title" id="taskModalTitle">编辑任务</span>
+                        <button class="modal-close" onclick="closeTaskModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editProjId">
+                        <input type="hidden" id="editTaskId">
+                        <div class="form-group">
+                            <label class="form-label">任务阶段</label>
+                            <select id="editStage" class="form-select"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">任务名称</label>
+                            <input type="text" id="editName" class="form-input" placeholder="如：预计签约">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">开始日期</label>
+                            <input type="date" id="editStart" class="form-input">
+                            <div class="date-quick-btns">
+                                <button class="date-quick-btn" onclick="setDateQuick('editStart', 0)">今天</button>
+                                <button class="date-quick-btn" onclick="setDateQuick('editStart', 1)">明天</button>
+                                <button class="date-quick-btn" onclick="setDateQuick('editStart', 7)">一周后</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">结束日期</label>
+                            <input type="date" id="editEnd" class="form-input">
+                            <div class="date-quick-btns">
+                                <button class="date-quick-btn" onclick="setDateQuick('editEnd', 0)">今天</button>
+                                <button class="date-quick-btn" onclick="setDateQuick('editEnd', 7)">一周后</button>
+                                <button class="date-quick-btn" onclick="setDateQuick('editEnd', 30)">一月后</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">进度（%）</label>
+                            <div class="pct-wrap">
+                                <input type="range" id="pctSlider" class="pct-slider" min="0" max="100" step="5" value="0" oninput="onPctSliderChange(this.value)">
+                                <input type="number" id="editPct" class="form-input pct-input" min="0" max="100" value="0" oninput="onPctInputChange(this.value)">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">备注</label>
+                            <textarea id="editNote" class="form-textarea" rows="3" placeholder="可选备注信息"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" onclick="deleteTask()" id="btnDelete" style="display:none;margin-right:auto">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:4px"><polyline points="3,6 5,6 5,21 19,21 19,6"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="12" y1="6" x2="12" y2="19"/></svg>
+                            删除
+                        </button>
+                        <button class="btn btn-ghost" onclick="closeTaskModal()">取消</button>
+                        <button class="btn btn-brand" onclick="saveTask()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 项目弹窗 -->
+    <div class="modal-overlay" id="projModal">
+        <div class="modal" style="position:fixed;inset:0;background:rgba(0,0,0,.6);">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;">
+                <div class="modal" style="width:560px;max-width:100%;max-height:90vh;overflow-y:auto;">
+                    <div class="modal-header">
+                        <span class="modal-title" id="projModalTitle">新建项目</span>
+                        <button class="modal-close" onclick="closeProjModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editProjId2">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group" style="grid-column:1/-1;">
+                                <label class="form-label">项目名称 <span style="color:var(--danger)">*</span></label>
+                                <input type="text" id="projName" class="form-input" placeholder="如：AIMS - 吉隆坡">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">关联机房</label>
+                                <select id="projDcSelect" class="form-select"><option value="">-- 暂不关联 --</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">设计功率（MW）</label>
+                                <input type="number" id="projPower" class="form-input" step="0.1" placeholder="如：3.0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">项目负责人</label>
+                                <input type="text" id="projOwner" class="form-input" placeholder="负责人姓名">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">当前阶段</label>
+                                <select id="projStage" class="form-select">
+                                    <option value="signing">签约</option>
+                                    <option value="delivery">交付</option>
+                                    <option value="boi">BOI审批</option>
+                                    <option value="purchase">设备采购</option>
+                                    <option value="entry">进场施工</option>
+                                    <option value="compute">算力上线</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">预计开始日期</label>
+                                <input type="date" id="projStartDate" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">预计结束日期</label>
+                                <input type="date" id="projEndDate" class="form-input">
+                            </div>
+                            <div class="form-group" style="grid-column:1/-1;">
+                                <label class="form-label">项目备注</label>
+                                <textarea id="projNote" class="form-input" rows="3" placeholder="项目相关备注信息"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" onclick="deleteProject()" id="btnDeleteProj" style="display:none;margin-right:auto">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:4px"><polyline points="3,6 5,6 5,21 19,21 19,6"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="12" y1="6" x2="12" y2="19"/></svg>
+                            删除项目
+                        </button>
+                        <button class="btn btn-ghost" onclick="closeProjModal()">取消</button>
+                        <button class="btn btn-brand" onclick="saveProject()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="tooltip" id="tooltip" style="display:none"></div>
-    <script src="gantt.js">
 
-(function(){
-    var u = null;
-    try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
-    if (u) {
-        var nu = document.getElementById('navUser');
-        if (nu) nu.innerHTML = '<div class="nav-avatar">'+(u.name||'管').charAt(0)+'</div><span>'+(u.name||'管理员')+'</span>';
-    }
-    var tt = document.getElementById('themeToggle');
-    if (tt) tt.addEventListener('click', function(){ document.body.classList.toggle('theme-light'); });
-    document.getElementById('navLogout') && document.getElementById('navLogout').addEventListener('click', function(){
-        localStorage.removeItem('aidc_user');
-        window.location.href = 'login.html';
-    });
-})();
-
-</script>
+    <script src="gantt.js"></script>
+    <script>
+    (function(){
+        var u = null;
+        try { u = JSON.parse(localStorage.getItem("aidc_user")); } catch(e){}
+        if (u) {
+            var nu = document.getElementById('navUser');
+            if (nu) nu.innerHTML = '<div class="nav-avatar">'+(u.name||'管').charAt(0)+'</div><span>'+(u.name||'管理员')+'</span>';
+        }
+        var tt = document.getElementById('themeToggle');
+        if (tt) tt.addEventListener('click', function(){ document.body.classList.toggle('theme-light'); });
+        document.getElementById('navLogout') && document.getElementById('navLogout').addEventListener('click', function(){
+            localStorage.removeItem('aidc_user');
+            window.location.href = 'login.html';
+        });
+    })();
+    </script>
 </body>
 </html>

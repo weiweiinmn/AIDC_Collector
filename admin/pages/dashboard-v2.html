@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5">
     <title>仪表盘 - AIDC Collector</title>
-    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="shared.css?v=1776180444">
     <link rel="stylesheet" href="shared-light.css">
     <!-- 登录态校验 -->
     <script>
@@ -70,9 +70,18 @@
     }
 
     .kpi-card:nth-child(1) { --kpi-color: #22c55e; }
-    .kpi-card:nth-child(2) { --kpi-color: #3b82f6; }
     .kpi-card:nth-child(3) { --kpi-color: #f59e0b; }
     .kpi-card:nth-child(4) { --kpi-color: #8b5cf6; }
+
+    /* 已签约 MW — 金色强调风格 */
+    .kpi-card--primary {
+        border-color: rgba(245, 158, 11, 0.35);
+        background: linear-gradient(135deg, var(--dash-card-bg) 60%, rgba(245,158,11,0.08));
+    }
+    .kpi-card--primary:hover { border-color: rgba(245, 158, 11, 0.6); }
+    .kpi-card--primary::before { background: #f59e0b; }
+    .kpi-card--primary .kpi-value { color: #f59e0b; }
+    .kpi-card--primary .kpi-icon { background: rgba(245,158,11,0.15); color: #f59e0b; }
 
     .kpi-header {
         display: flex;
@@ -183,6 +192,104 @@
     .status-bar-fill.success  { background: #22c55e; }
     .status-bar-fill.info    { background: #3b82f6; }
     .status-bar-fill.warning { background: #f59e0b; }
+
+    /* ── 基础设施能力 ─────────────────────────────────────── */
+    .capability-section {
+        background: var(--dash-card-bg);
+        border: 1px solid var(--dash-border);
+        border-radius: var(--dash-radius);
+        padding: 18px 20px;
+        margin-bottom: 20px;
+    }
+    .capability-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+    .capability-section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+    .capability-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+    @media (max-width: 640px) {
+        .capability-grid { grid-template-columns: 1fr; }
+    }
+    .capability-item {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--dash-border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        transition: border-color 0.2s;
+    }
+    body.theme-light .capability-item {
+        background: rgba(0,0,0,0.015);
+    }
+    .capability-item:hover { border-color: rgba(255,255,255,0.12); }
+    .capability-item-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    .capability-label {
+        font-size: 12px;
+        color: var(--gray-500);
+        font-weight: 500;
+    }
+    .capability-badge {
+        font-size: 11px;
+        padding: 2px 7px;
+        border-radius: 5px;
+        font-weight: 600;
+    }
+    .capability-badge.green  { background: rgba(34,197,94,0.12);  color: #22c55e; }
+    .capability-badge.yellow { background: rgba(245,158,11,0.12); color: #f59e0b; }
+    .capability-badge.blue   { background: rgba(59,130,246,0.12); color: #3b82f6; }
+    .capability-main {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+        margin-bottom: 8px;
+    }
+    .capability-num {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1;
+    }
+    .capability-unit {
+        font-size: 13px;
+        color: var(--gray-500);
+        font-weight: 500;
+    }
+    .capability-sub {
+        font-size: 11px;
+        color: var(--gray-600);
+        margin-bottom: 8px;
+    }
+    .capability-track {
+        height: 4px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+    body.theme-light .capability-track {
+        background: rgba(0,0,0,0.06);
+    }
+    .capability-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.6s ease;
+    }
+    .capability-fill.green  { background: #22c55e; }
+    .capability-fill.yellow { background: #f59e0b; }
+    .capability-fill.blue   { background: #3b82f6; }
     .status-bar-fill.accent  { background: #8b5cf6; }
     .status-bar-fill.danger  { background: #ef4444; }
 
@@ -387,6 +494,96 @@
         background: rgba(0,0,0,0.05);
     }
 
+    /* ── KYC 阻塞清单 ───────────────────────────────────── */
+    .kyc-blocker-section {
+        background: var(--dash-card-bg);
+        border: 1px solid var(--dash-border);
+        border-radius: var(--dash-radius);
+        padding: 18px 20px;
+        margin-bottom: 20px;
+    }
+    .kyc-blocker-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+    .kyc-blocker-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+    .kyc-blocker-count-badge {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+    .kyc-blocker-count-badge.danger  { background: rgba(239,68,68,0.12);  color: #ef4444; }
+    .kyc-blocker-count-badge.success { background: rgba(34,197,94,0.12);  color: #22c55e; }
+    .kyc-blocker-list { display: flex; flex-direction: column; gap: 8px; }
+    .kyc-blocker-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.04);
+        border-radius: 10px;
+        transition: border-color 0.2s;
+    }
+    body.theme-light .kyc-blocker-item {
+        background: rgba(0,0,0,0.015);
+        border-color: rgba(0,0,0,0.06);
+    }
+    .kyc-blocker-item:hover { border-color: rgba(239,68,68,0.25); }
+    .kyc-blocker-item.clear:hover { border-color: rgba(34,197,94,0.25); }
+    .kyc-blocker-icon {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        font-size: 16px;
+    }
+    .kyc-blocker-icon.warn { background: rgba(245,158,11,0.12); }
+    .kyc-blocker-icon.ok   { background: rgba(34,197,94,0.12); }
+    .kyc-blocker-info { flex: 1; min-width: 0; }
+    .kyc-blocker-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .kyc-blocker-name a {
+        color: var(--text-primary);
+        text-decoration: none;
+    }
+    .kyc-blocker-name a:hover { color: var(--accent); }
+    .kyc-blocker-detail {
+        font-size: 11px;
+        color: var(--gray-500);
+        margin-top: 2px;
+    }
+    .kyc-blocker-tag {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 5px;
+        font-weight: 600;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .kyc-blocker-tag.pending { background: rgba(245,158,11,0.12); color: #f59e0b; }
+    .kyc-blocker-tag.stale   { background: rgba(239,68,68,0.12);  color: #ef4444; }
+    .kyc-blocker-empty {
+        text-align: center;
+        padding: 20px;
+        color: var(--gray-500);
+        font-size: 13px;
+    }
+    .kyc-blocker-empty-icon { font-size: 28px; margin-bottom: 6px; }
+
     /* 底部提示 */
     .dash-footer {
         text-align: center;
@@ -432,23 +629,7 @@
     
     </style>
 
-    <style>
-    .theme-toggle {
-      display: flex; align-items: center; justify-content: center;
-      width: 36px; height: 36px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-strong);
-      background: transparent; color: var(--text-secondary);
-      cursor: pointer; transition: all var(--transition-base); flex-shrink: 0;
-    }
-    .theme-toggle:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--brand); }
-    .theme-toggle .icon-sun, .theme-toggle .icon-moon { width: 18px; height: 18px; }
-    .theme-toggle .icon-sun { display: none; }
-    .theme-toggle .icon-moon { display: block; }
-    body.theme-light .theme-toggle .icon-sun { display: block; }
-    body.theme-light .theme-toggle .icon-moon { display: none; }
     
-    </style>
 
 </head>
 <body>
@@ -500,48 +681,49 @@
 
     <!-- 仪表盘主体 -->
     <div class="dash-page">
+        <h1 class="page-title" style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 0 0 20px;">仪表盘</h1>
 
         <!-- KPI 指标卡 -->
         <div class="kpi-grid" id="kpi-grid">
             <div class="kpi-card" id="kpi-total">
                 <div class="kpi-header">
-                    <span class="kpi-label">机房总数</span>
+                    <span class="kpi-label">🏢 机房总数</span>
                     <div class="kpi-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                     </div>
                 </div>
                 <div class="kpi-value" id="kpi-total-value">—</div>
-                <div class="kpi-sub">共 <strong id="kpi-total-sub">0</strong> 个机房</div>
+                <div class="kpi-sub">本月新增 <strong id="kpi-total-sub">0</strong> 个</div>
             </div>
-            <div class="kpi-card" id="kpi-today">
+            <div class="kpi-card kpi-card--primary" id="kpi-mw">
                 <div class="kpi-header">
-                    <span class="kpi-label">本周新增</span>
+                    <span class="kpi-label">⚡ 已签约 MW</span>
+                    <div class="kpi-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                </div>
+                <div class="kpi-value" id="kpi-mw-value">—</div>
+                <div class="kpi-sub">占总量 <strong id="kpi-mw-sub">0%</strong></div>
+            </div>
+            <div class="kpi-card" id="kpi-neg">
+                <div class="kpi-header">
+                    <span class="kpi-label">🤝 洽谈中</span>
+                    <div class="kpi-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                </div>
+                <div class="kpi-value" id="kpi-neg-value">—</div>
+                <div class="kpi-sub">占总量 <strong id="kpi-neg-sub">0%</strong></div>
+            </div>
+            <div class="kpi-card" id="kpi-week">
+                <div class="kpi-header">
+                    <span class="kpi-label">📈 本周新增</span>
                     <div class="kpi-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
                     </div>
                 </div>
-                <div class="kpi-value" id="kpi-today-value">—</div>
-                <div class="kpi-sub">本月累计 <strong id="kpi-today-sub">0</strong> 个</div>
-            </div>
-            <div class="kpi-card" id="kpi-kyc">
-                <div class="kpi-header">
-                    <span class="kpi-label">KYC 未完成</span>
-                    <div class="kpi-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    </div>
-                </div>
-                <div class="kpi-value" id="kpi-kyc-value">—</div>
-                <div class="kpi-sub">已完成 <strong id="kpi-kyc-sub">0</strong> · 未完成 <strong>0</strong></div>
-            </div>
-            <div class="kpi-card" id="kpi-negotiating">
-                <div class="kpi-header">
-                    <span class="kpi-label">待 KYC</span>
-                    <div class="kpi-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                    </div>
-                </div>
-                <div class="kpi-value" id="kpi-neg-value">—</div>
-                <div class="kpi-sub">待处理 <strong id="kpi-neg-sub">0</strong> 个</div>
+                <div class="kpi-value" id="kpi-week-value">—</div>
+                <div class="kpi-sub">本月累计 <strong id="kpi-week-sub">0</strong> 个</div>
             </div>
         </div>
 
@@ -552,6 +734,67 @@
                 <a href="datacenter-list.html" style="font-size:12px;color:var(--accent);text-decoration:none;">查看全部 →</a>
             </div>
             <div class="status-bars" id="status-bars">
+                <!-- JS 渲染 -->
+            </div>
+        </div>
+
+        <!-- 基础设施能力 -->
+        <div class="capability-section">
+            <div class="capability-section-header">
+                <span class="capability-section-title">⚙️ 基础设施能力</span>
+            </div>
+            <div class="capability-grid">
+                <div class="capability-item" id="cap-800g">
+                    <div class="capability-item-header">
+                        <span class="capability-label">800G 网络</span>
+                        <span class="capability-badge green" id="cap-800g-badge">—</span>
+                    </div>
+                    <div class="capability-main">
+                        <span class="capability-num" id="cap-800g-num">—</span>
+                        <span class="capability-unit">机房</span>
+                    </div>
+                    <div class="capability-sub" id="cap-800g-sub">占总数 —</div>
+                    <div class="capability-track">
+                        <div class="capability-fill green" id="cap-800g-fill" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="capability-item" id="cap-liquid">
+                    <div class="capability-item-header">
+                        <span class="capability-label">液冷支持</span>
+                        <span class="capability-badge yellow" id="cap-liquid-badge">—</span>
+                    </div>
+                    <div class="capability-main">
+                        <span class="capability-num" id="cap-liquid-num">—</span>
+                        <span class="capability-unit">机房</span>
+                    </div>
+                    <div class="capability-sub" id="cap-liquid-sub">占总数 —</div>
+                    <div class="capability-track">
+                        <div class="capability-fill yellow" id="cap-liquid-fill" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="capability-item" id="cap-pue">
+                    <div class="capability-item-header">
+                        <span class="capability-label">PUE 均值</span>
+                        <span class="capability-badge blue" id="cap-pue-badge">—</span>
+                    </div>
+                    <div class="capability-main">
+                        <span class="capability-num" id="cap-pue-num">—</span>
+                    </div>
+                    <div class="capability-sub" id="cap-pue-sub">行业领先 ≤1.4，良好 ≤1.5</div>
+                    <div class="capability-track">
+                        <div class="capability-fill blue" id="cap-pue-fill" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KYC 阻塞清单 -->
+        <div class="kyc-blocker-section">
+            <div class="kyc-blocker-header">
+                <span class="kyc-blocker-title">🚨 KYC 阻塞清单</span>
+                <span class="kyc-blocker-count-badge danger" id="kyc-blocker-badge">—</span>
+            </div>
+            <div class="kyc-blocker-list" id="kyc-blocker-list">
                 <!-- JS 渲染 -->
             </div>
         </div>
@@ -648,25 +891,40 @@
     }
 
     function loadDashboard() {
-        var res   = 
-    AIDC_API.seedDatacenters();
-    AIDC_API.seedUsers();
-    AIDC_API.getStats();
+        AIDC_API.seedDatacenters();
+        AIDC_API.seedUsers();
+        var res   = AIDC_API.getStats();
         var stats = res.data || {};
 
-        // KPI 卡片
-        document.getElementById('kpi-total-value').textContent   = stats.total      || 0;
-        document.getElementById('kpi-total-sub').textContent     = stats.total      || 0;
-        document.getElementById('kpi-today-value').textContent  = stats.weekCount  || 0;
-        document.getElementById('kpi-today-sub').textContent    = stats.monthCount || 0;
-
         var dist  = stats.statusDist || {};
-        var pendingKYC = (dist['not_started']||0) + (dist['in_progress']||0) + (dist['pending_doc']||0);
-        document.getElementById('kpi-neg-value').textContent  = pendingKYC;
-        document.getElementById('kpi-neg-sub').textContent    = dist['not_started']||0;
+        var total = stats.total || 0;
+        var negCount = (dist['negotiating']||0);
+        var negPct   = total > 0 ? (negCount / total * 100).toFixed(0) + '%' : '0%';
+        var mwPct    = stats.totalMw > 0 && total > 0
+                          ? (stats.signedMw / stats.totalMw * 100).toFixed(0) + '%'
+                          : '—';
+
+        // KPI 卡片
+        // ① 机房总数 + 本月新增
+        document.getElementById('kpi-total-value').textContent = total;
+        document.getElementById('kpi-total-sub').textContent   = stats.monthCount || 0;
+        // ② 已签约 MW（核心战略指标，金色卡片）
+        document.getElementById('kpi-mw-value').textContent = stats.signedMw
+            ? stats.signedMw + ' MW'
+            : '—';
+        document.getElementById('kpi-mw-sub').textContent = mwPct;
+        // ③ 洽谈中
+        document.getElementById('kpi-neg-value').textContent = negCount;
+        document.getElementById('kpi-neg-sub').textContent   = negPct;
+        // ④ 本周新增 + 月累计
+        document.getElementById('kpi-week-value').textContent = stats.weekCount || 0;
+        document.getElementById('kpi-week-sub').textContent   = stats.monthCount || 0;
 
         // 状态分布
         renderStatusBars(dist, stats.total||0);
+
+        // 基础设施能力
+        renderCapability(stats);
 
         // 加载完整列表计算 KYC 和国家
         var listRes = AIDC_API.getDatacenters({ pageSize: 1000 });
@@ -700,6 +958,54 @@
         }).join('');
     }
 
+    function renderCapability(stats) {
+        var total = stats.total || 0;
+        var section = document.getElementById('cap-800g');
+        if (!section) return;
+
+        // 800G 网络
+        var g800c = stats.network800gCount || 0;
+        var g800t = stats.network800gTotal || total;
+        var g800p = g800t > 0 ? (g800c / g800t * 100).toFixed(0) : 0;
+        document.getElementById('cap-800g-num').textContent   = g800c;
+        document.getElementById('cap-800g-sub').textContent   = '占总数 ' + g800p + '%';
+        document.getElementById('cap-800g-badge').textContent = g800c + '/' + g800t;
+        document.getElementById('cap-800g-fill').style.width  = g800p + '%';
+
+        // 液冷
+        var liqc  = stats.liquidCoolingCount || 0;
+        var liqt  = stats.liquidCoolingTotal || total;
+        var liqp  = liqt > 0 ? (liqc / liqt * 100).toFixed(0) : 0;
+        document.getElementById('cap-liquid-num').textContent   = liqc;
+        document.getElementById('cap-liquid-sub').textContent   = '占总数 ' + liqp + '%';
+        document.getElementById('cap-liquid-badge').textContent = liqc + '/' + liqt;
+        document.getElementById('cap-liquid-fill').style.width  = liqp + '%';
+
+        // PUE 均值
+        var pue = stats.avgPue;
+        document.getElementById('cap-pue-num').textContent = pue !== null && pue !== undefined ? pue : '—';
+        var pueBadge = document.getElementById('cap-pue-badge');
+        if (pue !== null && pue !== undefined) {
+            if (pue <= 1.4) {
+                pueBadge.textContent = '🌟 领先';
+                pueBadge.className = 'capability-badge green';
+            } else if (pue <= 1.5) {
+                pueBadge.textContent = '✅ 良好';
+                pueBadge.className = 'capability-badge blue';
+            } else {
+                pueBadge.textContent = '⚠️ 待优化';
+                pueBadge.className = 'capability-badge yellow';
+            }
+            // PUE 进度条：1.0=0%，2.0=100%，反向（越低越好）
+            var puePct = Math.max(0, Math.min(100, (2.0 - pue) / 1.0 * 100)).toFixed(0);
+            document.getElementById('cap-pue-fill').style.width = puePct + '%';
+        } else {
+            pueBadge.textContent = '—';
+            pueBadge.className = 'capability-badge green';
+            document.getElementById('cap-pue-fill').style.width = '0%';
+        }
+    }
+
     function renderCountry(list, total) {
         var el = document.getElementById('country-list');
         if (!el) return;
@@ -725,9 +1031,6 @@
         var total = list.length;
         var done  = (byKYC['approved']||0) + (byKYC['not_required']||0);
         var undone = total - done;
-
-        document.getElementById('kpi-kyc-value').textContent = undone;
-        document.getElementById('kpi-kyc-sub').textContent   = done;
 
         var rows = [
             { key:'approved',     label:'已完成',     color:'#22c55e' },

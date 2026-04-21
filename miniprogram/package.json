@@ -1,9 +1,0 @@
-{
-  "name": "aidc-collector",
-  "version": "1.0.0",
-  "description": "AIDC Collector - AI算力机房采集助手",
-  "dependencies": {
-    "tdesign-miniprogram": "^1.9.0"
-  },
-  "devDependencies": {}
-}

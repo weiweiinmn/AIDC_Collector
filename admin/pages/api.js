@@ -61,12 +61,14 @@
     var raw = localStorage.getItem(K.datacenters);
     if (raw && JSON.parse(raw).length > 0) return;
     var seed = [
-      { id: 'dc001', name: 'Equinix SG2',         country: '新加坡',  province: '新加坡', city: '新加坡', address: '1 Genting Lane, Singapore 349544', status: 'collected',   customer: 'Equinix',   rackCount: 1800, powerPerRack: 10, pue: 1.35, createdBy: 'u001', createdByName: '管理员', createdAt: new Date(Date.now()-86400000*5).toISOString(), updatedAt: now() },
-      { id: 'dc002', name: 'STT Bangkok 1',        country: '泰国',    province: '曼谷',   city: '曼谷',  address: 'Bang Khen District, Bangkok 10220', status: 'new',         customer: 'STT GDC',   rackCount: 800,  powerPerRack: 10, pue: 1.42, createdBy: 'u001', createdByName: '管理员', createdAt: new Date(Date.now()-86400000*2).toISOString(), updatedAt: now() },
-      { id: 'dc003', name: 'DCI Indonesia JK01',   country: '印尼',    province: '雅加达', city: '雅加达', address: 'Jl. Kebayoran Lama, Jakarta Barat', status: 'collected',   customer: 'DCI',       rackCount: 600,  powerPerRack: 6,  pue: 1.5,  createdBy: 'u002', createdByName: '张三',   createdAt: new Date(Date.now()-86400000).toISOString(),   updatedAt: now() },
-      { id: 'dc004', name: 'Supernap Thailand 1',  country: '泰国',    province: '曼谷',   city: '曼谷',  address: 'Suvarnabhumi Area, Bangkok 10540', status: 'negotiating', customer: 'Supernap',  rackCount: 2000, powerPerRack: 15, pue: 1.38, createdBy: 'u001', createdByName: '管理员', createdAt: now(), updatedAt: now() },
-      { id: 'dc005', name: 'Keppel DC Singapore 2',country: '新加坡',  province: '新加坡', city: '新加坡', address: '55 Ayer Rajah Crescent, Singapore', status: 'signed',      customer: 'Keppel DC', rackCount: 2500, powerPerRack: 12, pue: 1.3,  createdBy: 'u002', createdByName: '张三',   createdAt: new Date(Date.now()-86400000*3).toISOString(), updatedAt: now() },
+      { id: 'dc001', name: 'Equinix SG2',         r1: '新加坡',  r2: '新加坡', r3: '新加坡', address: '1 Genting Lane, Singapore 349544', status: 'collected',   customer: 'Equinix',   cabinetCount: 1800, cabinetPower: 10, pueDesign: 1.35, createdBy: 'u001', createdByName: '管理员', createdAt: new Date(Date.now()-86400000*5).toISOString(), updatedAt: now() },
+      { id: 'dc002', name: 'STT Bangkok 1',        r1: '泰国',    r2: '曼谷',   r3: '曼谷',  address: 'Bang Khen District, Bangkok 10220', status: 'new',         customer: 'STT GDC',   cabinetCount: 800,  cabinetPower: 10, pueDesign: 1.42, createdBy: 'u001', createdByName: '管理员', createdAt: new Date(Date.now()-86400000*2).toISOString(), updatedAt: now() },
+      { id: 'dc003', name: 'DCI Indonesia JK01',   r1: '印尼',    r2: '雅加达', r3: '雅加达', address: 'Jl. Kebayoran Lama, Jakarta Barat', status: 'collected',   customer: 'DCI',       cabinetCount: 600,  cabinetPower: 6,  pueDesign: 1.5,  createdBy: 'u002', createdByName: '张三',   createdAt: new Date(Date.now()-86400000).toISOString(),   updatedAt: now() },
+      { id: 'dc004', name: 'Supernap Thailand 1',  r1: '泰国',    r2: '曼谷',   r3: '曼谷',  address: 'Suvarnabhumi Area, Bangkok 10540', status: 'negotiating', customer: 'Supernap',  cabinetCount: 2000, cabinetPower: 15, pueDesign: 1.38, createdBy: 'u001', createdByName: '管理员', createdAt: now(), updatedAt: now() },
+      { id: 'dc005', name: 'Keppel DC Singapore 2',r1: '新加坡',  r2: '新加坡', r3: '新加坡', address: '55 Ayer Rajah Crescent, Singapore', status: 'signed',      customer: 'Keppel DC', cabinetCount: 2500, cabinetPower: 12, pueDesign: 1.3,  createdBy: 'u002', createdByName: '张三',   createdAt: new Date(Date.now()-86400000*3).toISOString(), updatedAt: now() },
     ];
+    // 使用 compatWrite 确保新旧字段名都写入
+    seed = seed.map(function(d) { return compatWrite(d); });
     addChangelog('dc001', 'Equinix SG2',          'create', '新增机房 [Equinix SG2]',          '管理员');
     addChangelog('dc002', 'STT Bangkok 1',         'create', '新增机房 [STT Bangkok 1]',         '管理员');
     addChangelog('dc003', 'DCI Indonesia JK01',    'create', '新增机房 [DCI Indonesia JK01]',    '张三');
@@ -97,6 +99,116 @@
   // ── 统一响应 ─────────────────────────────────────────────────────────────
   function ok(data)    { return { code: 0, data: data }; }
   function err(msg)    { return { code: 1, message: msg }; }
+
+  // ── 字段名兼容层（与移动端统一）────────────────────────────────────────────
+  // 读取兼容：旧字段名 → 新 camelCase 字段名
+  function normalizeDatacenter(d) {
+    if (!d) return d;
+    // 地址字段兼容
+    if (!d.r1 && d.country) d.r1 = d.country;
+    if (!d.r2 && d.province) d.r2 = d.province;
+    if (!d.r3 && d.city) d.r3 = d.city;
+    // 机柜电力字段兼容（旧→新 camelCase）
+    if (d.rackCount !== undefined && d.cabinetCount === undefined) d.cabinetCount = d.rackCount;
+    if (d.cabinet_count !== undefined && d.cabinetCount === undefined) d.cabinetCount = d.cabinet_count;
+    if (d.powerPerRack !== undefined && d.cabinetPower === undefined) d.cabinetPower = d.powerPerRack;
+    if (d.cabinet_power !== undefined && d.cabinetPower === undefined) d.cabinetPower = d.cabinet_power;
+    if (d.pue !== undefined && d.pueDesign === undefined) d.pueDesign = d.pue;
+    if (d.pue_design !== undefined && d.pueDesign === undefined) d.pueDesign = d.pue_design;
+    if (d.mainCoolingType !== undefined && d.coolingType === undefined) d.coolingType = d.mainCoolingType;
+    if (d.cooling_type !== undefined && d.coolingType === undefined) d.coolingType = d.cooling_type;
+    if (d.mainsCapacity !== undefined && d.powerKva === undefined) d.powerKva = d.mainsCapacity;
+    if (d.mains_capacity !== undefined && d.powerKva === undefined) d.powerKva = d.mains_capacity;
+    if (d.powerCapacity !== undefined && d.powerMw === undefined) d.powerMw = d.powerCapacity;
+    if (d.available_power !== undefined && d.powerMw === undefined) d.powerMw = d.available_power;
+    if (d.expandable !== undefined && d.powerExpand === undefined) d.powerExpand = d.expandable;
+    if (d.expandable_power !== undefined && d.powerExpand === undefined) d.powerExpand = d.expandable_power;
+    if (d.propertyType !== undefined && d.property === undefined) d.property = d.propertyType;
+    if (d.expectedDate !== undefined && d.deliveryDate === undefined) d.deliveryDate = d.expectedDate;
+    if (d.expected_date !== undefined && d.deliveryDate === undefined) d.deliveryDate = d.expected_date;
+    if (d.liaison !== undefined && d.contactPerson === undefined) d.contactPerson = d.liaison;
+    if (d.contact_person !== undefined && d.contactPerson === undefined) d.contactPerson = d.contact_person;
+    // 其他字段兼容
+    if (d.cabinet_available !== undefined && d.cabinetAvailable === undefined) d.cabinetAvailable = d.cabinet_available;
+    if (d.network_routes !== undefined && d.networkRoutes === undefined) d.networkRoutes = d.network_routes;
+    if (d.carrier_count !== undefined && d.carrierCount === undefined) d.carrierCount = d.carrier_count;
+    if (d.network_800g !== undefined && d.network800g === undefined) d.network800g = d.network_800g;
+    if (d.transformer_kva !== undefined && d.transformerKva === undefined) d.transformerKva = d.transformer_kva;
+    if (d.genset_redundancy !== undefined && d.gensetRedundancy === undefined) d.gensetRedundancy = d.genset_redundancy;
+    if (d.genset_runtime !== undefined && d.gensetRuntime === undefined) d.gensetRuntime = d.genset_runtime;
+    if (d.ups_config !== undefined && d.upsConfig === undefined) d.upsConfig = d.ups_config;
+    if (d.ups_runtime !== undefined && d.upsRuntime === undefined) d.upsRuntime = d.ups_runtime;
+    if (d.power_sla !== undefined && d.powerSla === undefined) d.powerSla = d.power_sla;
+    if (d.chiller_count !== undefined && d.chillerCount === undefined) d.chillerCount = d.chiller_count;
+    if (d.liquid_cooling !== undefined && d.liquidCooling === undefined) d.liquidCooling = d.liquid_cooling;
+    if (d.floor_load !== undefined && d.floorLoad === undefined) d.floorLoad = d.floor_load;
+    if (d.floor_height !== undefined && d.floorHeight === undefined) d.floorHeight = d.floor_height;
+    return d;
+  }
+
+  // 写入兼容：同时写入新旧字段名
+  function compatWrite(data) {
+    var out = Object.assign({}, data);
+    // 地址字段双向写入
+    if (data.r1) { out.country = data.r1; }
+    if (data.r2) { out.province = data.r2; }
+    if (data.r3) { out.city = data.r3; }
+    if (data.country) { out.r1 = data.country; }
+    if (data.province) { out.r2 = data.province; }
+    if (data.city) { out.r3 = data.city; }
+    // 机柜电力字段双向写入（新 camelCase → 旧 snake_case）
+    if (data.cabinetCount !== undefined) { out.cabinet_count = data.cabinetCount; out.rackCount = data.cabinetCount; }
+    if (data.cabinet_count !== undefined) { out.cabinetCount = data.cabinet_count; out.rackCount = data.cabinet_count; }
+    if (data.cabinetPower !== undefined) { out.cabinet_power = data.cabinetPower; out.powerPerRack = data.cabinetPower; }
+    if (data.cabinet_power !== undefined) { out.cabinetPower = data.cabinet_power; out.powerPerRack = data.cabinet_power; }
+    if (data.pueDesign !== undefined) { out.pue_design = data.pueDesign; out.pue = data.pueDesign; }
+    if (data.pue_design !== undefined) { out.pueDesign = data.pue_design; out.pue = data.pue_design; }
+    if (data.coolingType !== undefined) { out.cooling_type = data.coolingType; out.mainCoolingType = data.coolingType; }
+    if (data.cooling_type !== undefined) { out.coolingType = data.cooling_type; out.mainCoolingType = data.cooling_type; }
+    if (data.powerKva !== undefined) { out.power_kva = data.powerKva; out.mainsCapacity = data.powerKva; }
+    if (data.power_kva !== undefined) { out.powerKva = data.power_kva; out.mainsCapacity = data.power_kva; }
+    if (data.mains_capacity !== undefined) { out.powerKva = data.mains_capacity; out.mainsCapacity = data.mains_capacity; }
+    if (data.powerMw !== undefined) { out.power_mw = data.powerMw; out.powerCapacity = data.powerMw; out.available_power = data.powerMw; }
+    if (data.available_power !== undefined) { out.powerMw = data.available_power; out.powerCapacity = data.available_power; }
+    if (data.powerExpand !== undefined) { out.power_expand = data.powerExpand; out.expandable = data.powerExpand; out.expandable_power = data.powerExpand; }
+    if (data.expandable_power !== undefined) { out.powerExpand = data.expandable_power; out.expandable = data.expandable_power; }
+    if (data.deliveryDate !== undefined) { out.delivery_date = data.deliveryDate; out.expectedDate = data.deliveryDate; out.expected_date = data.deliveryDate; }
+    if (data.expected_date !== undefined) { out.deliveryDate = data.expected_date; out.expectedDate = data.expected_date; }
+    if (data.contactPerson !== undefined) { out.contact_person = data.contactPerson; out.liaison = data.contactPerson; }
+    if (data.contact_person !== undefined) { out.contactPerson = data.contact_person; out.liaison = data.contact_person; }
+    if (data.property !== undefined) { out.propertyType = data.property; }
+    if (data.propertyType !== undefined) { out.property = data.propertyType; }
+    // 其他字段双向写入
+    if (data.cabinetAvailable !== undefined) { out.cabinet_available = data.cabinetAvailable; }
+    if (data.cabinet_available !== undefined) { out.cabinetAvailable = data.cabinet_available; }
+    if (data.networkRoutes !== undefined) { out.network_routes = data.networkRoutes; }
+    if (data.network_routes !== undefined) { out.networkRoutes = data.network_routes; }
+    if (data.carrierCount !== undefined) { out.carrier_count = data.carrierCount; }
+    if (data.carrier_count !== undefined) { out.carrierCount = data.carrier_count; }
+    if (data.network800g !== undefined) { out.network_800g = data.network800g; }
+    if (data.network_800g !== undefined) { out.network800g = data.network_800g; }
+    if (data.transformerKva !== undefined) { out.transformer_kva = data.transformerKva; }
+    if (data.transformer_kva !== undefined) { out.transformerKva = data.transformer_kva; }
+    if (data.gensetRedundancy !== undefined) { out.genset_redundancy = data.gensetRedundancy; }
+    if (data.genset_redundancy !== undefined) { out.gensetRedundancy = data.genset_redundancy; }
+    if (data.gensetRuntime !== undefined) { out.genset_runtime = data.gensetRuntime; }
+    if (data.genset_runtime !== undefined) { out.gensetRuntime = data.genset_runtime; }
+    if (data.upsConfig !== undefined) { out.ups_config = data.upsConfig; }
+    if (data.ups_config !== undefined) { out.upsConfig = data.ups_config; }
+    if (data.upsRuntime !== undefined) { out.ups_runtime = data.upsRuntime; }
+    if (data.ups_runtime !== undefined) { out.upsRuntime = data.ups_runtime; }
+    if (data.powerSla !== undefined) { out.power_sla = data.powerSla; }
+    if (data.power_sla !== undefined) { out.powerSla = data.power_sla; }
+    if (data.chillerCount !== undefined) { out.chiller_count = data.chillerCount; }
+    if (data.chiller_count !== undefined) { out.chillerCount = data.chiller_count; }
+    if (data.liquidCooling !== undefined) { out.liquid_cooling = data.liquidCooling; }
+    if (data.liquid_cooling !== undefined) { out.liquidCooling = data.liquid_cooling; }
+    if (data.floorLoad !== undefined) { out.floor_load = data.floorLoad; }
+    if (data.floor_load !== undefined) { out.floorLoad = data.floor_load; }
+    if (data.floorHeight !== undefined) { out.floor_height = data.floorHeight; }
+    if (data.floor_height !== undefined) { out.floorHeight = data.floor_height; }
+    return out;
+  }
 
   // ── API ──────────────────────────────────────────────────────────────────
   window.AIDC_API = {
@@ -171,14 +283,15 @@
 
     createDatacenter: function(data) {
       var user   = this.getUser();
-      var record = Object.assign({
+      // 使用 compatWrite 确保新旧字段名都写入
+      var record = compatWrite(Object.assign({
         id:             'dc' + Date.now(),
         status:         'new',
         createdBy:      user ? user.id : 'u001',
         createdByName:  user ? user.name : '管理员',
         createdAt:      now(),
         updatedAt:      now(),
-      }, data);
+      }, data));
       var list = JSON.parse(localStorage.getItem(K.datacenters) || '[]');
       list.unshift(record);
       localStorage.setItem(K.datacenters, JSON.stringify(list));
@@ -193,11 +306,13 @@
       var idx  = list.findIndex(function(d){ return d.id === id; });
       if (idx === -1) return err('记录不存在');
       var oldRecord = list[idx];
+      // 使用 compatWrite 确保新旧字段名都写入
+      var compatData = compatWrite(data);
       var changedFields = [];
-      Object.keys(data).forEach(function(key) {
-        if (oldRecord[key] !== data[key]) changedFields.push(key);
+      Object.keys(compatData).forEach(function(key) {
+        if (oldRecord[key] !== compatData[key]) changedFields.push(key);
       });
-      list[idx] = Object.assign({}, oldRecord, data, { updatedAt: now() });
+      list[idx] = Object.assign({}, oldRecord, compatData, { updatedAt: now() });
       localStorage.setItem(K.datacenters, JSON.stringify(list));
       var user = this.getUser();
       if (changedFields.length > 0) {
@@ -305,14 +420,92 @@
       var today      = new Date().toDateString();
       var monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
       var weekStart  = new Date(); weekStart.setDate(weekStart.getDate() - weekStart.getDay() || 7); weekStart.setDate(weekStart.getDate() - 6); weekStart.setHours(0,0,0,0);
+      var now        = new Date();
+      var in90Days   = new Date(now.getTime() + 90 * 86400000);
+
+      // 状态分布
       var statusDist = {};
       all.forEach(function(d) { statusDist[d.status] = (statusDist[d.status]||0) + 1; });
+
+      // MW 统计（兼容 powerMw / power_mw / powerCapacity / available_power）
+      var totalMw   = 0;
+      var signedMw  = 0;
+      var totalCabinets = 0;
+      all.forEach(function(d) {
+        var mw = parseFloat(d.powerMw || d.power_mw || d.powerCapacity || d.available_power || 0);
+        var cab = parseInt(d.cabinetCount || d.cabinet_count || d.rackCount || 0);
+        totalMw += mw;
+        totalCabinets += cab;
+        if (d.status === 'signed') signedMw += mw;
+      });
+
+      // 平均 PUE（power_kva / powerKva / pueDesign / pue）
+      var pueSum = 0, pueCount = 0;
+      all.forEach(function(d) {
+        var p = parseFloat(d.pueDesign || d.pue_design || d.pue || 0);
+        if (p > 0) { pueSum += p; pueCount++; }
+      });
+
+      // 800G / 液冷 / powerSla 统计
+      var network800gCount   = 0;
+      var liquidCoolingCount = 0;
+      var powerSlaCount      = 0;
+      all.forEach(function(d) {
+        if (d.network800g || d.network_800g) network800gCount++;
+        if (d.liquidCooling || d.liquid_cooling) liquidCoolingCount++;
+        if (d.powerSla === '99.999%' || d.power_sla === '99.999%') powerSlaCount++;
+      });
+
+      // KYC 阻塞清单（pending_doc 或 in_progress 超30天未更新）
+      var kycBlockers = all.filter(function(d) {
+        if (d.kycStatus === 'pending_doc') return true;
+        if (d.kycStatus === 'in_progress' || d.kycStatus === 'in-progress') {
+          var updated = new Date(d.updatedAt || d.createdAt);
+          var daysSinceUpdate = (now - updated) / 86400000;
+          return daysSinceUpdate > 30;
+        }
+        return false;
+      }).map(function(d) {
+        var updated = new Date(d.updatedAt || d.createdAt);
+        var daysSinceUpdate = Math.floor((now - updated) / 86400000);
+        return { id: d.id, name: d.name, kycStatus: d.kycStatus, daysSinceUpdate: daysSinceUpdate };
+      });
+
+      // 90天内即将交付
+      var upcomingDeliveries = all.filter(function(d) {
+        if (!d.deliveryDate) return false;
+        var dd = new Date(d.deliveryDate);
+        return dd >= now && dd <= in90Days;
+      }).map(function(d) {
+        var dd = new Date(d.deliveryDate);
+        var daysLeft = Math.ceil((dd - now) / 86400000);
+        return { id: d.id, name: d.name, deliveryDate: d.deliveryDate, daysLeft: daysLeft };
+      });
+
       return ok({
-        total:      all.length,
-        todayCount: all.filter(function(d){ return new Date(d.createdAt).toDateString() === today;     }).length,
-        weekCount:  all.filter(function(d){ return new Date(d.createdAt) >= weekStart;                }).length,
-        monthCount: all.filter(function(d){ return new Date(d.createdAt) >= monthStart;                }).length,
-        statusDist: statusDist,
+        // 基础数量
+        total:        all.length,
+        todayCount:   all.filter(function(d){ return new Date(d.createdAt).toDateString() === today;     }).length,
+        weekCount:    all.filter(function(d){ return new Date(d.createdAt) >= weekStart;                }).length,
+        monthCount:   all.filter(function(d){ return new Date(d.createdAt) >= monthStart;                }).length,
+        // 状态分布
+        statusDist:   statusDist,
+        // MW / 机柜
+        totalMw:      Math.round(totalMw * 100) / 100,
+        signedMw:     Math.round(signedMw * 100) / 100,
+        totalCabinets: totalCabinets,
+        // PUE
+        avgPue:       pueCount > 0 ? Math.round(pueSum / pueCount * 100) / 100 : null,
+        // 基础设施能力
+        network800gCount:    network800gCount,
+        network800gTotal:    all.length,
+        liquidCoolingCount: liquidCoolingCount,
+        liquidCoolingTotal: all.length,
+        powerSlaCount:       powerSlaCount,
+        powerSlaTotal:       all.length,
+        // KYC & 交付
+        kycBlockers:         kycBlockers,
+        upcomingDeliveries:  upcomingDeliveries,
       });
     },
 
@@ -333,6 +526,108 @@
     getStatusCls: function(status) {
       var m = this.statusMap[status];
       return m ? m.cls : 'info';
+    },
+
+    // ── 字段映射兼容层（供表单页面直接调用）─────────────────────────────
+    normalizeDatacenter: function(d) {
+      if (!d) return d;
+      if (!d.r1 && d.country) d.r1 = d.country;
+      if (!d.r2 && d.province) d.r2 = d.province;
+      if (!d.r3 && d.city) d.r3 = d.city;
+      if (d.rackCount !== undefined && d.cabinetCount === undefined) d.cabinetCount = d.rackCount;
+      if (d.cabinet_count !== undefined && d.cabinetCount === undefined) d.cabinetCount = d.cabinet_count;
+      if (d.powerPerRack !== undefined && d.cabinetPower === undefined) d.cabinetPower = d.powerPerRack;
+      if (d.cabinet_power !== undefined && d.cabinetPower === undefined) d.cabinetPower = d.cabinet_power;
+      if (d.pue !== undefined && d.pueDesign === undefined) d.pueDesign = d.pue;
+      if (d.pue_design !== undefined && d.pueDesign === undefined) d.pueDesign = d.pue_design;
+      if (d.mainCoolingType !== undefined && d.coolingType === undefined) d.coolingType = d.mainCoolingType;
+      if (d.cooling_type !== undefined && d.coolingType === undefined) d.coolingType = d.cooling_type;
+      if (d.mainsCapacity !== undefined && d.powerKva === undefined) d.powerKva = d.mainsCapacity;
+      if (d.mains_capacity !== undefined && d.powerKva === undefined) d.powerKva = d.mains_capacity;
+      if (d.powerCapacity !== undefined && d.powerMw === undefined) d.powerMw = d.powerCapacity;
+      if (d.available_power !== undefined && d.powerMw === undefined) d.powerMw = d.available_power;
+      if (d.expandable !== undefined && d.powerExpand === undefined) d.powerExpand = d.expandable;
+      if (d.expandable_power !== undefined && d.powerExpand === undefined) d.powerExpand = d.expandable_power;
+      if (d.propertyType !== undefined && d.property === undefined) d.property = d.propertyType;
+      if (d.expectedDate !== undefined && d.deliveryDate === undefined) d.deliveryDate = d.expectedDate;
+      if (d.expected_date !== undefined && d.deliveryDate === undefined) d.deliveryDate = d.expected_date;
+      if (d.liaison !== undefined && d.contactPerson === undefined) d.contactPerson = d.liaison;
+      if (d.contact_person !== undefined && d.contactPerson === undefined) d.contactPerson = d.contact_person;
+      if (d.cabinet_available !== undefined && d.cabinetAvailable === undefined) d.cabinetAvailable = d.cabinet_available;
+      if (d.network_routes !== undefined && d.networkRoutes === undefined) d.networkRoutes = d.network_routes;
+      if (d.carrier_count !== undefined && d.carrierCount === undefined) d.carrierCount = d.carrier_count;
+      if (d.network_800g !== undefined && d.network800g === undefined) d.network800g = d.network_800g;
+      if (d.transformer_kva !== undefined && d.transformerKva === undefined) d.transformerKva = d.transformer_kva;
+      if (d.genset_redundancy !== undefined && d.gensetRedundancy === undefined) d.gensetRedundancy = d.genset_redundancy;
+      if (d.genset_runtime !== undefined && d.gensetRuntime === undefined) d.gensetRuntime = d.genset_runtime;
+      if (d.ups_config !== undefined && d.upsConfig === undefined) d.upsConfig = d.ups_config;
+      if (d.ups_runtime !== undefined && d.upsRuntime === undefined) d.upsRuntime = d.ups_runtime;
+      if (d.power_sla !== undefined && d.powerSla === undefined) d.powerSla = d.power_sla;
+      if (d.chiller_count !== undefined && d.chillerCount === undefined) d.chillerCount = d.chiller_count;
+      if (d.liquid_cooling !== undefined && d.liquidCooling === undefined) d.liquidCooling = d.liquid_cooling;
+      if (d.floor_load !== undefined && d.floorLoad === undefined) d.floorLoad = d.floor_load;
+      if (d.floor_height !== undefined && d.floorHeight === undefined) d.floorHeight = d.floor_height;
+      return d;
+    },
+
+    compatWrite: function(data) {
+      var out = Object.assign({}, data);
+      if (data.r1) { out.country = data.r1; }
+      if (data.r2) { out.province = data.r2; }
+      if (data.r3) { out.city = data.r3; }
+      if (data.country) { out.r1 = data.country; }
+      if (data.province) { out.r2 = data.province; }
+      if (data.city) { out.r3 = data.city; }
+      if (data.cabinetCount !== undefined) { out.cabinet_count = data.cabinetCount; out.rackCount = data.cabinetCount; }
+      if (data.cabinet_count !== undefined) { out.cabinetCount = data.cabinet_count; out.rackCount = data.cabinet_count; }
+      if (data.cabinetPower !== undefined) { out.cabinet_power = data.cabinetPower; out.powerPerRack = data.cabinetPower; }
+      if (data.cabinet_power !== undefined) { out.cabinetPower = data.cabinet_power; out.powerPerRack = data.cabinet_power; }
+      if (data.pueDesign !== undefined) { out.pue_design = data.pueDesign; out.pue = data.pueDesign; }
+      if (data.pue_design !== undefined) { out.pueDesign = data.pue_design; out.pue = data.pue_design; }
+      if (data.coolingType !== undefined) { out.cooling_type = data.coolingType; out.mainCoolingType = data.coolingType; }
+      if (data.cooling_type !== undefined) { out.coolingType = data.cooling_type; out.mainCoolingType = data.cooling_type; }
+      if (data.powerKva !== undefined) { out.power_kva = data.powerKva; out.mainsCapacity = data.powerKva; }
+      if (data.power_kva !== undefined) { out.powerKva = data.power_kva; out.mainsCapacity = data.power_kva; }
+      if (data.mains_capacity !== undefined) { out.powerKva = data.mains_capacity; out.mainsCapacity = data.mains_capacity; }
+      if (data.powerMw !== undefined) { out.power_mw = data.powerMw; out.powerCapacity = data.powerMw; out.available_power = data.powerMw; }
+      if (data.available_power !== undefined) { out.powerMw = data.available_power; out.powerCapacity = data.available_power; }
+      if (data.powerExpand !== undefined) { out.power_expand = data.powerExpand; out.expandable = data.powerExpand; out.expandable_power = data.powerExpand; }
+      if (data.expandable_power !== undefined) { out.powerExpand = data.expandable_power; out.expandable = data.expandable_power; }
+      if (data.deliveryDate !== undefined) { out.delivery_date = data.deliveryDate; out.expectedDate = data.deliveryDate; out.expected_date = data.deliveryDate; }
+      if (data.expected_date !== undefined) { out.deliveryDate = data.expected_date; out.expectedDate = data.expected_date; }
+      if (data.contactPerson !== undefined) { out.contact_person = data.contactPerson; out.liaison = data.contactPerson; }
+      if (data.contact_person !== undefined) { out.contactPerson = data.contact_person; out.liaison = data.contact_person; }
+      if (data.property !== undefined) { out.propertyType = data.property; }
+      if (data.propertyType !== undefined) { out.property = data.propertyType; }
+      if (data.cabinetAvailable !== undefined) { out.cabinet_available = data.cabinetAvailable; }
+      if (data.cabinet_available !== undefined) { out.cabinetAvailable = data.cabinet_available; }
+      if (data.networkRoutes !== undefined) { out.network_routes = data.networkRoutes; }
+      if (data.network_routes !== undefined) { out.networkRoutes = data.network_routes; }
+      if (data.carrierCount !== undefined) { out.carrier_count = data.carrierCount; }
+      if (data.carrier_count !== undefined) { out.carrierCount = data.carrier_count; }
+      if (data.network800g !== undefined) { out.network_800g = data.network800g; }
+      if (data.network_800g !== undefined) { out.network800g = data.network_800g; }
+      if (data.transformerKva !== undefined) { out.transformer_kva = data.transformerKva; }
+      if (data.transformer_kva !== undefined) { out.transformerKva = data.transformer_kva; }
+      if (data.gensetRedundancy !== undefined) { out.genset_redundancy = data.gensetRedundancy; }
+      if (data.genset_redundancy !== undefined) { out.gensetRedundancy = data.genset_redundancy; }
+      if (data.gensetRuntime !== undefined) { out.genset_runtime = data.gensetRuntime; }
+      if (data.genset_runtime !== undefined) { out.gensetRuntime = data.genset_runtime; }
+      if (data.upsConfig !== undefined) { out.ups_config = data.upsConfig; }
+      if (data.ups_config !== undefined) { out.upsConfig = data.ups_config; }
+      if (data.upsRuntime !== undefined) { out.ups_runtime = data.upsRuntime; }
+      if (data.ups_runtime !== undefined) { out.upsRuntime = data.ups_runtime; }
+      if (data.powerSla !== undefined) { out.power_sla = data.powerSla; }
+      if (data.power_sla !== undefined) { out.powerSla = data.power_sla; }
+      if (data.chillerCount !== undefined) { out.chiller_count = data.chillerCount; }
+      if (data.chiller_count !== undefined) { out.chillerCount = data.chiller_count; }
+      if (data.liquidCooling !== undefined) { out.liquid_cooling = data.liquidCooling; }
+      if (data.liquid_cooling !== undefined) { out.liquidCooling = data.liquid_cooling; }
+      if (data.floorLoad !== undefined) { out.floor_load = data.floorLoad; }
+      if (data.floor_load !== undefined) { out.floorLoad = data.floor_load; }
+      if (data.floorHeight !== undefined) { out.floor_height = data.floorHeight; }
+      if (data.floor_height !== undefined) { out.floorHeight = data.floor_height; }
+      return out;
     },
 
   }; // end AIDC_API

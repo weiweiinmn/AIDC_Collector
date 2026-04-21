@@ -27,66 +27,8 @@
       margin-top: 2px;
     }
 
-    .record-card {
-      background: #fff;
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      margin-bottom: 10px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .record-card:active {
-      transform: scale(0.98);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .record-card .rc-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .record-card .rc-name {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--c-text-primary);
-      flex: 1;
-    }
-    .record-card .rc-city {
-      font-size: 12px;
-      color: var(--c-text-secondary);
-    }
-    .record-card .rc-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 12px;
-      color: var(--c-text-muted);
-    }
-    .record-card .rc-meta-item {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-    .record-card .rc-bar {
-      margin-top: 8px;
-      height: 4px;
-      background: var(--c-gray-bg);
-     
-      overflow: hidden;
-    }
-    .record-card .rc-bar-fill {
-      height: 100%;
-     
-      transition: width 0.4s ease;
-    }
-    .record-card .rc-bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--c-text-muted);
-      margin-top: 4px;
-    }
+    /* 记录页复用列表页 dc-card 样式，保持宽度一致 */
+    .dc-list { padding: 0 16px 20px; }
 
     /* 统计摘要 */
     .stats-row {
@@ -146,7 +88,7 @@
   </div>
   <div id="dcList">
     <!-- 骨架屏 -->
-    <div style="padding:0 16px">
+    <div class="dc-list">
       <div class="sk-card" style="margin-bottom:10px"><div class="skeleton sk-line"></div><div class="skeleton sk-line medium"></div></div>
       <div class="sk-card" style="margin-bottom:10px"><div class="skeleton sk-line"></div><div class="skeleton sk-line medium"></div></div>
       <div class="sk-card" style="margin-bottom:10px"><div class="skeleton sk-line"></div><div class="skeleton sk-line medium"></div></div>
@@ -286,22 +228,24 @@ function renderList(list) {
     return;
   }
   empty.classList.add('hidden');
-  var html = '<div style="padding:0 16px">';
+  var html = '<div class="dc-list">';
   list.forEach(function(d) {
     var statusLabel = AIDC_API.getStatusLabel(d.status);
-    html += '<div class="record-card" onclick="goDetail(\'' + d.id + '\')">';
-    html += '<div class="rc-top">';
+    var statusCls = AIDC_API.getStatusCls(d.status);
+    var countryFlag = '';
+    var flagMap = {'中国':'🇨🇳','新加坡':'🇸🇬','泰国':'🇹🇭','印尼':'🇮🇩','菲律宾':'🇵🇭','日本':'🇯🇵','澳大利亚':'🇦🇺','马来西亚':'🇲🇾','越南':'🇻🇳','印度':'🇮🇳','韩国':'🇰🇷'};
+    var flag = flagMap[d.r1 || d.country || ''] || '';
+    html += '<div class="dc-card" onclick="goDetail(\'' + d.id + '\')">';
+    html += '<div class="dc-card-top">';
+    if (flag) html += '<span class="dc-flag">' + flag + '</span>';
     html += '<div style="flex:1;min-width:0">';
-    html += '<div class="rc-name">' + escHtml(d.name||'') + '</div>';
-    html += '<div style="font-size:12px;color:var(--c-text-muted)">📍 ' + escHtml(d.city||'') + (d.country ? ' · ' + d.country : '') + '</div>';
+    html += '<div class="dc-name">' + escHtml(d.name||'') + '</div>';
+    html += '<div class="dc-location"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 5.02944 7.02944 1 12 1C16.9706 1 21 5.02944 21 10Z"/><circle cx="12" cy="10" r="3"/></svg> ' + escHtml(d.r3 || d.city || '') + (d.r1 || d.country ? ' · ' + (d.r1 || d.country) : '') + '</div>';
     html += '</div>';
-    html += '<span class="rc-status">' + statusLabel + '</span>';
+    html += '<span class="badge badge-' + statusCls + '" style="flex-shrink:0;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px">' + statusLabel + '</span>';
     html += '</div>';
-    if (d.rackCount) {
-      html += '<div style="font-size:12px;color:var(--c-text-muted);margin-top:4px">🏢️ ' + d.rackCount + ' 柜 · ▪ ' + (d.powerPerRack||'-') + 'kW/rack · PUE ' + (d.pue||'-') + '</div>';
-    }
     if (d.customer) {
-      html += '<div style="font-size:12px;color:var(--c-text-muted);margin-top:2px">🏢 ' + escHtml(d.customer) + '</div>';
+      html += '<div style="font-size:12px;color:var(--c-text-secondary);margin-bottom:8px">' + escHtml(d.customer) + '</div>';
     }
     html += '</div>';
   });
